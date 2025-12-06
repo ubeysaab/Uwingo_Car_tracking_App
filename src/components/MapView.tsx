@@ -14,7 +14,7 @@ type OutVehicle = {
   lng: number;
   plate: string;
   speed: number;
-  color: string;
+  isWorking: boolean;
 };
 
 export default function MapView() {
@@ -45,7 +45,7 @@ export default function MapView() {
           lng,
           plate: String(x.vehicles?.Plate),
           speed: Number(x.trackingData?.speed),
-          color: x.trackingData?.WorkingStatus ? "#2b8cff" : "#d9534f",
+          isWorking: x?.trackingData?.WorkingStatus
         };
       })
       .filter((v) => isFinite(v.lat) && isFinite(v.lng));

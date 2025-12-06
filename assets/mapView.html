@@ -404,6 +404,7 @@
     </div>
   </div>
 
+  <!-- 
   <div id="controls">
     <div class="control-group">
       <label class="control-label">
@@ -432,7 +433,8 @@
     <button id="refreshBtn">
       <i class="fas fa-redo"></i> Refresh Now
     </button>
-  </div>
+  </div> 
+  -->
 
   <button id="legendButton">
     <i class="fas fa-info-circle"></i>
@@ -535,7 +537,7 @@
       map = L.map('map', {
         zoomControl: false,
         attributionControl: false
-      }).setView([41.0082, 28.9784], 13); // Default Istanbul view
+      }).setView([38.4011, 42.1078], 13); // Default Istanbul view
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -577,25 +579,25 @@
 
     function setupEventListeners() {
       // Zoom level change
-      document.getElementById('zoomLevel').addEventListener('change', function () {
-        const zoomLevel = parseInt(this.value);
-        if (!isNaN(zoomLevel)) {
-          map.setZoom(zoomLevel);
-        }
-      });
+      // document.getElementById('zoomLevel').addEventListener('change', function () {
+      //   const zoomLevel = parseInt(this.value);
+      //   if (!isNaN(zoomLevel)) {
+      //     map.setZoom(zoomLevel);
+      //   }
+      // });
 
       // Refresh rate change
-      document.getElementById('refreshRate').addEventListener('change', function () {
-        const interval = parseInt(this.value);
-        if (!isNaN(interval)) {
-          clearInterval(refreshInterval);
-          refreshInterval = setInterval(refreshData, interval);
-          showNotification(`Refresh rate set to ${interval / 1000} seconds`);
-        }
-      });
+      // document.getElementById('refreshRate').addEventListener('change', function () {
+      //   const interval = parseInt(this.value);
+      //   if (!isNaN(interval)) {
+      //     clearInterval(refreshInterval);
+      //     refreshInterval = setInterval(refreshData, interval);
+      //     showNotification(`Refresh rate set to ${interval / 1000} seconds`);
+      //   }
+      // });
 
       // Refresh button
-      document.getElementById('refreshBtn').addEventListener('click', refreshData);
+      // document.getElementById('refreshBtn').addEventListener('click', refreshData);
 
       // Legend toggle
       document.getElementById('legendButton').addEventListener('click', function () {
@@ -624,12 +626,13 @@
         updateStats();
 
         // Start refresh interval
-        const initialInterval = parseInt(document.getElementById('refreshRate').value);
-        refreshInterval = setInterval(refreshData, initialInterval);
+        // const initialInterval = parseInt(document.getElementById('refreshRate').value);
+        refreshInterval = setInterval(refreshData, 60000);
 
         // Hide loading
         document.getElementById('loading').style.opacity = '0';
         setTimeout(() => {
+          console.log('hide the loggin 🔥🔥')
           document.getElementById('loading').style.display = 'none';
         }, 300);
         sendReady()
@@ -662,7 +665,7 @@
           vehiclesData = incomingData; // Update the global variable
         } else {
           // If no data passed, generate mock data
-          console.log("this shouldn't run ❌")
+          console.log("this shouldn't run XX")
           showNotification('Failed to update UI.', 'error');
         }
 
@@ -752,7 +755,7 @@
           const lat = item?.lat;
           const lon = item?.lng;
           const speed = item?.speed;
-          const workingStatus = item?.workingstatus;
+          const workingStatus = item?.isWorking;
           const plate = item?.plate;
           console.log(plate)
 
@@ -818,14 +821,16 @@
         html: `
                     <div style="position: relative; width: 40px; height: 40px;">
                         <div class="${iconClass}" style="width: 100%; height: 100%; border-radius: 50%; 
+
+transform: rotate(${currentBearing}deg);
+
+
                               background: ${iconClass.includes('speed-exceeded') ? 'rgba(255, 59, 48, 0.2)' :
             iconClass.includes('violations') ? 'rgba(175, 82, 222, 0.2)' :
-              'rgba(52, 199, 89, 0.2)'}; 
+              'rgba(233, 233, 233)'}; 
                               display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-car" style="color: ${iconClass.includes('speed-exceeded') ? '#FF3B30' :
-            iconClass.includes('violations') ? '#AF52DE' :
-              '#34C759'}; 
-                                  font-size: 20px; transform: rotate(${currentBearing}deg);"></i>
+                            <i class="fa-solid fa-location-arrow" style="color: #1785e1 ; 
+                                  font-size: 20px; transform: rotate(-45deg);"></i>
                         </div>
                     </div>
                 `,
@@ -920,7 +925,7 @@
 
     function updateStats() {
       totalVehicles = vehiclesData ? vehiclesData.length : 0;
-      activeVehicles = vehiclesData ? vehiclesData.filter(item => item.trackingData.workingstatus).length : 0;
+      activeVehicles = vehiclesData ? vehiclesData.filter(item => item.isWorking).length : 0;
       violationsCount = offPlates.size;
 
       document.getElementById('totalVehicles').textContent = totalVehicles;
