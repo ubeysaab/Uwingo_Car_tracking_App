@@ -14,7 +14,9 @@ import {
   View,
 } from "react-native";
 import * as z from "zod";
+import { NormalizedErrorT } from "../types/auth";
 
+import loginService from "../api/services/login";
 
 // Define validation schema with Zod
 const loginSchema = z.object({
@@ -54,11 +56,18 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormDataT) => {
     try {
       // Simulate API call
-      console.log("Login data:", data)
-      await new Promise((resolve: any) => setTimeout(resolve, 1000))
+      const res = await loginService(
+        data.username,
+        data.password
+      )
+      console.log("Login data:", res)
+      // await new Promise((resolve: any) => setTimeout(resolve, 1000))
       Alert.alert("Success", "Logged in successfully!")
-    } catch (error) {
-      Alert.alert("Error", "Login failed. Please try again.")
+    } catch (error: unknown) {
+      console.log(error)
+      const errorMessage = ((error as NormalizedErrorT).message ||
+        " An Error happend Please Try Again Later.")
+      Alert.alert(errorMessage)
     }
   }
 

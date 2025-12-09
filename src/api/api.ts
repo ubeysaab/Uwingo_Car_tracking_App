@@ -1,13 +1,8 @@
 
 import axios, { AxiosError } from "axios";
+import { NormalizedErrorT } from "../types/auth";
 
-export type NormalizedError = {
-  message: string;
-  status?: number;
-  original?: any;
-};
-
-function normalizeAxiosError(error: unknown): NormalizedError {
+function normalizeAxiosError(error: unknown): NormalizedErrorT {
   // Ensure it's really an Axios error
   if (!axios.isAxiosError(error)) {
     return { message: "Beklenmeyen bir hata oluştu." };
@@ -21,7 +16,7 @@ function normalizeAxiosError(error: unknown): NormalizedError {
 
     switch (status) {
       case 401:
-        return { message: "Bu işlemi yapmak için lütfen giriş yapın.", status };
+        return { message: "Girdiğiniz bilgiler hatalı. Lütfen kontrol edip tekrar deneyiniz.", status };
       case 404:
         return { message: "Aradığınız içerik bulunamadı.", status };
       case 500:

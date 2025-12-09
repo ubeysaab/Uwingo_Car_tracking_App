@@ -524,6 +524,7 @@
     let activeVehicles = 0;
     let violationsCount = 0;
 
+
     // Initialize map when DOM is loaded
     document.addEventListener('DOMContentLoaded', function () {
       initializeMap();
@@ -638,8 +639,8 @@
         sendReady()
 
       } catch (error) {
-        console.error('Error loading initial data:', error);
-        // showNotification('Failed to load data. Please check connection.', 'error');
+        // console.error('Error loading initial data:', error);
+        showNotification('Failed to load data. Please check connection.', 'error');
         document.getElementById('loading').style.display = 'none';
       }
     }
@@ -667,7 +668,10 @@
           // If no data passed, generate mock data
           console.log("this shouldn't run XX")
           // simulateDataFetch()
-          showNotification('Failed to load data. Please check connection.', 'error');
+          if (!firstLoad) {
+            showNotification('Failed to load data. Please check connection 1st.', 'error');
+          }
+
         }
 
         // Update markers based on the global vehiclesData
