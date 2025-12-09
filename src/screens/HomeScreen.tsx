@@ -4,7 +4,7 @@ import MapView from '../components/MapView';
 function HomeScreen() {
   return (
     <>
-      <Text>Home Screen</Text>
+      {/* <Text>Home Screen</Text> */}
       <MapView />
     </>
   );
