@@ -46,6 +46,7 @@ export const authStore = createStore<AuthStore>((set) => ({
 
   // define what each actions do 
 
+  // BOOTSTRAP : THE INITIAL LOADING STATE
   bootstrap: async () => {
     const stored = await loadTokens();
 
@@ -79,4 +80,5 @@ export const authStore = createStore<AuthStore>((set) => ({
 }));
 
 
-export const useAuthStore = () => useStore(authStore);
+// ✅ The correct definition:
+export const useAuthStore = <T>(selector: (state: AuthStore) => T) => useStore(authStore, selector);

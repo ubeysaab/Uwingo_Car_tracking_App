@@ -42,6 +42,13 @@ const api: AxiosInstance = axios.create({
 
 // --- REQUEST INTERCEPTOR (Aynı kalabilir) ----
 api.interceptors.request.use((config) => {
+
+if (authStore.getState().status === "booting") {
+  throw new Error("API call before auth bootstrap");
+}
+
+
+
   const { accessToken } = authStore.getState();
 
   // ATTACH ACCESS TOKEN
