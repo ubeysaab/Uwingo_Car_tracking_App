@@ -6,6 +6,7 @@ export default async function login(UserName: string, Password: string): Promise
 
   const res = await api.post(loginEndPoint, { UserName, Password })
 
+  console.log(res)
   const parsed = LoginSchema.safeParse(res.data);
   if (!parsed.success) {
     throw new Error("Invalid login response shape");

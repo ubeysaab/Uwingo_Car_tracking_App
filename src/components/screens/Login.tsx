@@ -13,38 +13,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as z from "zod";
 import { NormalizedErrorT } from "../types/auth";
 
 import loginService from "../api/services/login";
+import { useAuthStore } from "../stores/authStore";
+import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "../types/auth";
+import { saveTokens } from "../utils/auth/keychain";
 
-// Define validation schema with Zod
-const loginSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be less than 20 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 6 characters")
-    .max(50, "Password must be less than 50 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
-})
-
-type LoginFormDataT = z.infer<typeof loginSchema>
 
 export default function LoginScreen() {
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormDataT>({
+  } = useForm<loginCredentialsValidationSchemaT>({
     mode: "onBlur",
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginCredentialsValidationSchema),
     defaultValues: {
       username: "",
       password: "",
@@ -53,7 +37,8 @@ export default function LoginScreen() {
 
   })
 
-  const onSubmit = async (data: LoginFormDataT) => {
+  const setAccessToken = useAuthStore(store => store.loginSuccess)
+  const onSubmit = async (data: loginCredentialsValidationSchemaT) => {
     try {
       // Simulate API call
       const res = await loginService(
@@ -61,7 +46,9 @@ export default function LoginScreen() {
         data.password
       )
       console.log("Login data:", res)
-      // await new Promise((resolve: any) => setTimeout(resolve, 1000))
+      await saveTokens({ refreshToken: res.refreshToken })
+      setAccessToken(res.accessToken)
+
       Alert.alert("Success", "Logged in successfully!")
     } catch (error: unknown) {
       console.log(error)
