@@ -13,12 +13,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NormalizedErrorT } from "../types/auth";
+import { NormalizedErrorT } from "../../types/auth";
 
-import loginService from "../api/services/login";
-import { useAuthStore } from "../stores/authStore";
-import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "../types/auth";
-import { saveTokens } from "../utils/auth/keychain";
+import loginService from "../../api/services/login";
+import { useAuthStore } from "../../stores/authStore";
+import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "../../types/auth";
 
 
 export default function LoginScreen() {
@@ -37,7 +36,7 @@ export default function LoginScreen() {
 
   })
 
-  const setAccessToken = useAuthStore(store => store.loginSuccess)
+  const loginSuccess = useAuthStore(store => store.loginSuccess)
   const onSubmit = async (data: loginCredentialsValidationSchemaT) => {
     try {
       // Simulate API call
@@ -46,10 +45,9 @@ export default function LoginScreen() {
         data.password
       )
       console.log("Login data:", res)
-      await saveTokens({ refreshToken: res.refreshToken })
-      setAccessToken(res.accessToken)
+      await loginSuccess(res)
 
-      Alert.alert("Success", "Logged in successfully!")
+      // Alert.alert("Success", "Logged in successfully!")
     } catch (error: unknown) {
       console.log(error)
       const errorMessage = ((error as NormalizedErrorT).message ||
@@ -76,7 +74,7 @@ export default function LoginScreen() {
               >
                 <Image
                   style={styles.logoImg}
-                  source={require("../../assets/images/logo.png")}
+                  source={require("../../../assets/images/logo.png")}
                 />
               </View>
               <Text style={styles.title}>Welcome Back</Text>

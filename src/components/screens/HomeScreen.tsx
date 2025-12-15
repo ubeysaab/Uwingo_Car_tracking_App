@@ -1,5 +1,4 @@
-import { Text, View } from 'react-native'
-import MapView from '../components/MapView';
+import MapView from '../MapView';
 
 function HomeScreen() {
   return (

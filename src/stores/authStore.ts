@@ -67,6 +67,11 @@ export const authStore = createStore<AuthStore>((set) => ({
       accessToken,
       status: "authenticated",
     });
+
+    console.log("AUTH STATUS AFTER LOGIN:", authStore.getState().status);
+
+
+
   },
 
   logout: async () => {
@@ -82,3 +87,5 @@ export const authStore = createStore<AuthStore>((set) => ({
 
 // ✅ The correct definition:
 export const useAuthStore = <T>(selector: (state: AuthStore) => T) => useStore(authStore, selector);
+
+

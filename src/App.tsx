@@ -1,31 +1,46 @@
 // in App.js
 
 import { useEffect } from 'react';
-// Import the hook
-import { useAuthStore } from './stores/authStore';
+// ⭐️  imports for conditional rendering (UI Gating)
 import { NavigationContainer } from '@react-navigation/native';
-import RootStack from './navigation/StackNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import WorkingStack from './navigation/WorkingStack';
+import { useAuthStore } from './stores/authStore';
+
+
+
 
 export default function App() {
-  // ⭐️ CORRECT FIX: Call the hook at the top level to select the 'bootstrap' action.
-  // The function you pass to useAuthStore is the selector for the data.
-  const bootstrap = useAuthStore((store) => store.bootstrap);
+  // 1. Select the 'bootstrap' action and the 'status' from the store
+  const bootstrap = useAuthStore((state) => state.bootstrap)
+  const status = useAuthStore((state) => state.status)
+
+
+  console.log('app status', status)
 
   useEffect(() => {
-    // Call the function returned by the selector
+    // 2. Run the bootstrap function on mount to hydrate the state
     bootstrap();
 
+    // Note: If you don't add bootstrap to the dependency array, 
+    // ESLint will complain. Adding it is safe since it's a stable
+    // function reference from Zustand.
   }, [bootstrap]);
-  // We include 'bootstrap' in the dependency array. Since it is a function 
-  // from the Zustand store, its reference is stable across renders, so this 
-  // effect will still only run once on mount.
+
+
+
+
+
 
   return (
     <NavigationContainer>
+
+
       <SafeAreaProvider>
-        <RootStack />
+        {/* // 3. Conditional Rendering based on Status */}
+        <WorkingStack status={status} />
       </SafeAreaProvider>
     </NavigationContainer>
   );
 }
+

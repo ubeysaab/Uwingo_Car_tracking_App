@@ -44,7 +44,8 @@ const api: AxiosInstance = axios.create({
 api.interceptors.request.use((config) => {
 
 if (authStore.getState().status === "booting") {
-  throw new Error("API call before auth bootstrap");
+  const normalized = normalizeAxiosError(new Error("API call before auth bootstrap"));
+   return Promise.reject(normalized);
 }
 
 
