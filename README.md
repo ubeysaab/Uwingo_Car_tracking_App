@@ -363,3 +363,8 @@ The warning points to the core mechanism React uses for state hooks: if the retu
 I recommend using **Option 1 (with `shallow`)** if you need multiple values, or **Option 2 (single-value selectors)** if your component can be logically split.
 
 Do you want to check if the issue is in your store definition or if it is purely in how you are calling `useAuthStore` in your component?
+
+
+## Thing need to back 
+
+-  npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.

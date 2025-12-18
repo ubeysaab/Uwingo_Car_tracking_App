@@ -3,7 +3,8 @@
 
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import HomeScreen from '../components/screens/HomeScreen';
+import HomeScreen from '../components/Screens/HomeScreen';
+import Vehicles from '../components/Screens/Vehicles';
 
 
 const Stack = createDrawerNavigator();
@@ -21,6 +22,7 @@ export default function RootStack() {
     >
 
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="vehicles" component={Vehicles} />
 
     </Stack.Navigator>
   );
