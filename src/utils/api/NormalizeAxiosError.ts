@@ -3,6 +3,7 @@ import axios from "axios";
 import { AxiosError } from "axios";
 
 export function normalizeAxiosError(error: unknown): NormalizedErrorT {
+  console.log(error)
   if (!axios.isAxiosError(error)) {
     return { message: "Beklenmeyen bir hata oluştu." };
   }
@@ -29,6 +30,7 @@ export function normalizeAxiosError(error: unknown): NormalizedErrorT {
 
   // ---- B) Request sent but no response (error.request) ----
   if (err.request) {
+    console.log()
     if (err.code === "ERR_NETWORK") {
       return { message: "İnternet bağlantısı yok veya sunucuya ulaşılamıyor." };
     }
