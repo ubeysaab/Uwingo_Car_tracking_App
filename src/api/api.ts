@@ -52,6 +52,7 @@ if (authStore.getState().status === "booting") {
 
   const { accessToken } = authStore.getState();
 
+
   // ATTACH ACCESS TOKEN
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;

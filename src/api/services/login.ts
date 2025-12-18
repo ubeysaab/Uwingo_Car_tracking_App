@@ -1,10 +1,12 @@
 import api from "../api"
-import { loginEndPoint } from "../endpoints"
+import { ENDPOINTS } from "../endpoints"
 import { LoginResponseT, LoginSchema } from "../../types/auth"
 
 export default async function login(UserName: string, Password: string): Promise<LoginResponseT> {
 
-  const res = await api.post(loginEndPoint, { UserName, Password })
+
+  console.log(ENDPOINTS.Others.login)
+  const res = await api.post(ENDPOINTS.Others.login, { UserName, Password })
 
   console.log(res)
   const parsed = LoginSchema.safeParse(res.data);
