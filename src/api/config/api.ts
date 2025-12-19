@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { authStore } from "../localStores/authStore";
-import { normalizeAxiosError } from '../utils/api/NormalizeAxiosError'
+import { authStore } from "@/localStores/authStore";
+import { normalizeAxiosError } from '@/utils/api/NormalizeAxiosError'
 
 // Yeni bir field eklemek için AxiosRequestConfig'i genişletiyoruz
 // interface CustomAxiosRequestConfig extends AxiosRequestConfig {

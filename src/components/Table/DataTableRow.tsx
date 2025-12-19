@@ -12,8 +12,8 @@ import color from 'color';
 
 // import { useInternalTheme } from '../../core/theming';
 // import { black, white } from '../../styles/themes/v2/colors';
-import type { $RemoveChildren, ThemeProp } from '../../types/reactNativePaperTypes';
-import TouchableRipple from '../TouchableRipple/TouchableRipple';
+import type { $RemoveChildren, ThemeProp } from '@/types/reactNativePaperTypes';
+import TouchableRipple from '@/components/TouchableRipple/TouchableRipple';
 
 export type Props = $RemoveChildren<typeof TouchableRipple> & {
   /**

@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 // ⭐️  imports for conditional rendering (UI Gating)
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import WorkingStack from './navigation/WorkingStack';
-import { useAuthStore } from './localStores/authStore';
+import WorkingStack from '@/navigation/WorkingStack';
+import { useAuthStore } from '@/localStores/authStore';
 
 
 import { PaperProvider } from 'react-native-paper';
 import { AppRegistry } from 'react-native';
 
-import ReactQueryProvider from './serverStores/ReactQueryProvider';
+import ReactQueryProvider from '@/serverStores/ReactQueryProvider';
 
 
 export default function App() {

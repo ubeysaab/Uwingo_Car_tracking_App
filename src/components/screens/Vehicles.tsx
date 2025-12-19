@@ -2,7 +2,7 @@
 
 
 import * as React from 'react';
-import DataTable from '../Table/DataTable';
+import DataTable from '@/components/Table/DataTable';
 
 
 

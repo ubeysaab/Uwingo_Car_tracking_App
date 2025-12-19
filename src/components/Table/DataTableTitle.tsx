@@ -11,12 +11,10 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import color from 'color';
 
 import { Text } from "react-native-paper";
-import { useInternalTheme } from '../../core/theming';
-import type { ThemeProp } from '../../types/reactNativePaperTypes';
-import IconButton from '../IconButton/IconButton';
+import IconButton from '@/components/IconButton/IconButton';
+import type { ThemeProp } from '@/types/reactNativePaperTypes';
 
 export type Props = React.ComponentPropsWithRef<typeof Pressable> & {
   /**
@@ -92,7 +90,7 @@ const DataTableTitle = ({
   maxFontSizeMultiplier,
   ...rest
 }: Props) => {
-  const theme = useInternalTheme(themeOverrides);
+  // const theme = useInternalTheme(themeOverrides);
   const { current: spinAnim } = React.useRef<Animated.Value>(
     new Animated.Value(sortDirection === 'ascending' ? 0 : 1)
   );
@@ -105,9 +103,9 @@ const DataTableTitle = ({
     }).start();
   }, [sortDirection, spinAnim]);
 
-  const textColor = theme.isV3 ? theme.colors.onSurface : theme?.colors?.text;
+  // const textColor = theme.isV3 ? theme.colors.onSurface : theme?.colors?.text;
 
-  const alphaTextColor = color(textColor).alpha(0.6).rgb().string();
+  // const alphaTextColor = color(textColor).alpha(0.6).rgb().string();
 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],
@@ -151,7 +149,7 @@ const DataTableTitle = ({
                 : styles.rightText
               : styles.centerText
             : {},
-          sortDirection ? styles.sorted : { color: alphaTextColor },
+          sortDirection && styles.sorted,
           textStyle,
         ]}
         numberOfLines={numberOfLines}

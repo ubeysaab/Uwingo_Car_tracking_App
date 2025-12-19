@@ -1,7 +1,7 @@
 // fetchPipeline.ts
-import { FinalMapDTO } from "../../../types/forMap"
+import { FinalMapDTO } from "@/types/forMap"
 // import { getActiveDevice, getBySrnLastList } from "../endpoints";
-import { ENDPOINTS } from "../../endpoints";
+import { ENDPOINTS } from "@/api/endpoints";
 interface DeviceData {
   serialNumber: string;
   speed: number;

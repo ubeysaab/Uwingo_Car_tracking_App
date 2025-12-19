@@ -1,6 +1,6 @@
 import { ColorValue, StyleSheet } from "react-native";
-import IconButton from "../../IconButton/IconButton";
-import { Menu } from "../../Menu/Menu";
+import IconButton from "@/components/IconButton/IconButton";
+import { Menu } from "@/components/Menu/Menu";
 import React from "react";
 
 

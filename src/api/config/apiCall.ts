@@ -1,6 +1,6 @@
 
 import * as z from 'zod';
-import api from './api';
+import api from '@/api/config/api';
 /**
  * A generic function to handle API calls with Zod validation
  * @param method - The HTTP method (post, get, put, delete)

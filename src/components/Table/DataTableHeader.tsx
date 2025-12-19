@@ -5,7 +5,7 @@ import color from 'color';
 
 // import { useInternalTheme } from '../../core/theming';
 // import { black, white } from '../../styles/themes/v2/colors';
-import type { ThemeProp } from '../../types/reactNativePaperTypes';
+import type { ThemeProp } from '@/types/reactNativePaperTypes';
 
 export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**

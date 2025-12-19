@@ -13,11 +13,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NormalizedErrorT } from "../../types/auth";
+import { NormalizedErrorT } from "@/types/auth";
 
-import loginService from "../../api/services/login/login";
-import { useAuthStore } from "../../localStores/authStore";
-import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "../../types/auth";
+import loginService from "@/api/services/login/login";
+import { useAuthStore } from "@/localStores/authStore";
+import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "@/types/auth";
 
 
 export default function LoginScreen() {
@@ -74,7 +74,7 @@ export default function LoginScreen() {
               >
                 <Image
                   style={styles.logoImg}
-                  source={require("../../../assets/images/logo.png")}
+                  source={require("/assets/images/logo.png")}
                 />
               </View>
               <Text style={styles.title}>Welcome Back</Text>

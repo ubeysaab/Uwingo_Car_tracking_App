@@ -1,12 +1,12 @@
-import { fetchFinalMapData } from "../api/services/map/fetchPipeLine";
-import type { FinalMapDTO } from "../types/forMap";
+import { fetchFinalMapData } from "@/api/services/map/fetchPipeLine";
+import type { FinalMapDTO } from "@/types/forMap";
 import React, { useEffect, useRef, useState } from "react";
 import { AppState, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 
 // Make sure this path is correct relative to this file!
 // If MapView is in src/components, and HTML is in src/assets:
-const mapHtmlFile = require("../../assets/mapView.html");
+const mapHtmlFile = require("/assets/mapView.html");
 
 
 // TODO :  ADD BUTTON THAT SHOWS ALL POPU UP IN ORDER TO FIND VEHICLES FASTER( NOW YOU NEED TO CLICK ON IT IN ORDER TO SEE THE VALUES) ( BETTER UX)

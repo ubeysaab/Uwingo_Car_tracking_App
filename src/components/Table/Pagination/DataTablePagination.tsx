@@ -6,15 +6,15 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import PaginationDropdown from './PaginationDropDown';
+import PaginationDropdown from '@/components/Table/Pagination/PaginationDropDown';
 
 // import color from 'color';
-import type { ThemeProp } from '../../../types/reactNativePaperTypes';
+import type { ThemeProp } from '@/types/reactNativePaperTypes';
 
 // import { useInternalTheme } from '../../core/theming';
 // import MaterialCommunityIcon from '../MaterialCommunityIcon';
 import { Text } from 'react-native';
-import PaginationControls from './PaginationControl';
+import PaginationControls from '@/components/Table/Pagination/PaginationControl';
 
 export type Props = React.ComponentPropsWithRef<typeof View> &
   PaginationControlsProps &
