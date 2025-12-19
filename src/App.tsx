@@ -5,13 +5,13 @@ import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import WorkingStack from './navigation/WorkingStack';
-import { useAuthStore } from './stores/authStore';
+import { useAuthStore } from './localStores/authStore';
 
 
 import { PaperProvider } from 'react-native-paper';
 import { AppRegistry } from 'react-native';
 
-
+import ReactQueryProvider from './serverStores/ReactQueryProvider';
 
 
 export default function App() {
@@ -40,12 +40,17 @@ export default function App() {
     <NavigationContainer>
 
       {/* TODO : USE THE PROVIDER TO HANDLE THEME  WITH   Material Design 3 default theme*/}
-      <PaperProvider>
-        <SafeAreaProvider>
-          {/* // 3. Conditional Rendering based on Status */}
-          <WorkingStack status={status} />
-        </SafeAreaProvider>
-      </PaperProvider >
+
+
+      <ReactQueryProvider>
+        <PaperProvider>
+          <SafeAreaProvider>
+            {/* // 3. Conditional Rendering based on Status */}
+            <WorkingStack status={status} />
+          </SafeAreaProvider>
+        </PaperProvider >
+      </ReactQueryProvider>
+
     </NavigationContainer>
   );
 }

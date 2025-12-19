@@ -16,7 +16,7 @@ import {
 import { NormalizedErrorT } from "../../types/auth";
 
 import loginService from "../../api/services/login";
-import { useAuthStore } from "../../stores/authStore";
+import { useAuthStore } from "../../localStores/authStore";
 import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "../../types/auth";
 
 
