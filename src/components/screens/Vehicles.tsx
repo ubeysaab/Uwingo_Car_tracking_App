@@ -4,6 +4,10 @@
 import * as React from 'react';
 import DataTable from '../Table/DataTable';
 
+
+
+
+
 const MyComponent = () => {
   const [pageNumber, setPageNumber] = React.useState<number>(0);
   const [numberOfItemsPerPageList] = React.useState([5, 10, 20, 50, 100]); // static just for don't leak memory between render wake it a state

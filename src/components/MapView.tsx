@@ -1,4 +1,4 @@
-import { fetchFinalMapData } from "../api/services/fetchPipeLine";
+import { fetchFinalMapData } from "../api/services/map/fetchPipeLine";
 import type { FinalMapDTO } from "../types/forMap";
 import React, { useEffect, useRef, useState } from "react";
 import { AppState, StyleSheet, View } from "react-native";
