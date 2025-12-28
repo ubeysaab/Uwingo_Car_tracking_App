@@ -9,6 +9,10 @@
     "**/Pods"
   ],
   "compilerOptions": {
+    "target": "ES2023",
+    "lib": [
+      "ES2023"
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [
