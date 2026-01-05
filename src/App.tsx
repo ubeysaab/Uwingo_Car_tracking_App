@@ -5,13 +5,13 @@ import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import WorkingStack from '@/navigation/WorkingStack';
-import { useAuthStore } from '@/localStores/authStore';
+import { useAuthStore } from '@/store/local/authStore';
 
 
 import { PaperProvider } from 'react-native-paper';
 import { AppRegistry } from 'react-native';
 
-import ReactQueryProvider from '@/serverStores/ReactQueryProvider';
+import ReactQueryProvider from '@/store/server/ReactQueryProvider';
 
 
 export default function App() {

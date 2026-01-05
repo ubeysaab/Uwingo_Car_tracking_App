@@ -117,7 +117,7 @@ const DataTable = ({ children, style, ...rest }: Props) => (
 // @component ./DataTableHeader.tsx
 DataTable.Header = DataTableHeader;
 
-// @component ./DataTableTitle.tsx
+// @component ./DataTableTitle.tsx 
 DataTable.Title = DataTableTitle;
 
 // @component ./DataTableRow.tsx

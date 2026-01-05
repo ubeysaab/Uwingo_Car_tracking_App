@@ -34,7 +34,7 @@ async function callApi<T>(
   // Use api[method] to dynamically select the axios/fetch function
   const res = await api[method](endpoint, payload);
 
-  console.log("Response:", res);
+  console.log("Response :", res);
 
   // 2. Validate the response
   const parsed = schema.safeParse(res.data);

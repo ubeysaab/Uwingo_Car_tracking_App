@@ -5,8 +5,6 @@ import Config from 'react-native-config';
 // export const getBySrnLastList = "http://78.111.111.81:5302/api/TrackingData/getby-srnlastlist"
 // export const loginEndPoint = 'http://78.111.111.81:5191/api/Authentication/login'
 
-
-
 /**
  * Application Endpoint Configuration
  */
@@ -19,14 +17,14 @@ export const ENDPOINTS = {
     create: `${BASE_URL}/api/Vehicles/create-vehicle`,
     get: `${BASE_URL}/api/Vehicles/get-vehicles`,
     update: `${BASE_URL}/api/Vehicles/update-vehicle`,
-    delete: `${BASE_URL}/api/Vehicles/delete-vehicle/`,
+    delete: `${BASE_URL}/api/Vehicles/delete-vehicle`,
   },
 
   Drivers: {
     create: `${BASE_URL}/api/Drivers/create-driver`,
     get: `${BASE_URL}/api/Drivers/get-driver`,
     update: `${BASE_URL}/api/Drivers/update-driver`,
-    delete: `${BASE_URL}/api/Drivers/delete-driver/`,
+    delete: `${BASE_URL}/api/Drivers/delete-driver`,
   },
 
   Devices: {

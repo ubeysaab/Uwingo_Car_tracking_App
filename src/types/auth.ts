@@ -1,6 +1,6 @@
 // Auth state type only — no implementation details here.
 import { z } from "zod";
-
+// (Zod Schemas & TS Types)
 
 
 export type AuthStateT = {
@@ -26,7 +26,7 @@ export const LoginSchema = z.object({
 
 
 
-export type LoginResponseT = z.infer<typeof LoginSchema>
+export type LoginSchemaT = z.infer<typeof LoginSchema>
 
 
 

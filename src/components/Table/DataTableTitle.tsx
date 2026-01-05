@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Animated,
   GestureResponderEvent,
-  I18nManager,
   PixelRatio,
   Pressable,
   StyleProp,
@@ -11,72 +10,20 @@ import {
   ViewStyle,
 } from 'react-native';
 
-
 import { Text } from "react-native-paper";
-import IconButton from '@/components/IconButton/IconButton';
 import type { ThemeProp } from '@/types/reactNativePaperTypes';
 
 export type Props = React.ComponentPropsWithRef<typeof Pressable> & {
-  /**
-   * Text content of the `DataTableTitle`.
-   */
   children: React.ReactNode;
-  /**
-   * Align the text to the right. Generally monetary or number fields are aligned to right.
-   */
   numeric?: boolean;
-  /**
-   * Direction of sorting. An arrow indicating the direction is displayed when this is given.
-   */
   sortDirection?: 'ascending' | 'descending';
-  /**
-   * The number of lines to show.
-   */
   numberOfLines?: number;
-  /**
-   * Function to execute on press.
-   */
   onPress?: (e: GestureResponderEvent) => void;
   style?: StyleProp<ViewStyle>;
-  /**
-   * Text content style of the `DataTableTitle`.
-   */
   textStyle?: StyleProp<TextStyle>;
-  /**
-   * Specifies the largest possible scale a text font can reach.
-   */
   maxFontSizeMultiplier?: number;
-  /**
-   * @optional
-   */
   theme?: ThemeProp;
 };
-
-/**
- * A component to display title in table header.
- *
- * ## Usage
- * ```js
- * import * as React from 'react';
- * import { DataTable } from 'react-native-paper';
- *
- * const MyComponent = () => (
- *       <DataTable>
- *         <DataTable.Header>
- *           <DataTable.Title
- *             sortDirection='descending'
- *           >
- *             Dessert
- *           </DataTable.Title>
- *           <DataTable.Title numeric>Calories</DataTable.Title>
- *           <DataTable.Title numeric>Fat (g)</DataTable.Title>
- *         </DataTable.Header>
- *       </DataTable>
- * );
- *
- * export default MyComponent;
- * ```
- */
 
 const DataTableTitle = ({
   numeric,
@@ -86,11 +33,10 @@ const DataTableTitle = ({
   textStyle,
   style,
   theme: themeOverrides,
-  numberOfLines = 1,
+  numberOfLines = 2, // Increased default to allow wrapping
   maxFontSizeMultiplier,
   ...rest
 }: Props) => {
-  // const theme = useInternalTheme(themeOverrides);
   const { current: spinAnim } = React.useRef<Animated.Value>(
     new Animated.Value(sortDirection === 'ascending' ? 0 : 1)
   );
@@ -103,59 +49,38 @@ const DataTableTitle = ({
     }).start();
   }, [sortDirection, spinAnim]);
 
-  // const textColor = theme.isV3 ? theme.colors.onSurface : theme?.colors?.text;
-
-  // const alphaTextColor = color(textColor).alpha(0.6).rgb().string();
-
-  const spin = spinAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
-  });
-
-  const icon = sortDirection ? (
-    <Animated.View style={[styles.icon, { transform: [{ rotate: spin }] }]}>
-      {/* <MaterialCommunityIcon
-        name="arrow-up"
-        size={16}
-        color={textColor}
-        direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
-      /> */}
-
-      <IconButton
-        icon='ArrowUp'
-      />
-    </Animated.View>
-  ) : null;
+  // Helper to force breaks in long strings with no spaces (e.g., long IDs or URLs)
+  const renderChildren = () => {
+    if (typeof children === 'string') {
+      // Inserts a zero-width space after every character to allow breaking anywhere
+      return children.split('').join('\u200B');
+    }
+    return children;
+  };
 
   return (
     <Pressable
       disabled={!onPress}
       onPress={onPress}
       {...rest}
-      style={[styles.container, numeric && styles.right, style]}
+      style={[styles.container, numeric && styles.numeric, style]}
     >
-      {icon}
-
       <Text
+        // Android: 'simple' breaks words wherever they hit the edge
+        textBreakStrategy="simple"
+        // iOS: 'standard' allows basic wrapping
+        lineBreakStrategyIOS="standard"
         style={[
           styles.cell,
-          // height must scale with numberOfLines
-          { maxHeight: 24 * PixelRatio.getFontScale() * numberOfLines },
-          // if numberOfLines causes wrap, center is lost. Align directly, sensitive to numeric and RTL
-          numberOfLines > 1
-            ? numeric
-              ? I18nManager.getConstants().isRTL
-                ? styles.leftText
-                : styles.rightText
-              : styles.centerText
-            : {},
-          sortDirection && styles.sorted,
+          // Removed maxHeight to allow the text to actually wrap vertically
           textStyle,
         ]}
+        // numberOfLines={0} allows infinite wrapping. 
+        // If you want a limit, pass it here, but it must be > 1 to wrap.
         numberOfLines={numberOfLines}
         maxFontSizeMultiplier={maxFontSizeMultiplier}
       >
-        {children}
+        {renderChildren()}
       </Text>
     </Pressable>
   );
@@ -165,42 +90,28 @@ DataTableTitle.displayName = 'DataTable.Title';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // width: 120,
     flexDirection: 'row',
-    alignContent: 'center',
-    paddingVertical: 12,
-  },
-
-  rightText: {
-    textAlign: 'right',
-  },
-
-  leftText: {
-    textAlign: 'left',
-  },
-
-  centerText: {
-    textAlign: 'center',
-  },
-
-  right: {
-    justifyContent: 'flex-end',
-  },
-
-  cell: {
-    lineHeight: 24,
-    fontSize: 12,
-    fontWeight: '500',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    // Ensures the container can grow vertically if text wraps
+    minHeight: 48,
   },
-
-  sorted: {
-    marginLeft: 8,
+  cell: {
+    flex: 1,
+    lineHeight: 20, // Reduced slightly for better multi-line appearance
+    fontSize: 14,
+    fontWeight: '800',
+    color: 'rgba(0, 0, 0, 0.87)',
+    // Ensures the text engine knows it can wrap
+    flexWrap: 'wrap',
   },
-
-  icon: {
-    height: 24,
-    justifyContent: 'center',
+  numeric: {
+    width: 60,
+    justifyContent: 'flex-end',
   },
 });
 

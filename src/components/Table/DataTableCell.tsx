@@ -9,7 +9,7 @@ import {
 
 import type { $RemoveChildren } from '@/types/reactNativePaperTypes';
 import TouchableRipple from '@/components/TouchableRipple/TouchableRipple';
-import { Text } from "react-native"
+import { Text } from 'react-native-paper';
 
 export type Props = $RemoveChildren<typeof TouchableRipple> & {
   /**
@@ -77,7 +77,7 @@ const DataTableCell = ({
     <TouchableRipple
       {...rest}
       testID={testID}
-      style={[styles.container, numeric && styles.right, style]}
+      style={[styles.container, numeric && styles.numeric, style]}
     >
       <CellContent
         textStyle={textStyle}
@@ -105,10 +105,10 @@ const CellContent = ({
 
   return (
     <Text
-      style={textStyle}
-    // numberOfLines={1}
-    // maxFontSizeMultiplier={maxFontSizeMultiplier}
-    // testID={`${testID}-text-container`}
+      style={[textStyle, styles.text]}
+      numberOfLines={2}
+      maxFontSizeMultiplier={maxFontSizeMultiplier}
+      testID={`${testID}-text-container`}
     >
       {children}
     </Text>
@@ -119,14 +119,22 @@ DataTableCell.displayName = 'DataTable.Cell';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: "yellow",
+    width: 120
   },
-
-  right: {
-    justifyContent: 'flex-end',
+  numeric: {
+    width: 60
   },
+  text: {
+    flexWrap: 'wrap',
+    fontWeight: "600",
+    fontSize: 14,
+    color: 'red'
+  }
 });
 
 export default DataTableCell;

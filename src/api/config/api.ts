@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { authStore } from "@/localStores/authStore";
+import { authStore } from "@/store/local/authStore";
 import { normalizeAxiosError } from '@/utils/api/NormalizeAxiosError'
 
 // Yeni bir field eklemek için AxiosRequestConfig'i genişletiyoruz
@@ -81,7 +81,7 @@ api.interceptors.response.use(
     }
 
 
-
+    console.log("error from api",error)
     const normalized = normalizeAxiosError(error);
 
     // Reject with the cleaned error object

@@ -65,13 +65,7 @@ const DataTableRow = ({
   theme: themeOverrides,
   ...rest
 }: Props) => {
-  // const theme = useInternalTheme(themeOverrides);
-  // const borderBottomColor = theme.isV3
-  //   ? theme.colors.surfaceVariant
-  //   : color(theme.dark ? white : black)
-  //       .alpha(0.12)
-  //       .rgb()
-  //       .string();
+
 
   return (
     <TouchableRipple
@@ -98,6 +92,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // flexBasis: 'auto',
+    borderColor: 'red'
+    , borderWidth: 2
   },
 });
 

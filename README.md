@@ -551,4 +551,182 @@ const VehicleList = () => {
 
 ```
 
-**Would you like me to help you set up a basic "Service + Hook" structure for one of your modules?**
+
+
+# vs config
+
+To implement a Next.js-style `@` alias in React Native and ensure VS Code handles file moves correctly, follow this step-by-step summary.
+
+### **Step 1: Install the Babel Plugin**
+
+Babel needs a specific plugin to understand that `@` isn't a real package in `node_modules`, but a shortcut to your folder.
+
+```bash
+npm install --save-dev babel-plugin-module-resolver
+# or
+yarn add --dev babel-plugin-module-resolver
+
+```
+
+---
+
+### **Step 2: Configure Babel (The "Builder")**
+
+Edit your `babel.config.js`. This tells the Metro Bundler how to find your files when the app runs.
+
+```javascript
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        root: ['./src'],
+        alias: {
+          '@': './src',
+        },
+      },
+    ],
+  ],
+};
+
+```
+
+---
+
+### **Step 3: Configure TypeScript (The "Editor")**
+
+Edit your `tsconfig.json`. This tells VS Code where the files are so you get auto-complete and "Cmd + Click" support.
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+
+```
+
+---
+
+### **Step 4: Configure VS Code for File Moves**
+
+To make VS Code automatically update your `@/` imports when you drag-and-drop or rename a file, change these settings:
+
+1. **Open Settings**: `Cmd + ,` (Mac) or `Ctrl + ,` (Windows).
+2. **Update Imports on Move**: Search for `updateImportsOnFileMove` and set both JS and TS to **"Always"**.
+3. **Prefer Path Aliases**: Search for `importModuleSpecifier` and set it to **"non-relative"**. This forces VS Code to use `@/` instead of `../../` when it fixes paths.
+
+---
+
+### **Step 5: Reset and Test**
+
+Because React Native caches your file structure, you **must** restart with a clean slate for the changes to take effect:
+
+```bash
+npx react-native start --reset-cache
+
+```
+
+### **Summary of Results**
+
+* **Imports look like:** `import { Header } from '@/components/Header';`
+* **Moving a file:** If you move `Header.tsx` to a new folder, VS Code will automatically rewrite all your `@/components/Header` imports to the new location.
+* **No Red Lines:** TypeScript will recognize `@/` as your `src` folder immediately.
+
+[VS Code tips for moving files](https://www.youtube.com/watch?v=8oCBk9BWjHQ)
+This video demonstrates how to configure VS Code to automatically update import statements when renaming or moving files within your project.
+
+**Would you like me to provide a "check-list" of common errors to look for if your app still says "Module not found" after these steps?**
+
+
+
+# React Query
+In **TanStack Query** (formerly React Query), `useQueryClient` is a custom hook that returns the current **QueryClient** instance.
+
+Think of the `QueryClient` as the "brain" or the central engine that manages the cache, state, and configuration for all your data fetching.
+
+---
+
+## Why do you need `useQueryClient`?
+
+While `useQuery` is used to **fetch** data, `useQueryClient` is used to **manipulate** the cache or interact with it globally. Here are the most common use cases:
+
+### 1. Manual Cache Invalidation
+
+The most frequent use case is telling React Query that certain data is now "old" (stale) and needs to be refetched—usually after a successful mutation (like updating a user profile).
+
+```javascript
+const queryClient = useQueryClient();
+
+const mutation = useMutation({
+  mutationFn: updateProfile,
+  onSuccess: () => {
+    // Invalidate and refetch 'user' data
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+  },
+});
+
+```
+
+### 2. Prefetching Data
+
+You can use it to fetch data before the user even navigates to a specific page or opens a modal, making the UI feel instantaneous.
+
+```javascript
+const prefetchTodos = async () => {
+  // This will fetch the data and put it in the cache
+  await queryClient.prefetchQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  });
+};
+
+```
+
+### 3. Updating the Cache Manually (Optimistic Updates)
+
+Sometimes you don’t want to wait for a server response to show a change. You can use `setQueryData` to manually update the cached data immediately.
+
+```javascript
+queryClient.setQueryData(['todos'], (oldData) => [...oldData, newTodo]);
+
+```
+
+### 4. Accessing Cached Data
+
+If you need to peek at data that is already in the cache without triggering a new network request, you can use `getQueryData`.
+
+```javascript
+const cachedData = queryClient.getQueryData(['user']);
+
+```
+
+---
+
+## How it works under the hood
+
+When you wrap your app in a `<QueryClientProvider>`, you provide a `new QueryClient()`. The `useQueryClient` hook allows any child component to tap into that same instance.
+
+### Summary Table
+
+| Method                  | What it does                                      |
+| ----------------------- | ------------------------------------------------- |
+| **`invalidateQueries`** | Marks data as stale and triggers a refetch.       |
+| **`setQueryData`**      | Directly overwrites data in the cache.            |
+| **`getQueryData`**      | Retrieves existing data from the cache.           |
+| **`prefetchQuery`**     | Fetches data ahead of time to store in the cache. |
+| **`clear`**             | Wipes the entire cache (useful for logout).       |
+
+---
+
+Would you like to see a full example of how to implement an **optimistic update** using `useQueryClient`?
+
+
+
+
+
+

@@ -17,7 +17,7 @@ import { useStore } from "zustand";
 // Zustand store must hydrate itself BEFORE the app renders auth-gated screens
 
 
-import { clearTokens, loadTokens, saveTokens } from "../utils/auth/keychain";
+import { clearTokens, loadTokens, saveTokens } from "../../utils/auth/keychain";
 
 type AuthStatus = "booting" | "authenticated" | "unauthenticated";
 
