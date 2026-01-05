@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-    marginTop: 50
+    marginTop: 10,
+
   },
 
   // Search Input Style

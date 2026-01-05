@@ -134,7 +134,8 @@ const Vehicles = () => {
 
   return (
     <>
-      <View>
+      <View
+        style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5 }}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
           onPress={handleAddNew}
