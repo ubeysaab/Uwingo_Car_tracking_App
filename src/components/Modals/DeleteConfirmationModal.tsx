@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { AlertTriangle, Trash2 } from 'lucide-react-native';
+import LucideIconButton from '../IconButton/LucideIconButton';
 
 interface DeleteModalProps {
   visible: boolean;
@@ -52,7 +53,7 @@ const DeleteConfirmationModal = ({
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.deleteButton}
               onPress={onConfirm}
               disabled={isDeleting}
@@ -61,7 +62,15 @@ const DeleteConfirmationModal = ({
               <Text style={styles.deleteText}>
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <LucideIconButton
+              icon='Trash2'
+              containerColor={"#FF3B30"}
+              onPress={onConfirm}
+              text={isDeleting ? 'Deleting...' : 'Delete'}
+              disabled={isDeleting}
+              style={[styles.deleteButton]}
+            />
           </View>
         </View>
       </View>

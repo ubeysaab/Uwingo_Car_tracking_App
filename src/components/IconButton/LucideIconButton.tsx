@@ -12,29 +12,29 @@ import {
   ColorValue,
 } from 'react-native';
 
-// Lucide ikonlarını içeri aktarın
-// Bu kütüphaneyi kurduğunuzdan emin olun: npm install lucide-react-native
 import { LucideIcon, icons } from 'lucide-react-native';
 
 // --- TİP TANIMLARI ---
 
-// Lucide'ın tüm ikon adlarının string tipinde güvenli bir şekilde kullanımı
-export type LucideIconName = keyof typeof icons;
+export type LucideIconNames = keyof typeof icons;
 
 interface IconButtonProps {
   /** Görüntülenecek Lucide ikonunun adı (örn: "Camera", "Heart"). */
-  icon: LucideIconName;
+  icon: LucideIconNames;
   text?: string | number,
+  textColor?: string,
   /** İkonun rengi. */
   iconColor?: ColorValue;
   /** Arka plan rengi (düğme kabı rengi). */
   containerColor?: ColorValue;
   /** İkonun boyutu (piksel). */
   size?: number;
+  borderRadius?: number;
   /** Düğmeye tıklandığında çalışacak fonksiyon. */
   onPress?: (e: GestureResponderEvent) => void;
   /** Düğmenin devre dışı olup olmadığı. */
   disabled?: boolean;
+
   /** Yüklenme göstergesinin görünüp görünmeyeceği. */
   loading?: boolean;
   /** Dış View bileşeni için stil. */
@@ -45,27 +45,25 @@ interface IconButtonProps {
 
 // --- BİLEŞEN ---
 
-export const LucideIconButton = React.forwardRef<View, IconButtonProps>(
+const LucideIconButton = React.forwardRef<View, IconButtonProps>(
   (
     {
       icon,
-      iconColor = '#007AFF', // Varsayılan siyah
-      containerColor = 'transparent', // Varsayılan şeffaf
-      size = 24,
+      iconColor = '#FFF',
+      textColor = '#FFF',
+      containerColor = '#007AFF',
+      size = 16,
       onPress,
       disabled = false,
       loading = false,
       style,
+      borderRadius = 5,
       accessibilityLabel,
       text = ''
     },
     ref
   ) => {
-    // Lucide ikonunun kendisini bul
     const LucideIconComponent = icons[icon] as LucideIcon;
-
-    // Düğme boyutu, ikon boyutuna göre padding eklenerek hesaplanır
-    const buttonSize = size + 16; // 8 sol + 8 sağ padding
 
     return (
       <View
@@ -73,13 +71,13 @@ export const LucideIconButton = React.forwardRef<View, IconButtonProps>(
         style={[
           styles.container,
           {
-            width: buttonSize,
-            height: buttonSize,
-            borderRadius: buttonSize / 2,
+            borderRadius: borderRadius,
             backgroundColor: containerColor,
+            // If there is no text, we keep it square, otherwise auto-width
+            padding: 8,
           },
-          disabled && styles.disabled, // Devre dışı stili
-          style, // Dışarıdan gelen stil
+          disabled && styles.disabled,
+          style,
         ]}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
@@ -88,34 +86,31 @@ export const LucideIconButton = React.forwardRef<View, IconButtonProps>(
         <Pressable
           onPress={onPress}
           disabled={disabled || loading}
-          // Basıldığında şeffaflığı azaltarak basit bir 'ripple' benzeri etki yaratabiliriz.
           style={({ pressed }) => [
             styles.pressable,
             { opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          {loading && (
-            // Yüklenme Durumu
+          {loading ? (
             <ActivityIndicator size={size} color={iconColor} />
-          )}
-          {text ? (
-            <Text>
+          ) : (
+            <View style={styles.contentRow}>
+              {/* If text exists, render text and icon side by side */}
+              {text ? (
+                <>
+                  <Text style={[styles.text, { color: textColor }]}>
+                    {text}
+                  </Text>
+                  <View style={{ width: 6 }} />
+                </>
+              ) : null}
+
               <LucideIconComponent
                 color={iconColor as string}
                 size={size}
               />
-            </Text>
-          ) : (
-            // İkon Durumu
-            <LucideIconComponent
-              color={iconColor as string}
-              size={size}
-            // İhtiyaç duyarsanız, ikonun kendi stilini de buraya ekleyebilirsiniz
-            />
+            </View>
           )}
-
-
-
         </Pressable>
       </View>
     );
@@ -125,22 +120,26 @@ export const LucideIconButton = React.forwardRef<View, IconButtonProps>(
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    margin: 6,
-    // Gölge (isteğe bağlı)
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    alignSelf: 'flex-start',
+
   },
   pressable: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontWeight: '600',
+    fontSize: 14,
   },
   disabled: {
     opacity: 0.4,
   },
 });
 
-export default LucideIconButton;
+
+export default LucideIconButton

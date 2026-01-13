@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Pencil, Trash2 } from 'lucide-react-native'; // Import Lucide Icons
 import { ColumnConfig } from './types';
+import LucideIconButton from '../IconButton/LucideIconButton';
 
 interface ResponsiveTableRowProps<T> {
   item: T;
@@ -12,6 +13,7 @@ interface ResponsiveTableRowProps<T> {
   uniqueKey: keyof T;
   onEdit: (item: T) => void;   // Added Edit Callback
   onDelete: (item: T) => void; // Added Delete Callback
+  sendDataAsStrings?: boolean;
 }
 
 // T extends Record<string, any> fixes the "indexing type unknown" error
@@ -24,8 +26,10 @@ const ResponsiveTableRow = <T extends Record<string, any>>({
   uniqueKey,
   onEdit,
   onDelete,
+  sendDataAsStrings = false
 }: ResponsiveTableRowProps<T>) => {
   const isExpanded = expandedId === item[uniqueKey];
+  const isDeleted = item?.terminationDate
 
   return (
     <View style={styles.rowContainer}>
@@ -55,23 +59,40 @@ const ResponsiveTableRow = <T extends Record<string, any>>({
           ))}
 
           {/* Action Buttons Section */}
-          <View style={styles.actionContainer}>
-            <TouchableOpacity
+          {!isDeleted &&
+            (<View style={styles.actionContainer}>
+              {/* <TouchableOpacity
               style={[styles.actionButton, styles.editButton]}
               onPress={() => onEdit?.(item)}
             >
               <Pencil size={18} color="#FFF" />
               <Text style={styles.actionButtonText}>Edit</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <TouchableOpacity
+              <LucideIconButton
+                icon='Pencil'
+                containerColor={"#007AFF"}
+                onPress={() => onEdit?.(item)}
+                text={'Edit'}
+              // disabled={item?.terminationDate}
+              />
+
+              {/* <TouchableOpacity
               style={[styles.actionButton, styles.deleteButton]}
-              onPress={() => onDelete?.(item?.vehicleId)}
+              onPress={() => onDelete?.(item)}
             >
               <Trash2 size={18} color="#FFF" />
               <Text style={styles.actionButtonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+            </TouchableOpacity> */}
+              <LucideIconButton
+                icon='Trash2'
+                containerColor={"#FF3B30"}
+                onPress={() => onDelete?.(item)}
+                text={'Delete'}
+              // disabled={item?.terminationDate}
+              />
+            </View>
+            )}
         </View>
       )}
     </View>
@@ -81,7 +102,6 @@ const ResponsiveTableRow = <T extends Record<string, any>>({
 export default ResponsiveTableRow;
 
 const styles = StyleSheet.create({
-  // ... existing styles ...
   rowContainer: { borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
   visibleRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15 },
   cell: { fontSize: 14 },

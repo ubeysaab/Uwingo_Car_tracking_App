@@ -22,6 +22,7 @@ const ErrorModal = ({ visible, title = "Error Occurred", message, onClose, onRet
         <View style={styles.modalContainer}>
           {/* Header Icon */}
           <View style={styles.iconContainer}>
+
             <AlertCircle size={48} color="#FF3B30" />
           </View>
 

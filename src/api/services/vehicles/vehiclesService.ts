@@ -1,6 +1,6 @@
 import callApi from "@/api/config/apiCall";
 import { ENDPOINTS } from "@/api/endpoints";
-import { VehicleApplicationSchema, VehicleApplicationT } from "@/types/vehicles";
+import { VehicleApplicationSchema, VehicleApplicationT } from "@/types/comingData/vehicles";
 import z from "zod";
 
 export const VehicleService = {
@@ -16,6 +16,6 @@ export const VehicleService = {
     callApi('put', `${ENDPOINTS.Vehicles.update}`, z.any(), data),
 
   // // DELETE
-  delete: (id: string) =>
+  delete: (id: string | number) =>
     callApi('delete', `${ENDPOINTS.Vehicles.delete}/${id}`, z.any()),
 };

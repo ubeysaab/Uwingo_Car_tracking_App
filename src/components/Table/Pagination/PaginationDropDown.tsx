@@ -1,5 +1,5 @@
 import { ColorValue, StyleSheet } from "react-native";
-import IconButton from "@/components/IconButton/IconButton";
+import IconButton from "@/components/IconButton/LucideIconButton";
 import { Menu } from "@/components/Menu/Menu";
 import React from "react";
 

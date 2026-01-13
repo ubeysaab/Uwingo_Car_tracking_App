@@ -20,7 +20,7 @@ export const useDeleteVehicle = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => VehicleService.delete(id),
+    mutationFn: (id: string | number) => VehicleService.delete(id),
     onSuccess: () => {
       // This tells React Query to refetch the list automatically!
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });

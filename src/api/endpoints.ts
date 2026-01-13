@@ -39,7 +39,7 @@ export const ENDPOINTS = {
     get: `${BASE_URL}/api/DriverVehicle/get-drivervehicle`,
     create: `${BASE_URL}/api/DriverVehicle/create-drivervehicle`,
     update: `${BASE_URL}/api/DriverVehicle/update-drivervehicle`,
-    delete: `${BASE_URL}/api/DriverVehicle/delete-drivervehicle/`,
+    delete: `${BASE_URL}/api/DriverVehicle/delete-drivervehicle`,
   },
 
   DeviceVehicles: {

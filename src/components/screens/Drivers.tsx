@@ -1,6 +1,6 @@
 import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { useGetVehicles, useDeleteVehicle, useUpdateVehicle, useCreateVehicle } from '@/store/server/useVehicles';
-import { VehicleApplicationT } from '@/types/comingData/vehicles';
+
 import * as React from 'react';
 import ErrorScreen from './ErrorScreen';
 import SplashScreen from './SplashScreen';
@@ -14,71 +14,75 @@ import { NormalizedErrorT } from '@/types/auth';
 import LucideIconButton from '../IconButton/LucideIconButton';
 
 
+import { DriverApplicationT } from '@/types/comingData/drivers';
+import { useCreateDriver, useDeleteDriver, useGetDrivers, useUpdateDriver } from '@/store/server/useDrivers';
+import DriverFormModals from '@/components/Modals/DriverFormModals';
 
 
 
 
 
 
+const Drivers = () => {
 
-const Vehicles = () => {
-
-  const { data, isPending, isError, refetch } = useGetVehicles();
-  const mutationDelete = useDeleteVehicle()
-  const mutationUpdate = useUpdateVehicle()
-  const mutationAdd = useCreateVehicle()
+  const { data, isPending, isError, refetch } = useGetDrivers();
+  const mutationDelete = useDeleteDriver()
+  const mutationUpdate = useUpdateDriver()
+  const mutationAdd = useCreateDriver()
 
   // 1. State to manage the Modal
   const [saveModalVisibility, setSaveModalVisibility] = React.useState(false);
   const [deleteModalVisiblity, setDeleteModalVisibility] = React.useState(false);
-  const [selectedVehicle, setSelectedVehicle] = React.useState<VehicleApplicationT | null>(null);
-
   const [errorModalVisibility, setErrorModalVisibility] = React.useState(false)
 
+
+  const [selectedDriver, setSelectedDriver] = React.useState<DriverApplicationT | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string>("")
 
   // 1. Add state to track the ID specifically for deletion
-  const [vehicleToDelete, setVehicleToDelete] = React.useState<VehicleApplicationT | null>(null);
+  const [driverToDelete, setDriverToDelete] = React.useState<DriverApplicationT | null>(null);
 
 
 
   const handleDelete = (id: any) => {
-    setVehicleToDelete(id);
+    setDriverToDelete(id);
     setDeleteModalVisibility(true);
   };
 
 
   // 2. Handlers
-  const handleEdit = (vehicle: VehicleApplicationT) => {
-    setSelectedVehicle(vehicle); // Set the vehicle to be edited
+  const handleEdit = (driver: DriverApplicationT) => {
+    setSelectedDriver(driver); // Set the vehicle to be edited
     setSaveModalVisibility(true);       // Open modal
   };
 
   const handleAddNew = () => {
     // console.log(data)
-    setSelectedVehicle(null);    // No vehicle means "Add Mode"
+    setSelectedDriver(null);    // No vehicle means "Add Mode"
     setSaveModalVisibility(true);
   };
 
 
   const confirmDelete = () => {
-    if (vehicleToDelete?.vehicleId) {
-      console.log(vehicleToDelete)
-      mutationDelete.mutate(vehicleToDelete?.vehicleId, {
+    if (driverToDelete?.driverId) {
+      console.log(driverToDelete)
+      mutationDelete.mutate(driverToDelete?.driverId, {
         onSuccess: () => {
           setDeleteModalVisibility(false);
-          setVehicleToDelete(null);
+          setDriverToDelete(null);
         },
         onError: (error: NormalizedErrorT) => {
           setDeleteModalVisibility(false)
           setErrorModalVisibility(true)
-          setVehicleToDelete(null)
+          setDriverToDelete(null)
           setErrorMessage(error.message)
         }
       });
     }
   };
   const confirmAddandUpdate = (data: any, method: 'put' | 'post') => {
+    console.log('hello from add ')
+    console.log('method : ', method, "data", data)
     if (method === 'put') {
       // We pass ONE object containing id and the rest of the data
       console.log("the data sended for update", data)
@@ -90,8 +94,7 @@ const Vehicles = () => {
             // TODO: Add toast success message here
           },
           onError: (error: NormalizedErrorT) => {
-            // console.error("Update failed", error);
-            // TODO: Open Error Modal here
+
             setErrorModalVisibility(true)
             setErrorMessage(error.message)
           }
@@ -122,15 +125,9 @@ const Vehicles = () => {
   )
 
   // Manually define your columns to map labels to specific object keys
-  const columns: ColumnConfig<VehicleApplicationT>[] = [
-    { label: 'Vehicle Plate', key: 'plate' },
-    { label: 'Brand', key: 'make' },
-    { label: 'Model', key: 'model' },
-    { label: 'Model Year', key: 'year' }, // Ensure 'year' exists in VehicleApplicationT
-    { label: 'Chassis No', key: 'vin' },
-    { label: 'Initial KM', key: 'firstKilometer' },
-    { label: 'Has Driver?', key: 'isThereDriver' },
-    { label: 'For Rent?', key: 'isItForRent' },
+  const columns: ColumnConfig<DriverApplicationT>[] = [
+    { label: 'Driver Name', key: 'driverName' },
+    { label: 'Driver Code', key: 'driverCode' },
   ];
 
   return (
@@ -145,11 +142,11 @@ const Vehicles = () => {
         />
       </View>
 
-      <ResponsiveTable data={data} columns={columns} uniqueKey='plate' handleEdit={handleEdit} handleDelete={handleDelete} />
+      <ResponsiveTable data={data} columns={columns} uniqueKey='driverId' handleEdit={handleEdit} handleDelete={handleDelete} />
 
-      <VehicleFormModal
+      <DriverFormModals
         visible={saveModalVisibility}
-        initialData={selectedVehicle}
+        initialData={selectedDriver}
         onClose={() => setSaveModalVisibility(false)}
         onSubmit={(data, method) => confirmAddandUpdate(data, method)}
       />
@@ -159,7 +156,7 @@ const Vehicles = () => {
         visible={deleteModalVisiblity}
         onClose={() => {
           setDeleteModalVisibility(false);
-          setVehicleToDelete(null);
+          setDriverToDelete(null);
         }}
         onConfirm={confirmDelete}
         isDeleting={mutationDelete.isPending}
@@ -204,4 +201,4 @@ const styles = StyleSheet.create({
   actionButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
 })
 
-export default Vehicles;
+export default Drivers;

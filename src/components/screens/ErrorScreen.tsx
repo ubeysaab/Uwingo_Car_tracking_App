@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface ErrorScreenProps {
   message?: string;
-  // onRetry: () => void;
+  onRetry: () => void;
 }
 
-const ErrorScreen = ({ message = "Something went wrong while loading the data." }: ErrorScreenProps) => {
+const ErrorScreen = ({ message = "Something went wrong while loading the data.", onRetry }: ErrorScreenProps) => {
   return (
     <View style={styles.errorContainer}>
       <View style={styles.iconCircle}>
@@ -15,9 +15,9 @@ const ErrorScreen = ({ message = "Something went wrong while loading the data." 
       <Text style={styles.errorTitle}>Oops!</Text>
       <Text style={styles.errorMessage}>{message}</Text>
 
-      {/* <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
+      <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
         <Text style={styles.retryText}>Try Again</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 };

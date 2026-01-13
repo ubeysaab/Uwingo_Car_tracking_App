@@ -1,5 +1,5 @@
 import { ColorValue } from "react-native";
-import IconButton from "@/components/IconButton/IconButton";
+import IconButton from "@/components/IconButton/LucideIconButton";
 
 
 

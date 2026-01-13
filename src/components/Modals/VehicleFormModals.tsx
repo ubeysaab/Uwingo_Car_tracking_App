@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { X } from 'lucide-react-native';
-import { VehicleApplicationT } from '@/types/vehicles';
+import { VehicleApplicationT } from '@/types/comingData/vehicles';
+import LucideIconButton from '../IconButton/LucideIconButton';
 
 interface VehicleFormModalProps {
   visible: boolean;
@@ -75,9 +76,16 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
         >
           <View style={styles.header}>
             <Text style={styles.title}>{initialData ? 'Edit Vehicle' : 'Add Vehicle'}</Text>
-            <TouchableOpacity onPress={onClose}>
+            {/* <TouchableOpacity onPress={onClose}>
               <X color="#333" size={24} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <LucideIconButton
+              icon='X'
+              size={24}
+              iconColor={'#333'}
+              containerColor={'transparent'}
+              onPress={onClose}
+            />
           </View>
 
           <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
@@ -202,6 +210,8 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
 
             <Text style={styles.saveButtonText}>Save Vehicle</Text>
           </TouchableOpacity>
+
+
         </KeyboardAvoidingView>
       </View>
     </Modal>
