@@ -1,11 +1,8 @@
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-
-
 import Devices from '@/components/Screens/Devices';
 import Drivers from "@/components/Screens/Drivers";
 import DriverVehicles from '@/components/Screens/DriverVehicles';
 import HomeScreen from '@/components/Screens/HomeScreen';
+import PacketContents from '@/components/Screens/PacketContents';
 import Packets from '@/components/Screens/Packets';
 import Vehicles from '@/components/Screens/Vehicles';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -30,6 +27,7 @@ export default function RootStack() {
       <Stack.Screen name='Devices' component={Devices} />
       <Stack.Screen name='Driver Vehicles' component={DriverVehicles} />
       <Stack.Screen name='Packets' component={Packets} />
+      <Stack.Screen name='Packet Contents' component={PacketContents} />
 
     </Stack.Navigator>
   );

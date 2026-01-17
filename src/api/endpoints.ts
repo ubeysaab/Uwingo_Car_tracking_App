@@ -53,14 +53,14 @@ export const ENDPOINTS = {
     get: `${BASE_URL}/api/PacketContent/get-packetcontent`,
     create: `${BASE_URL}/api/PacketContent/create-packetcontent`,
     update: `${BASE_URL}/api/PacketContent/update-packetcontent`,
-    delete: `${BASE_URL}/api/PacketContent/delete-packetcontent/`,
+    delete: `${BASE_URL}/api/PacketContent/delete-packetcontent`,
   },
 
   Packets: {
     get: `${BASE_URL}/api/Packets/get-packet`,
     create: `${BASE_URL}/api/Packets/create-packet`,
     update: `${BASE_URL}/api/Packets/update-packet`,
-    delete: `${BASE_URL}/api/Packets/delete-packet/`,
+    delete: `${BASE_URL}/api/Packets/delete-packet`,
   },
 
   PeriodicMaintenances: {
