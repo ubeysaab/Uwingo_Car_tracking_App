@@ -1,10 +1,9 @@
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
-import { DriverVehiclesApplicationT, DriverVehiclesSchema } from "@/types/comingData/driverVehicles";
+import { PacketApplicationSchema, PacketApplicationT } from "@/types/comingData/packets";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { PacketApplicationT, PacketApplicationSchema } from "@/types/comingData/packets";
 interface DropdownItem {
   id: number;
   label: string; // "Plate" for vehicles, "Name" for drivers

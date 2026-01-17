@@ -12,7 +12,7 @@ import SplashScreen from './SplashScreen';
 
 
 
-import PacketFormModal from '@/components/Modals/forms/PacketFromModal';
+import PacketFormModal from '@/components/Modals/forms/PacketFormModal';
 import { useCreatePacket, useDeletePacket, useGetPackets, useUpdatePacket } from '@/store/server/usePackets';
 import { PacketApplicationT } from '@/types/comingData/packets';
 
@@ -87,7 +87,7 @@ const Packets = () => {
       const payloadData = {
         ...data,
         packetId: selectedPacket?.packetId,
-        companyApplicationId: selectedPacket?.companyApplicationId
+        // companyApplicationId: selectedPacket?.companyApplicationId
       }
       mutationUpdate.mutate(
         payloadData,
