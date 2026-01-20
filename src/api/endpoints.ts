@@ -95,7 +95,7 @@ export const ENDPOINTS = {
     get: `${BASE_URL}/api/VehicleInspection/get-vehicleinspection`,
     create: `${BASE_URL}/api/VehicleInspection/create-vehicleinspection`,
     update: `${BASE_URL}/api/VehicleInspection/update-vehicleinspection`,
-    delete: `${BASE_URL}/api/VehicleInspection/delete-vehicleinspection/`,
+    delete: `${BASE_URL}/api/VehicleInspection/delete-vehicleinspection`,
   },
 
   VehicleRepair: {
