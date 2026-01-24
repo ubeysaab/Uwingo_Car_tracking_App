@@ -1,4 +1,5 @@
 import Devices from '@/components/Screens/Devices';
+import DevicesVehicles from '@/components/Screens/DeviceVehicles';
 import Drivers from "@/components/Screens/Drivers";
 import DriverVehicles from '@/components/Screens/DriverVehicles';
 import HomeScreen from '@/components/Screens/HomeScreen';
@@ -29,9 +30,11 @@ export default function RootStack() {
 
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="vehicles" component={Vehicles} />
-      <Stack.Screen name="drivers" component={Drivers} />
       <Stack.Screen name='Devices' component={Devices} />
-      <Stack.Screen name='Driver Vehicles' component={DriverVehicles} />
+      <Stack.Screen name="drivers" component={Drivers} />
+      <Stack.Screen name='Vehicle Connected Device ' component={DevicesVehicles} />
+      <Stack.Screen name='Driver Connected Vehicle' component={DriverVehicles} />
+
       <Stack.Screen name='Packages' component={Packets} />
       <Stack.Screen name='Packet Contents' component={PacketContents} />
       <Stack.Screen name='Vehicle Maintenance' component={VehicleMaintenance} />

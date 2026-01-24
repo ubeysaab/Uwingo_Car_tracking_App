@@ -27,7 +27,7 @@ export const ENDPOINTS = {
     update: `${BASE_URL}/api/Drivers/update-driver`,
     delete: `${BASE_URL}/api/Drivers/delete-driver`,
   },
-
+  // ✅
   Devices: {
     getActiveDevice: `${BASE_URL}/api/DeviceVehicles/get-activedevice`,
     create: `${BASE_URL}/api/Devices/create-device`,
@@ -47,7 +47,7 @@ export const ENDPOINTS = {
     get: `${BASE_URL}/api/DeviceVehicles/get-devicevehicle`,
     create: `${BASE_URL}/api/DeviceVehicles/create-devicevehicle`,
     update: `${BASE_URL}/api/DeviceVehicles/update-devicevehicle`,
-    delete: `${BASE_URL}/api/DeviceVehicles/delete-devicevehicle/`,
+    delete: `${BASE_URL}/api/DeviceVehicles/delete-devicevehicle`,
   },
   // ✅
   PacketContents: {
