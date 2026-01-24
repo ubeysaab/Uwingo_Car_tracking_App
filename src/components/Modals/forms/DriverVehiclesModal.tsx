@@ -1,3 +1,4 @@
+import DropdownComponent from "@/components/DropDown";
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import { DriverVehiclesApplicationT, DriverVehiclesSchema } from "@/types/comingData/driverVehicles";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface DropdownItem {
-  id: number;
+  value: number | undefined;
   label: string; // "Plate" for vehicles, "Name" for drivers
 }
 
@@ -93,19 +94,13 @@ const DriverVehiclesModal = ({
               control={control}
               name="vehicle_Id"
               render={({ field: { onChange, value } }) => (
-                <View style={styles.pickerWrapper}>
-                  {vehicles.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={[styles.itemCard, value === item.id && styles.itemCardSelected]}
-                      onPress={() => onChange(item.id)}
-                    >
-                      <Text style={[styles.itemText, value === item.id && styles.itemTextSelected]}>
-                        {item.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+
+                <DropdownComponent
+                  data={vehicles}
+                  onChange={onChange
+                  }
+                  value={value}
+                />
               )}
             />
 
@@ -115,23 +110,15 @@ const DriverVehiclesModal = ({
               control={control}
               name="drivers_Id"
               render={({ field: { onChange, value } }) => (
-                <View style={styles.pickerWrapper}>
-                  {drivers.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={[styles.itemCard, value === item.id && styles.itemCardSelected]}
-                      onPress={() => onChange(item.id)}
-                    >
-                      <Text style={[styles.itemText, value === item.id && styles.itemTextSelected]}>
-                        {item.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+
+                <DropdownComponent
+                  data={drivers}
+                  onChange={onChange
+                  }
+                  value={value}
+                />
               )}
             />
-
-            {/* ... Your existing Driver Name and Code fields ... */}
 
           </ScrollView>
 

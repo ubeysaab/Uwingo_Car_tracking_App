@@ -1,6 +1,6 @@
 import callApi from "@/api/config/apiCall";
 import { ENDPOINTS } from "@/api/endpoints";
-import { DriverApplicationT, DriverSchema } from "@/types/comingData/drivers";
+import { DriverApplicationT, } from "@/types/comingData/drivers";
 import z from "zod";
 
 export const DriverVehiclesService = {
