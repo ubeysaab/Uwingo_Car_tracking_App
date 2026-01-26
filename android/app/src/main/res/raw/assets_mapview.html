@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Live Vehicle Tracking</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-width: 200px;
+      backdrop-filter: blur(10px);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-label i {
+      color: #007AFF;
+    }
+
+    select,
+    button {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:focus,
+    button:focus {
+      outline: none;
+      border-color: #007AFF;
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, #007AFF, #0056CC);
+      color: white;
+      border: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0056CC, #004099);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #legendButton {
+      position: absolute;
+      bottom: 20px;
+      left: 15px;
+      z-index: 1000;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #34C759, #28A745);
+      color: white;
+      border: none;
+      font-size: 20px;
+      box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #legendButton:hover {
+      background: linear-gradient(135deg, #28A745, #1E7E34);
+    }
+
+    #legendDropdown {
+      position: absolute;
+      bottom: 75px;
+      left: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(20px);
+      width: 280px;
+      display: none;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .legend-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .close-legend {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    .close-legend:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .legend-item:last-child {
+      border-bottom: none;
+    }
+
+    .legend-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 16px;
+    }
+
+    .legend-content {
+      flex: 1;
+    }
+
+    .legend-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .legend-description {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .vehicle-tooltip {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1px solid #ddd !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+      padding: 12px !important;
+      font-size: 13px !important;
+      backdrop-filter: blur(10px);
+    }
+
+    .speed-exceeded {
+      color: #FF3B30;
+      font-weight: 600;
+      animation: pulse 1.5s infinite;
+    }
+
+    .violations-exceeded {
+      color: #AF52DE;
+      font-weight: 600;
+    }
+
+    .violations-speed-exceeded {
+      color: #FF2D55;
+      font-weight: 600;
+      animation: pulse 1s infinite;
+    }
+
+    .speed-ok {
+      color: #34C759;
+    }
+
+    .workingStatusClassOpen {
+      color: #34C759;
+    }
+
+    .workingStatusClassClosed {
+      color: #FF3B30;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007AFF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .stats-bar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #007AFF;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 768px) {
+      #controls {
+        top: calc(10px + env(safe-area-inset-top));
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 45%;
+      }
+
+      .stats-bar {
+        top: calc(15px + env(safe-area-inset-top));
+        left: 10px;
+        right: 10px;
+        justify-content: space-around;
+      }
+
+      #legendDropdown {
+        width: calc(100% - 30px);
+        left: 15px;
+        right: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <div id="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading vehicle data...</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value" id="totalVehicles">0</div>
+      <div class="stat-label">Vehicles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="activeVehicles">0</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="violationsCount">0</div>
+      <div class="stat-label">Violations</div>
+    </div>
+  </div>
+
+  <!-- 
+  <div id="controls">
+    <div class="control-group">
+      <label class="control-label">
+        <i class="fas fa-map"></i> Map View
+      </label>
+      <select id="zoomLevel">
+        <option value="1">World View</option>
+        <option value="5">Country View</option>
+        <option value="13" selected>City View</option>
+        <option value="18">Street View</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        <i class="fas fa-sync-alt"></i> Refresh Rate
+      </label>
+      <select id="refreshRate">
+        <option value="5000">5 seconds</option>
+        <option value="10000" selected>10 seconds</option>
+        <option value="30000">30 seconds</option>
+        <option value="60000">1 minute</option>
+      </select>
+    </div>
+
+    <button id="refreshBtn">
+      <i class="fas fa-redo"></i> Refresh Now
+    </button>
+  </div> 
+  -->
+
+  <button id="legendButton">
+    <i class="fas fa-info-circle"></i>
+  </button>
+
+  <div id="legendDropdown">
+    <div class="legend-header">
+      <h3>Map Legend</h3>
+      <button class="close-legend" id="closeLegend">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-icon" style="background: rgba(52, 199, 89, 0.1); color: #34C759;">
+        <i class="fas fa-circle"></i>
+      </div>
+      <div class="legend-content">
+        <div class="legend-title">Green Circle</div>
+        <div class="legend-description">Vehicle is ON and working</div>
+      </div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-icon" style="background: rgba(255, 59, 48, 0.1); color: #FF3B30;">
+        <i class="fas fa-circle"></i>
+      </div>
+      <div class="legend-content">
+        <div class="legend-title">Red Circle</div>
+        <div class="legend-description">Vehicle is OFF (not working)</div>
+      </div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-icon" style="background: rgba(175, 82, 222, 0.1); color: #AF52DE;">
+        <i class="fas fa-route"></i>
+      </div>
+      <div class="legend-content">
+        <div class="legend-title">Purple Line</div>
+        <div class="legend-description">Route violation (route exceeded)</div>
+      </div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-icon" style="background: rgba(0, 122, 255, 0.1); color: #007AFF;">
+        <i class="fas fa-tachometer-alt"></i>
+      </div>
+      <div class="legend-content">
+        <div class="legend-title">Blue Line</div>
+        <div class="legend-description">Route and speed violation</div>
+      </div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-icon" style="background: rgba(142, 142, 147, 0.1); color: #8E8E93;">
+        <i class="fas fa-road"></i>
+      </div>
+      <div class="legend-content">
+        <div class="legend-title">Gray Line</div>
+        <div class="legend-description">Normal speed violation area</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // TODO : TAKE SPEED LIMIT FROMT  THE SECOND ENDPOINT AN ASSIGN IT HERE IT IS NOT ASSIGNED
+    // Global variables
+    let map;
+    let vehicleMarkers = new Map();
+    let lastPositions = {};
+    let vehicleDistances = {};
+    let speedLimitDict = {};
+    let offPlates = new Set();
+    let bearing = 0;
+    let userInteracted = false;
+    let firstLoad = true;
+    let maxLatitude = -Infinity;
+    let minLongitude = Infinity;
+    let markers = L.layerGroup();
+    let violations = [];
+    let vehiclePlates = [];
+    let vehiclesData = [];
+    let drawnItems = new L.FeatureGroup();
+    let refreshInterval;
+    let totalVehicles = 0;
+    let activeVehicles = 0;
+    let violationsCount = 0;
+
+
+    // Initialize map when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeMap();
+      setupEventListeners();
+      loadInitialData();
+    });
+
+    function initializeMap() {
+      // Create map with default view
+      // console.log("1️⃣ Harita yuklendi ")
+      map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([38.4011, 42.1078], 13); // Default Istanbul view
+
+      // Add tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Add zoom control
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      // Add layers
+      markers.addTo(map);
+      drawnItems.addTo(map);
+
+      // Add scale control
+      L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+    }
+
+
+    async function onMessage(event) {
+      // console.log("2️⃣ OnMessage Calisiyor")
+      const payload = await parseMessageData(event);
+      console.log(JSON.stringify(payload.data))
+      if (!payload) return;
+
+      if (payload.type === 'FULL_UPDATE') {
+        // console.log("send the payload to update UI function now it's should run")
+        await takeDataAndUpdateUI(payload.data);
+      }
+    }
+    async function parseMessageData(event) {
+      try {
+        const raw = event.data || event;
+        if (typeof raw === 'string') return await JSON.parse(raw);
+        return raw;
+      } catch {
+        return null;
+      }
+    }
+
+    function setupEventListeners() {
+      // Zoom level change
+      // document.getElementById('zoomLevel').addEventListener('change', function () {
+      //   const zoomLevel = parseInt(this.value);
+      //   if (!isNaN(zoomLevel)) {
+      //     map.setZoom(zoomLevel);
+      //   }
+      // });
+
+      // Refresh rate change
+      // document.getElementById('refreshRate').addEventListener('change', function () {
+      //   const interval = parseInt(this.value);
+      //   if (!isNaN(interval)) {
+      //     clearInterval(refreshInterval);
+      //     refreshInterval = setInterval(refreshData, interval);
+      //     showNotification(`Refresh rate set to ${interval / 1000} seconds`);
+      //   }
+      // });
+
+      // Refresh button
+      // document.getElementById('refreshBtn').addEventListener('click', refreshData);
+
+      // Legend toggle
+      document.getElementById('legendButton').addEventListener('click', function () {
+        const legend = document.getElementById('legendDropdown');
+        legend.style.display = legend.style.display === 'block' ? 'none' : 'block';
+      });
+
+      // Close legend
+      document.getElementById('closeLegend').addEventListener('click', function () {
+        document.getElementById('legendDropdown').style.display = 'none';
+      });
+
+      // Map interaction tracking
+      map.on('zoomstart', () => userInteracted = true);
+      map.on('dragstart', () => userInteracted = true);
+
+      window.addEventListener('message', onMessage);
+      document.addEventListener('message', onMessage);
+    }
+
+    async function loadInitialData() {
+      try {
+        await takeDataAndUpdateUI();
+        await logPlates();
+        await drawTodaysRoute();
+        updateStats();
+
+        // Start refresh interval
+        // const initialInterval = parseInt(document.getElementById('refreshRate').value);
+        refreshInterval = setInterval(refreshData, 60000);
+
+        // Hide loading
+        document.getElementById('loading').style.opacity = '0';
+        setTimeout(() => {
+          // console.log('hide the loggin 🔥🔥')
+          document.getElementById('loading').style.display = 'none';
+        }, 300);
+        sendReady()
+
+      } catch (error) {
+        // console.error('Error loading initial data:', error);
+        showNotification('Failed to load data. Please check connection.', 'error');
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+
+    async function refreshData() {
+      // try {
+      //   await takeDataAndUpdateUI();
+      //   await drawTodaysRoute();
+      //   updateStats();
+      // } catch (error) {
+      //   console.error('Error refreshing data:', error);
+      // }
+      // console.log("helloworld")
+    }
+
+    async function takeDataAndUpdateUI(incomingData) {
+      // console.log("3️⃣ incoming data : ", JSON.stringify(incomingData))
+      // console.log(incomingData && Array.isArray(incomingData) && incomingData.length > 0)
+      try {
+        // LOGIC FIX: Check if we received data from React Native or need to simulate
+        if (incomingData && Array.isArray(incomingData) && incomingData.length > 0) {
+          // console.log("set up the data 🎆")
+          vehiclesData = incomingData; // Update the global variable
+        } else {
+          // If no data passed, generate mock data
+          // console.log("this shouldn't run XX")
+          // simulateDataFetch()
+          if (!firstLoad) {
+            showNotification('Failed to load data. Please check connection 1st.', 'error');
+          }
+
+        }
+
+        // Update markers based on the global vehiclesData
+        await updateVehicleMarkers();
+
+      } catch (error) {
+        console.error('Error in takeDataAndUpdateUI:', error);
+        throw error;
+      }
+    }
+    // use in order to debug when is server is not give response
+    async function simulateDataFetch() {
+      // LOGIC FIX: Generate actual mock data structure
+      const mockData = [
+        {
+
+          serialNumber: "SN001",
+          latitude: 41.0082,
+          longitude: 28.9784,
+          speed: 45,
+          workingstatus: true,
+
+
+          plate: "34 ABC 123",
+          vehicleId: 1
+
+        },
+        {
+
+          serialNumber: "SN002",
+          latitude: 41.0122,
+          longitude: 28.9850,
+          speed: 90, // Speeding
+          workingstatus: true,
+
+
+          plate: "34 XYZ 789",
+          vehicleId: 2
+
+        },
+        {
+
+          serialNumber: "SN003",
+          latitude: 41.0050,
+          longitude: 28.9600,
+          speed: 0,
+          workingstatus: false,
+
+
+          plate: "34 TST 000",
+          vehicleId: 3
+
+        }
+      ];
+
+      // Assign mock data to global variable
+      vehiclesData = mockData;
+
+      // Calculate bounds (moved logic here where data actually exists)
+      maxLatitude = -Infinity;
+      minLongitude = Infinity;
+
+      vehiclesData.forEach(item => {
+        if (item.trackingData) {
+          if (item.trackingData.latitude > maxLatitude) {
+            maxLatitude = item.trackingData.latitude;
+          }
+          if (item.trackingData.longitude < minLongitude) {
+            minLongitude = item.trackingData.longitude;
+          }
+        }
+      });
+    }
+
+    // TODO : WE GET THE ERRORS HERE 
+    async function updateVehicleMarkers() {
+      // console.log("4️⃣ update the UI ", JSON.stringify(vehiclesData))
+      if (!vehiclesData || vehiclesData.length === 0) return;
+
+      const latlngs = [];
+
+      vehiclesData.forEach(item => {
+        if (item) {
+          // console.log(JSON.stringify(item))
+          const serialNumber = item?.serialNumber;
+          const lat = item?.lat;
+          const lon = item?.lng;
+          const speed = item?.speed;
+          const workingStatus = item?.isWorking;
+          const plate = item?.plate;
+          // console.log(plate)
+
+          latlngs.push([lat, lon]);
+
+
+          // Calculate bearing if we have previous position
+          if (lastPositions[serialNumber]) {
+            const prev = lastPositions[serialNumber];
+            bearing = calculateBearing(prev.lat, prev.lon, lat, lon);
+          }
+
+          // TODO :  Determine violation status AFTER FETCHING THE 2ND ENDPOINT
+          // const speedLimit = speedLimitDict[item.serialNumber] || 80;
+          // const hasRouteViolation = offPlates.has(plate);
+          // const speedExceeded = speed > speedLimit;
+          const speedLimit = ""
+          const hasRouteViolation = ""
+          const speedExceeded = ""
+
+          // Determine classes
+          const speedClass = speedExceeded ? 'speed-exceeded' : 'speed-ok';
+          const routeClass = hasRouteViolation ? 'violations-exceeded' : '';
+          const combinedClass = speedExceeded && hasRouteViolation ? 'violations-speed-exceeded' : '';
+
+          // Determine icon class
+          let iconClass = speedClass;
+          if (combinedClass) iconClass = combinedClass;
+          else if (routeClass) iconClass = routeClass;
+
+          // Create popup content
+          const popupContent = createPopupContent(item, speed, speedLimit, workingStatus, speedExceeded, hasRouteViolation);
+
+          // Create or update marker
+          if (vehicleMarkers.has(serialNumber)) {
+            const marker = vehicleMarkers.get(serialNumber);
+            marker.setLatLng([lat, lon]);
+            marker.setIcon(createVehicleIcon(iconClass, bearing));
+            marker.setPopupContent(popupContent);
+          } else {
+            const marker = L.marker([lat, lon], {
+              icon: createVehicleIcon(iconClass)
+            }).addTo(markers);
+
+            marker.bindPopup(popupContent);
+            vehicleMarkers.set(serialNumber, marker);
+          }
+
+          lastPositions[serialNumber] = { lat, lon };
+        }
+      });
+
+      // Auto-zoom if user hasn't interacted
+      if ((firstLoad || !userInteracted) && latlngs.length > 0) {
+        const bounds = L.latLngBounds(latlngs);
+        map.fitBounds(bounds, { padding: [50, 50] });
+        firstLoad = false;
+      }
+    }
+
+    function createVehicleIcon(iconClass, currentBearing) {
+      return L.divIcon({
+        html: `
+                    <div style="position: relative; width: 40px; height: 40px;">
+                        <div class="${iconClass}" style="width: 100%; height: 100%; border-radius: 50%; 
+
+transform: rotate(${currentBearing}deg);
+
+
+                              background: ${iconClass.includes('speed-exceeded') ? 'rgba(255, 59, 48, 0.2)' :
+            iconClass.includes('violations') ? 'rgba(175, 82, 222, 0.2)' :
+              'rgba(233, 233, 233)'}; 
+                              display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-location-arrow" style="color: #1785e1 ; 
+                                  font-size: 20px; transform: rotate(-45deg);"></i>
+                        </div>
+                    </div>
+                `,
+        className: 'vehicle-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
+    }
+
+    function createPopupContent(item, speed, speedLimit, workingStatus, speedExceeded, hasRouteViolation) {
+      const violations = [];
+      if (speedExceeded) violations.push('Speed violation');
+      if (hasRouteViolation) violations.push('Route violation');
+
+      const violationText = violations.join(' • ');
+
+      return `
+                <div style="padding: 10px; min-width: 200px;">
+                    <div style="font-size: 16px; font-weight: bold; color: #007AFF; margin-bottom: 8px;">
+                        ${item?.plate}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                        <div><strong>Speed:</strong></div>
+                        <div style="color: ${speedExceeded ? '#FF3B30' : '#34C759'}; font-weight: ${speedExceeded ? 'bold' : 'normal'}">
+                            ${speed} km/h
+                        </div>
+                        
+                        <div><strong>Limit:</strong></div>
+                        <div>${speedLimit} km/h</div>
+                        
+                        <div><strong>Status:</strong></div>
+                        <div style="color: ${workingStatus ? '#34C759' : '#FF3B30'};">
+                            ${workingStatus ? 'ON' : 'OFF'}
+                        </div>
+                        
+                        ${violationText ? `
+                            <div><strong>Violations:</strong></div>
+                            <div style="color: #FF3B30; font-weight: bold;">
+                                ${violationText}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                        Last updated: ${new Date().toLocaleTimeString()}
+                    </div>
+                </div>
+            `;
+    }
+
+    async function logPlates() {
+      // This would fetch route analysis from your server
+      // For demo, we'll simulate it
+      await simulateRouteAnalysis();
+    }
+
+    async function simulateRouteAnalysis() {
+      // Simulate route analysis data
+      vehiclePlates = vehiclesData.map(item => ({
+        vehicleId: item.vehicles.vehicleId,
+        plate: item.vehicles.plate
+      }));
+
+      // For demo, randomly mark some plates as off-route
+      vehiclesData.forEach(item => {
+        if (Math.random() > 0.7) {
+          offPlates.add(item.vehicles.plate);
+        }
+      });
+    }
+
+    async function drawTodaysRoute() {
+      // This would draw today's routes for vehicles
+      // For demo, we'll create some random routes
+      drawnItems.clearLayers();
+
+      vehiclesData.forEach((item, index) => {
+        const lat = item.trackingData.latitude;
+        const lon = item.trackingData.longitude;
+
+        // Create a small circle around the vehicle position
+        const circle = L.circle([lat, lon], {
+          radius: 50,
+          color: offPlates.has(item.vehicles.plate) ? '#AF52DE' : '#34C759',
+          fillColor: offPlates.has(item.vehicles.plate) ? '#AF52DE' : '#34C759',
+          fillOpacity: 0.1,
+          weight: 2
+        });
+
+        drawnItems.addLayer(circle);
+      });
+    }
+
+    function updateStats() {
+      totalVehicles = vehiclesData ? vehiclesData.length : 0;
+      activeVehicles = vehiclesData ? vehiclesData.filter(item => item.isWorking).length : 0;
+      violationsCount = offPlates.size;
+
+      document.getElementById('totalVehicles').textContent = totalVehicles;
+      document.getElementById('activeVehicles').textContent = activeVehicles;
+      document.getElementById('violationsCount').textContent = violationsCount;
+    }
+
+    function calculateBearing(lat1, lon1, lat2, lon2) {
+      const toRad = angle => angle * Math.PI / 180;
+      const toDeg = angle => angle * 180 / Math.PI;
+
+      const dLon = toRad(lon2 - lon1);
+      const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+        Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+      const bearing = Math.atan2(y, x);
+      return (toDeg(bearing) + 360) % 360;
+    }
+
+    function showNotification(message, type = 'success') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#FF3B30' : '#34C759'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease-out;
+            `;
+
+      // Add keyframes for animation
+      const style = document.createElement('style');
+      style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+            `;
+      document.head.appendChild(style);
+
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+          document.head.removeChild(style);
+        }, 300);
+      }, 3000);
+    }
+
+    // // Handle messages from React Native WebView
+    // window.addEventListener('message', function (event) {
+    //   try {
+    //     const message = JSON.parse(event.data);
+    //     handleRNMessage(message);
+    //   } catch (error) {
+    //     console.error('Error parsing message from RN:', error);
+    //   }
+    // });
+
+    // function handleRNMessage(message) {
+    //   switch (message.type) {
+    //     case 'refresh':
+    //       refreshData();
+    //       break;
+    //     case 'setZoom':
+    //       const zoom = parseInt(message.value);
+    //       if (!isNaN(zoom)) {
+    //         map.setZoom(zoom);
+    //       }
+    //       break;
+    //     case 'showVehicle':
+    //       // Focus on specific vehicle
+    //       const vehicleId = message.vehicleId;
+    //       // Implementation depends on your data structure
+    //       break;
+    //   }
+    // }
+
+    // // Send message to React Native
+    // function sendToReactNative(data) {
+    //   if (window.ReactNativeWebView) {
+    //     window.ReactNativeWebView.postMessage(JSON.stringify(data));
+    //   }
+    // }
+
+    function sendReady() {
+      const msg = JSON.stringify({ type: 'READY' });
+      if (window.ReactNativeWebView?.postMessage) {
+        window.ReactNativeWebView.postMessage(msg);
+      }
+    }
+  </script>
+</body>
+
+</html>
