@@ -11,6 +11,7 @@ import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import VehicleFormModal from '@/components/Modals/forms/VehicleFormModal';
 import ErrorScreen from '@/components/Screens/ErrorScreen';
 import SplashScreen from '@/components/Screens/SplashScreen';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -20,6 +21,8 @@ const Vehicles = () => {
   const mutationDelete = useDeleteVehicle()
   const mutationUpdate = useUpdateVehicle()
   const mutationAdd = useCreateVehicle()
+  const { t } = useTranslation()
+
 
   // 1. State to manage the Modal
   const [saveModalVisibility, setSaveModalVisibility] = React.useState(false);
@@ -35,10 +38,6 @@ const Vehicles = () => {
 
 
 
-  const handleDelete = (id: any) => {
-    setVehicleToDelete(id);
-    setDeleteModalVisibility(true);
-  };
 
 
   // 2. Handlers
@@ -47,8 +46,13 @@ const Vehicles = () => {
     setSaveModalVisibility(true);       // Open modal
   };
 
+
+  const handleDelete = (vehicle: VehicleApplicationT) => {
+    setVehicleToDelete(vehicle);
+    setDeleteModalVisibility(true);
+  };
+
   const handleAddNew = () => {
-    // console.log(data)
     setSelectedVehicle(null);    // No vehicle means "Add Mode"
     setSaveModalVisibility(true);
   };
@@ -88,8 +92,6 @@ const Vehicles = () => {
             // TODO: Add toast success message here
           },
           onError: (error: NormalizedErrorT) => {
-            // console.error("Update failed", error);
-            // TODO: Open Error Modal here
             setErrorModalVisibility(true)
             setErrorMessage(error.message)
           }
@@ -111,8 +113,6 @@ const Vehicles = () => {
   };
 
 
-
-  // {isPending&&<SplashScreen/>}
   if (isPending) return (
     <SplashScreen />
   )
@@ -121,26 +121,27 @@ const Vehicles = () => {
     <ErrorScreen onRetry={refetch} />
   )
 
-  // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<VehicleApplicationT>[] = [
-    { label: 'Vehicle Plate', key: 'plate' },
-    { label: 'Brand', key: 'make' },
-    { label: 'Model', key: 'model' },
-    { label: 'Model Year', key: 'year' }, // Ensure 'year' exists in VehicleApplicationT
-    { label: 'Chassis No', key: 'vin' },
-    { label: 'Initial KM', key: 'firstKilometer' },
-    { label: 'Has Driver?', key: 'isThereDriver' },
-    { label: 'For Rent?', key: 'isItForRent' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'plate' },
+    { label: 'vehiclesPage.brand', key: 'make' },
+    { label: 'vehiclesPage.model', key: 'model' },
+    { label: 'vehiclesPage.modelYear', key: 'year' },
+    { label: 'vehiclesPage.chassisNo', key: 'vin' },
+    { label: 'vehiclesPage.initialKM', key: 'firstKilometer' },
+    { label: 'vehiclesPage.hasDriver', key: 'isThereDriver' },
+    { label: 'vehiclesPage.forRent', key: 'isItForRent' },
   ];
+
+
+
 
   return (
     <>
       <View
         style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5 }}>
-
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={t("common.create")}
           onPress={handleAddNew}
         />
       </View>
@@ -154,7 +155,6 @@ const Vehicles = () => {
         onSubmit={(data: any, method: "put" | "post") => confirmAddandUpdate(data, method)}
       />
 
-
       <DeleteConfirmationModal
         visible={deleteModalVisiblity}
         onClose={() => {
@@ -163,9 +163,6 @@ const Vehicles = () => {
         }}
         onConfirm={confirmDelete}
         isDeleting={mutationDelete.isPending}
-
-
-
       />
 
       <ErrorModal
@@ -179,29 +176,5 @@ const Vehicles = () => {
   );
 };
 
-
-
-const styles = StyleSheet.create({
-  actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    gap: 6,
-  },
-  editButton: { backgroundColor: '#007AFF' },
-  deleteButton: { backgroundColor: '#FF3B30' },
-  actionButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
-})
 
 export default Vehicles;

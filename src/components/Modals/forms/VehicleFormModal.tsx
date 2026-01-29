@@ -1,19 +1,20 @@
 import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import InputErrorMessage from '@/components/InputErrorMessage';
+import RadioButton from '@/components/RadioButton';
+import SaveButton from '@/components/TouchableRipple/SaveButton';
 import { VehicleApplicationSchema, VehicleApplicationT } from '@/types/comingData/vehicles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   KeyboardAvoidingView,
   Modal,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 interface VehicleFormModalProps {
@@ -23,7 +24,9 @@ interface VehicleFormModalProps {
   initialData?: VehicleApplicationT | null;
 }
 
+
 const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFormModalProps) => {
+  const { t } = useTranslation()
 
 
   const [method, setMethod] = useState<"put" | "post">('post')
@@ -82,14 +85,11 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={'padding'}
           style={styles.modalContainer}
         >
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Vehicle' : 'Add Vehicle'}</Text>
-            {/* <TouchableOpacity onPress={onClose}>
-              <X color="#333" size={24} />
-            </TouchableOpacity> */}
+            <Text style={styles.title}>{initialData ? t('vehiclesPage.editVehicle') : t('vehiclesPage.addVehicle')}</Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -101,7 +101,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
 
           <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
             {/* Plate Number */}
-            <Text style={styles.label}>Plate Number</Text>
+            <Text style={styles.label}>{t('vehiclesPage.vehiclePlate')}</Text>
             <Controller
               control={control}
               name="plate"
@@ -127,7 +127,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
             <View style={styles.row}>
               {/* Make */}
               <View style={styles.flex1}>
-                <Text style={styles.label}>Make</Text>
+                <Text style={styles.label}>{t('vehiclesPage.brand')}</Text>
                 <Controller
                   control={control}
                   name="make"
@@ -149,7 +149,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
               <View style={{ width: 15 }} />
               {/* Model */}
               <View style={styles.flex1}>
-                <Text style={styles.label}>Model</Text>
+                <Text style={styles.label}>{t('vehiclesPage.model')}</Text>
                 <Controller
                   control={control}
                   name="model"
@@ -174,21 +174,19 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
             </View>
 
             {/* VIN */}
-            <Text style={styles.label}> Chassis No</Text>
+            <Text style={styles.label}> {t('vehiclesPage.chassisNo')}</Text>
             <Controller
               control={control}
               name="vin"
               render={({ field: { onChange, value } }) => (
 
                 <>
-
                   <TextInput style={styles.input} value={value} onChangeText={onChange} />
                   {
                     errors.vin && (
                       <InputErrorMessage errorMessage={errors?.vin?.message} />
                     )
                   }
-
                 </>
               )}
             />
@@ -196,7 +194,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
             <View style={styles.row}>
               {/* Year */}
               <View style={styles.flex1}>
-                <Text style={styles.label}>Year</Text>
+                <Text style={styles.label}>{t('vehiclesPage.modelYear')}</Text>
                 <Controller
                   control={control}
                   name="year"
@@ -214,8 +212,6 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
                           <InputErrorMessage errorMessage={errors?.year?.message} />
                         )
                       }
-
-
                     </>
 
                   )}
@@ -224,7 +220,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
               <View style={{ width: 15 }} />
               {/* Kilometers */}
               <View style={styles.flex1}>
-                <Text style={styles.label}>Initial KM</Text>
+                <Text style={styles.label}>{t("vehiclesPage.initialKM")}</Text>
                 <Controller
                   control={control}
                   name="firstKilometer"
@@ -250,37 +246,26 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
             </View>
 
             {/* Boolean Switch (Is For Rent) */}
-            <Text style={styles.label}>Is it for Rent?</Text>
+            <Text style={styles.label}>{t("vehiclesPage.forRent")}</Text>
             <Controller
               control={control}
               name="isItForRent"
               render={({ field: { onChange, value } }) => (
 
-
-                <View style={styles.pickerContainer}>
-                  <TouchableOpacity
-                    style={[styles.radioBtn, value === true && styles.radioBtnActive]}
-                    onPress={() => onChange(true)}
-                  >
-                    <Text style={[styles.radioText, value === true && styles.radioTextActive]}>YES</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.radioBtn, value === false && styles.radioBtnActive]}
-                    onPress={() => onChange(false)}
-                  >
-                    <Text style={[styles.radioText, value === false && styles.radioTextActive]}>NO</Text>
-                  </TouchableOpacity>
-                </View>
+                <RadioButton
+                  value={value}
+                  onChange={onChange}
+                />
               )}
             />
           </ScrollView>
 
-          <TouchableOpacity style={styles.saveButton}
-            onPress={handleSubmit(data => onSubmit(data, method))}>
-
-            <Text style={styles.saveButtonText}>Save Vehicle</Text>
-          </TouchableOpacity>
-
+          <SaveButton
+            label={"vehiclesPage.saveVehicle"}
+            onPress={handleSubmit(
+              (data) => onSubmit(data, method)
+            )}
+          />
 
         </KeyboardAvoidingView>
       </View>
@@ -301,11 +286,4 @@ const styles = StyleSheet.create({
   inputError: { borderColor: '#FF3B30' },
   row: { flexDirection: 'row' },
   flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
 });

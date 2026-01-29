@@ -1,0 +1,55 @@
+{
+  "N/A": "Not Assigned",
+  "true": "Yes",
+  "false": "No",
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "n/a": "Not Assigned",
+    "true": "Yes",
+    "false": "No",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "save": "Save",
+    "search": "Search...",
+    "vehicles": "Vehicles",
+    "devices": "Devices",
+    "drivers": "Drivers",
+    "vehicleConnectedDevice": "Vehicle Connected Device",
+    "vehicleConnectedDriver": "Vehicle Connected Driver",
+    "packets": "Packets",
+    "packetContents": "Packet Contents",
+    "vehicleMaintenance": " Vehicle Maintenance",
+    "vehicleCasco": "Vehicle Casco",
+    "vehicleInspection": "Vehicle Inspection",
+    "vehicleInsurance": "Vehicle Insurance",
+    "vehicleRepair": "Vehicle Repair",
+    "vehicleSpeedLimit": "Vehicle Speed Limit"
+  },
+  "loginPage": {
+    "welcomeBack": "Welcome Back",
+    "signIn": "Sign In to Vehicle Tracking System",
+    "userName": " User Name",
+    "password": "Password",
+    "placeHolder": {
+      "userName": " Enter Your User Name",
+      "password": " Enter Your Password"
+    },
+    "login": "Login",
+    "loggingIn": "Logging In ..."
+  },
+  "vehiclesPage": {
+    "vehiclePlate": "Vehicle Plate",
+    "brand": "Brand",
+    "model": "Model",
+    "modelYear": "Model Year",
+    "chassisNo": "Chassis No",
+    "initialKM": "Initial Kilometer",
+    "hasDriver": "Has Driver",
+    "forRent": "For Rent ?",
+    "addVehicle": "Add Vehicle",
+    "editVehicle": "Edit  Vehicle",
+    "saveVehicle": "Save Vehicle"
+  }
+}
