@@ -11,8 +11,16 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+
+
+
   <style>
     * {
       margin: 0;
@@ -349,6 +357,88 @@
       letter-spacing: 0.5px;
     }
 
+    /* 1. Small Clusters (1-9 vehicles) - Soft Blue */
+    .marker-cluster-small {
+      background-color: rgba(0, 122, 255, 0.2) !important;
+    }
+
+    .marker-cluster-small div {
+      background-color: rgba(0, 122, 255, 0.6) !important;
+      color: white !important;
+    }
+
+    /* 2. Medium Clusters (10-99 vehicles) - Deep Blue */
+    .marker-cluster-medium {
+      background-color: rgba(0, 86, 204, 0.2) !important;
+    }
+
+    .marker-cluster-medium div {
+      background-color: rgba(0, 86, 204, 0.7) !important;
+      color: white !important;
+    }
+
+    /* 3. Large Clusters (100+ vehicles) - Dark Indigo */
+    .marker-cluster-large {
+      background-color: rgba(88, 86, 214, 0.2) !important;
+    }
+
+    .marker-cluster-large div {
+      background-color: rgba(88, 86, 214, 0.8) !important;
+      color: white !important;
+    }
+
+    /* 4. Keep your Red Alarm (highest priority) */
+    .cluster-alarm {
+      background-color: rgba(255, 59, 48, 0.3) !important;
+    }
+
+    .cluster-alarm div {
+      background-color: rgba(255, 59, 48, 0.9) !important;
+      color: white !important;
+      font-weight: bold;
+    }
+
+    /* Speeding/Violation Cluster (The "Alarm" State) */
+    .cluster-alarm {
+      background-color: rgba(255, 59, 48, 0.3) !important;
+      /* Soft Red outer */
+    }
+
+    .cluster-alarm div {
+      background-color: rgba(255, 59, 48, 0.8) !important;
+      /* Solid Red inner */
+      color: white !important;
+      font-weight: bold;
+      /* Optional: Add a pulse effect to catch the eye */
+      animation: cluster-pulse 2s infinite;
+    }
+
+    @keyframes cluster-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 59, 48, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     @media (max-width: 768px) {
       #controls {
         top: calc(10px + env(safe-area-inset-top));
@@ -511,7 +601,66 @@
     let firstLoad = true;
     let userInteracted = false;
 
-    let markers = L.layerGroup();
+    // let markers = L.markerClusterGroup({
+    //   spiderfyOnMaxZoom: true, // If markers are at the exact same spot, they fan out
+    //   showCoverageOnHover: false,
+    //   zoomToBoundsOnClick: true,
+    //   disableClusteringAtZoom: 18 // Stop clustering when zoomed in very close
+    // });
+
+
+
+
+    let markers = L.markerClusterGroup({
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      disableClusteringAtZoom: 15,
+
+      // This function runs every time a cluster is drawn
+      iconCreateFunction: function (cluster) {
+        const markersInCluster = cluster.getAllChildMarkers();
+        let hasViolation = false;
+
+        // Check if ANY marker inside this cluster has a violation icon
+        for (let i = 0; i < markersInCluster.length; i++) {
+          const icon = markersInCluster[i].options.icon.options.className;
+          if (icon.includes('speed-exceeded') || icon.includes('violations')) {
+            hasViolation = true;
+            break;
+          }
+        }
+
+        const childCount = cluster.getChildCount();
+
+        // Define the CSS class based on violation status
+        let c = ' marker-cluster-';
+        if (childCount < 10) c += 'small';
+        else if (childCount < 100) c += 'medium';
+        else c += 'large';
+
+        // Add our custom alarm class if a vehicle is speeding
+        const alarmClass = hasViolation ? ' cluster-alarm' : '';
+
+        return new L.DivIcon({
+          html: '<div><span>' + childCount + '</span></div>',
+          className: 'marker-cluster' + c + alarmClass,
+          iconSize: new L.Point(40, 40)
+        });
+      }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
     let drawnItems = new L.FeatureGroup();
     let vehiclesData = [];
 
@@ -536,7 +685,7 @@
       map = L.map('map', {
         zoomControl: false,
         attributionControl: false
-      }).setView([38.4011, 42.1078], 13);
+      }).setView([38.4011, 42.1078], 9);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -773,6 +922,9 @@
     async function updateVehicleMarkers() {
       if (!vehiclesData || !Array.isArray(vehiclesData)) return;
 
+
+
+      markers.clearLayers();
       const latlngs = [];
       offPlates.clear();
       const showAll = document.getElementById('toggleAllLabels').checked;
@@ -824,10 +976,16 @@
           marker = L.marker([lat, lng], {
             icon: createVehicleIcon(iconClass, bearing)
           }).addTo(markers);
+          // We store the iconClass name in the options so the cluster function can read it
+          marker.options.icon.options.className = iconClass;
           marker.bindPopup(createPopupContent(item, speed, speedLimit, isWorking, speedExceeded, isOutside));
           vehicleMarkers.set(serialNumber, marker);
         }
 
+
+
+        //  Add the marker to the cluster group
+        markers.addLayer(marker);
         // 5. Handle Tooltips (Labels)
         marker.unbindTooltip();
         marker.bindTooltip(labelHtml, {
@@ -847,119 +1005,6 @@
       }
     }
 
-    // async function updateVehicleMarkers() {
-    //   // console.log('4️⃣ Update Vehicle Markers')
-    //   if (!vehiclesData || !Array.isArray(vehiclesData)) return;
-
-    //   const latlngs = [];
-    //   offPlates.clear(); // Reset violations for this frame
-
-    //   const showAll = document.getElementById('toggleAllLabels').checked;
-    //   vehiclesData.forEach(item => {
-    //     const { lat, lng, speed, isWorking, plate, serialNumber, speedLimit, coordinate, analysisEndDate, analysisStartDate } = item;
-    //     if (!lat || !lng) return;
-
-    //     latlngs.push([lat, lng]);
-
-    //     // 1. Parse Polygon Coordinates
-    //     let polygonCoords = [];
-    //     try {
-    //       polygonCoords = typeof item.coordinate === 'string' ? JSON.parse(item.coordinate) : item.coordinate;
-    //     } catch (e) {
-    //       console.warn("Invalid polygon for plate:", plate);
-    //     }
-
-    //     // 2. Calculate Bearing (Direction)
-    //     let bearing = 0;
-    //     if (lastPositions[serialNumber]) {
-    //       bearing = computeDirection(lastPositions[serialNumber].lat, lastPositions[serialNumber].lng, lat, lng);
-    //     }
-    //     let isOutside = false
-
-    //     // 3. Violation Logic - using the fixed function
-    //     const targetDate = analysisEndDate ? new Date(analysisEndDate) : "";
-
-    //     const currentDate = new Date();
-    //     if (coordinate && (targetDate > currentDate)) {
-
-    //       isOutside = isVehicleOutsidePolygon({ latitude: lat, longitude: lng }, polygonCoords);
-    //     }
-
-    //     const speedExceeded = speed > speedLimit;
-
-    //     // console.log(`Plate: ${plate}, isOutside: ${isOutside}, SpeedExceeded: ${speedExceeded}`);
-
-    //     if (isOutside || speedExceeded) {
-    //       // console.log('added to offPlates ')
-    //       offPlates.add(plate);
-    //     }
-
-    //     // 4. Determine Icon Styling
-    //     let iconClass = 'speed-ok';
-    //     if (speedExceeded && isOutside) iconClass = 'violations-speed-exceeded';
-    //     else if (speedExceeded) iconClass = 'speed-exceeded';
-    //     else if (isOutside) iconClass = 'violations-exceeded';
-
-
-
-
-
-
-    //     // 3. Label Content for pop up
-    //     const labelHtml = `
-    //   ${plate} <span class="${speedExceeded ? 'label-speed-danger' : 'label-speed-ok'}">${speed}km/h</span>
-    // `;
-
-
-
-
-
-
-
-    //     // console.log('Icon class:', iconClass);
-
-    //     const popupContent = createPopupContent(item, speed, speedLimit, isWorking, speedExceeded, isOutside);
-
-    //     // 5. Update or Create Marker
-    //     // 4. Update or Create Marker
-    //     let marker;
-    //     if (vehicleMarkers.has(serialNumber)) {
-    //       // console.log('Updating existing marker')
-    //       marker = vehicleMarkers.get(serialNumber);
-    //       marker.setLatLng([lat, lng]);
-    //       marker.setIcon(createVehicleIcon(iconClass, bearing));
-    //       marker.setPopupContent(popupContent);
-    //     } else {
-    //       // console.log('Creating new marker')
-    //       const marker = L.marker([lat, lng], {
-    //         icon: createVehicleIcon(iconClass, bearing)
-    //       }).addTo(markers);
-    //       marker.bindPopup(popupContent);
-    //       vehicleMarkers.set(serialNumber, marker);
-    //     }
-
-
-
-
-    //     // 5. Handle Tooltips (Labels)
-    //     marker.unbindTooltip();
-    //     marker.bindTooltip(labelHtml, {
-    //       permanent: showAll,
-    //       direction: 'top',
-    //       className: 'vehicle-label',
-    //       offset: [0, -15],
-    //       opacity: 0.9
-    //     });
-
-    //     lastPositions[serialNumber] = { lat, lng };
-    //   });
-
-    //   // Auto-zoom only on first load
-    //   if (firstLoad && latlngs.length > 0) {
-    //     map.fitBounds(L.latLngBounds(latlngs), { padding: [50, 50] });
-    //     firstLoad = false;
-    //   }
-    // }
 
     function createVehicleIcon(iconClass, currentBearing) {
       // console.log('7️⃣ create vehicle Icon--')
