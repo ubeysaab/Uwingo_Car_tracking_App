@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Tracking Mockup</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      height: 100vh;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* UI Controls */
+    .top-bar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .toggle-container input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* Permanent Label Styling */
+    .vehicle-label {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #007AFF;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #333;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+    }
+
+    .label-speed {
+      color: #34C759;
+      margin-left: 4px;
+    }
+
+    .label-speed.danger {
+      color: #FF3B30;
+    }
+
+    /* Icon styling */
+    .vehicle-icon-inner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #007AFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <div style="font-weight: bold; color: #007AFF;">LIVE FLEET</div>
+    <label class="toggle-container">
+      <input type="checkbox" id="toggleLabels">
+      <span style="font-size: 13px; font-weight: 600;">Show All Labels</span>
+    </label>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([38.4011, 42.1078], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    let vehicleMarkers = new Map();
+
+    // 1. MOCK DATA
+    let mockVehicles = [
+      { id: 1, plate: "34 ABC 123", lat: 38.405, lng: 42.105, speed: 45, limit: 50 },
+      { id: 2, plate: "06 DEF 456", lat: 38.410, lng: 42.115, speed: 82, limit: 70 }, // Speeding
+      { id: 3, plate: "35 GHI 789", lat: 38.395, lng: 42.120, speed: 0, limit: 50 },
+      { id: 4, plate: "16 JKL 012", lat: 38.400, lng: 42.090, speed: 55, limit: 60 },
+      { id: 5, plate: "07 MNO 345", lat: 38.420, lng: 42.100, speed: 95, limit: 80 }  // Speeding
+    ];
+
+    // 2. RENDER FUNCTION
+    function updateMap() {
+      const showAll = document.getElementById('toggleLabels').checked;
+
+      mockVehicles.forEach(v => {
+        const isSpeeding = v.speed > v.limit;
+        const iconHtml = `
+          <div class="vehicle-icon-inner" style="border-color: ${isSpeeding ? '#FF3B30' : '#007AFF'}">
+            <i class="fa-solid fa-location-arrow" style="color: #007AFF; transform: rotate(-45deg);"></i>
+          </div>`;
+
+        const labelHtml = `
+          ${v.plate} 
+          <span class="label-speed ${isSpeeding ? 'danger' : ''}">
+            ${v.speed} km/h
+          </span>`;
+
+        if (vehicleMarkers.has(v.id)) {
+          // Update existing
+          const marker = vehicleMarkers.get(v.id);
+          marker.setLatLng([v.lat, v.lng]);
+          refreshTooltip(marker, labelHtml, showAll);
+        } else {
+          // Create new
+          const marker = L.marker([v.lat, v.lng], {
+            icon: L.divIcon({ html: iconHtml, className: '', iconSize: [40, 40], iconAnchor: [20, 20] })
+          }).addTo(map);
+
+          marker.bindPopup(`<b>${v.plate}</b><br>Speed: ${v.speed} km/h`);
+          vehicleMarkers.set(v.id, marker);
+          refreshTooltip(marker, labelHtml, showAll);
+        }
+      });
+    }
+
+    function refreshTooltip(marker, content, isPermanent) {
+      marker.unbindTooltip();
+      marker.bindTooltip(content, {
+        permanent: isPermanent,
+        direction: 'top',
+        className: 'vehicle-label',
+        offset: [0, -15]
+      });
+      if (isPermanent) marker.openTooltip();
+    }
+
+    // 3. SIMULATION (Move vehicles slightly)
+    setInterval(() => {
+      mockVehicles.forEach(v => {
+        if (v.speed > 0) {
+          v.lat += (Math.random() - 0.5) * 0.001;
+          v.lng += (Math.random() - 0.5) * 0.001;
+        }
+      });
+      updateMap();
+    }, 3000);
+
+    // Initial load
+    document.getElementById('toggleLabels').addEventListener('change', updateMap);
+    updateMap();
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+
+  <!-- mapillary -->
+  <script src="https://unpkg.com/mapillary-js@4.1.0/dist/mapillary.js"></script>
+  <link href="https://unpkg.com/mapillary-js@4.1.0/dist/mapillary.css" rel="stylesheet" />
+
+
+  <!-- mapillary end -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .vehicle-icon {
+      transition: all 0.3s ease;
+    }
+
+    .speed-ok {
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .speed-exceeded {
+      border: 3px solid #FF3B30;
+      box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+    }
+
+    .violations-exceeded {
+      border: 3px solid #AF52DE;
+    }
+
+    .violations-speed-exceeded {
+      border: 3px solid #FF3B30;
+      background: #AF52DE !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script>
+
+    // ----- Global Variables -----
+    let map;
+    let vehicleMarkers = new Map();
+    let markersLayer = L.layerGroup();
+    let firstLoad = true;
+    let vehicleToTrack = null;
+    let lastPositions = {}  // this gonna hold the previous lng and lat of the vehicle in order to can use them in computer direction 
+
+
+
+    // 1. Define all your available layers here
+    const baseLayers = {
+      osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+      satellite: L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        zIndex: 1
+      }),
+      topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        zIndex: 1
+      })
+    };
+
+    // 2. The Universal Switcher
+    window.switchLayer = function (layerKey) {
+      console.log("Switching to layer:", layerKey);
+
+      // Remove EVERY current tile layer from the map
+      map.eachLayer(function (layer) {
+        if (layer instanceof L.TileLayer) {
+          map.removeLayer(layer);
+        }
+      });
+
+      // Add the one requested
+      if (baseLayers[layerKey]) {
+        baseLayers[layerKey].addTo(map);
+      } else {
+        // Fallback to standard map
+        baseLayers.osm.addTo(map);
+      }
+    };
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeMap();
+      setupEventListeners();
+    });
+
+
+
+
+
+
+
+
+    function initializeMap() {
+      console.log("1️⃣ Harita yuklendi  asfasfsadf")
+      //  TODO :  change with lat and len after get the data
+      map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([38.4011, 42.1078], 13);
+
+
+
+      window.updateLocation = function (lat, lng) {
+        map.flyTo([lat, lng], 17, {
+          animate: true,
+          duration: 1.5
+        });
+      };
+
+
+
+
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      markersLayer.addTo(map)
+
+
+      // send ready message to react native 
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'mapLoaded' }));
+
+    }
+
+
+
+    function setupEventListeners() {
+      window.addEventListener('message', onMessage);
+      document.addEventListener('message', onMessage);
+    }
+
+    // Function to Recenter Map (Connects to your RN 📍 button)
+
+
+
+
+    //  HANDLING MESSAGES FUNCTIONS 
+    async function onMessage(event) {
+      try {
+        const raw = event.data || event;
+        const theMessage = typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+        if (theMessage.type === 'Vehicle_Data') {
+          takeTheDataAndUpdateTheUI(theMessage.data);
+        }
+      } catch (e) {
+        console.error("Message parsing error", e);
+      }
+    }
+
+
+    async function parseMessageData(event) {
+      try {
+        const raw = event.data || event;
+        if (typeof raw === 'string') return JSON.parse(raw);
+        return raw;
+      } catch {
+        return null;
+      }
+    }
+
+
+    // After Receiving a message we will update the UI 
+
+    function takeTheDataAndUpdateTheUI(data) {
+      if (data && typeof data === 'object') {
+        vehicleToTrack = data;
+        updateVehicleMarkers();
+      } else {
+        handleEmptyData();
+      }
+    }
+
+
+    // we need funtion to update marker of the vehicle to use it above so we write it here 
+    function updateVehicleMarkers() {
+      if (!vehicleToTrack) return;
+
+      // Extract data (handling potential nested coordinate objects)
+      const item = vehicleToTrack;
+      const lat = item.latitude || item.lat;
+      const lng = item.longitude || item.lng;
+      const { speed, workingstatus, plate, serialNumber, speedLimit, coordinate, analysisEndDate } = item;
+
+      if (!lat || !lng) return;
+
+      // 1. Calculate Bearing (Direction)
+      let bearing = 0;
+      if (lastPositions[serialNumber]) {
+        bearing = computeDirection(lastPositions[serialNumber].lat, lastPositions[serialNumber].lng, lat, lng);
+      }
+
+      // 2. Violation Logic
+      let isOutside = false;
+      const speedExceeded = speed > (speedLimit || 90);
+
+      if (coordinate) {
+        try {
+          const polyCoords = typeof coordinate === 'string' ? JSON.parse(coordinate) : coordinate;
+          isOutside = isVehicleOutsidePolygon({ lat, lng }, polyCoords);
+        } catch (e) { console.warn("Polygon parse error"); }
+      }
+
+      // 3. Determine Styling
+      let iconClass = 'speed-ok';
+      if (speedExceeded && isOutside) iconClass = 'violations-speed-exceeded';
+      else if (speedExceeded) iconClass = 'speed-exceeded';
+      else if (isOutside) iconClass = 'violations-exceeded';
+
+      const popupContent = createPopupContent(plate, speed, speedLimit, workingstatus, speedExceeded, isOutside);
+
+      // 4. Update or Create Marker
+      if (vehicleMarkers.has(serialNumber)) {
+        const marker = vehicleMarkers.get(serialNumber);
+        marker.setLatLng([lat, lng]);
+        marker.setIcon(createVehicleIcon(iconClass, bearing));
+        marker.setPopupContent(popupContent);
+      } else {
+        const marker = L.marker([lat, lng], {
+          icon: createVehicleIcon(iconClass, bearing)
+        }).addTo(markersLayer);
+        marker.bindPopup(popupContent);
+        vehicleMarkers.set(serialNumber, marker);
+      }
+
+      lastPositions[serialNumber] = { lat, lng };
+
+      // Auto-zoom on first load
+      if (firstLoad) {
+        map.setView([lat, lng], 15);
+        firstLoad = false;
+      }
+    }
+
+
+    // UI Functions 
+    function createVehicleIcon(iconClass, currentBearing) {
+      const bgColor = iconClass.includes('speed-exceeded') ? 'rgba(255, 59, 48, 0.8)' :
+        iconClass.includes('violations') ? 'rgba(175, 82, 222, 0.8)' :
+          'rgba(23, 133, 225, 0.9)';
+
+      return L.divIcon({
+        html: `
+          <div style="position: relative; width: 40px; height: 40px;">
+            <div class="${iconClass}" style="width: 100%; height: 100%; border-radius: 50%; 
+              transform: rotate(${currentBearing}deg);
+              background: ${bgColor}; 
+              display: flex; align-items: center; justify-content: center;">
+              <i class="fa-solid fa-location-arrow" style="color: white; 
+                font-size: 20px; transform: rotate(-45deg);"></i>
+            </div>
+          </div>
+        `,
+        className: 'vehicle-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
+    }
+
+    function createPopupContent(plate, speed, limit, status, speedEx, routeEx) {
+
+      const displayLimit = limit >= 500 ? "No Limit" : `${item.speedLimit} km/h`;
+      return `
+        <div style="padding: 5px; min-width: 150px; font-family: sans-serif;">
+          <b style="color: #3b82f6; font-size: 14px;">${plate}</b><br/>
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0;">
+          Speed: <span style="color: ${speedEx ? 'red' : 'green'}">${speed} km/h</span><br/>
+          Limit: ${displayLimit} <br/>
+          Status: ${status ? 'Moving' : 'Stopped'}
+          ${routeEx ? '<br/><b style="color: purple;">Route Violation</b>' : ''}
+        </div>
+      `;
+    }
+
+
+    // in order to decide things about the vehicles we need some validation functions
+
+
+    function computeDirection(lat1, lon1, lat2, lon2) {
+      const toRad = angle => angle * Math.PI / 180;
+      const toDeg = angle => angle * 180 / Math.PI;
+
+      const dLon = toRad(lon2 - lon1);
+      const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+        Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+      const bearing = Math.atan2(y, x);
+      return (toDeg(bearing) + 360) % 360;
+    }
+
+    function isVehicleOutsidePolygon(point, polygonCoords) {
+      if (!polygonCoords || !window.turf) return false;
+      try {
+        const pt = turf.point([point.lng, point.lat]);
+        const poly = turf.polygon([polygonCoords]);
+        return !turf.booleanPointInPolygon(pt, poly);
+      } catch (e) { return false; }
+    }
+
+    // function isPointInsideAnyPolygon(longitude, latitude) {
+    //   if (drawnItems.getLayers().length === 0) return false;
+
+    //   const pt = turf.point([longitude, latitude]);
+    //   let inside = false;
+
+    //   drawnItems.eachLayer(layer => {
+    //     if (inside) return; // short circuit (same as original)
+    //     try {
+    //       const poly = leafletPolygonToTurf(layer);
+    //       if (turf.booleanPointInPolygon(pt, poly)) inside = true;
+    //     } catch (_) { }
+    //   });
+
+    //   return inside;
+    // }
+
+
+
+
+
+
+
+
+    // ---Error And Edge Case handlers---- 
+
+    function handleEmptyData() {
+      if (!firstLoad) {
+        showNotification('No active vehicle data received.', 'error');
+      }
+    }
+
+    function handleUIUpdateError(error) {
+      console.error('Critical Error in UI Update:', error);
+      showNotification('An error occurred while updating the map.', 'error');
+    }
+
+
+    // -----Notifications----
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'error' ? '#FF3B30' : '#34C759'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+          document.head.removeChild(style);
+        }, 300);
+      }, 3000);
+    }
+
+
+  </script>
+</body>
+
+</html>
