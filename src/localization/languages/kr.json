@@ -1,0 +1,186 @@
+{
+  "null": "Nehatî Destnîşankirin",
+  "N/A": "Nehatî Destnîşankirin",
+  "true": "Erê",
+  "false": "Na",
+  "saveDetails": "Hûrguliyan Tomar Bike",
+  "common": {
+    "logout": "Derkeve",
+    "mapLegend": "Ravekirina Nexşeyê",
+    "active": "Çalak",
+    "violations": "Binpêkirin",
+    "purpleCircle": "Daireya Mor",
+    "purpleCircleDescription": "Binpêkirina Rêyê (Rê Hat Aşkirin)",
+    "redCircle": "Daireya Sor",
+    "redCircleDescription": "Binpêkirina Lezê",
+    "speed": "Lez",
+    "speedLimit": "Sînora Lezê",
+    "status": "Rewş",
+    "on": "Vekirî",
+    "off": "Girtî",
+    "lastUpdate": "Nûkirina Dawî",
+    "notes": "Not",
+    "blockage": "Astengkirin",
+    "yes": "Erê",
+    "no": "Na",
+    "n/a": "Nehatî Destnîşankirin",
+    "true": "Erê",
+    "false": "Na",
+    "delete": "Jê Bibe",
+    "edit": "Biguhêre",
+    "create": "Biafirîne",
+    "save": "Tomar Bike",
+    "search": "Lê bigere...",
+    "vehicles": "Erebe",
+    "devices": "Amûr",
+    "drivers": "Ajoker",
+    "description": "Danasîn",
+    "kilometer": "Kîlometre",
+    "vehicleConnectedDevice": "Amûra Girêdayî Erebe",
+    "vehicleConnectedDriver": "Ajokera Girêdayî Erebe",
+    "packets": "Pakêt",
+    "packetContents": "Naveroka Pakêtê",
+    "vehicleMaintenance": "Bakarhênana Erebe",
+    "vehicleCasco": "Kaskoya Erebe",
+    "vehicleInspection": "Kontrola Erebe",
+    "vehicleInsurance": "Sîgorteya Erebe",
+    "vehicleRepair": "Tamîrkirina Erebe",
+    "vehicleSpeedLimit": "Sînorê Leza Erebe",
+    "periodInMonths": {
+      "1": "1 Meh",
+      "2": "2 Meh",
+      "3": "3 Meh",
+      "4": "4 Meh",
+      "5": "5 Meh",
+      "6": "6 Meh",
+      "7": "7 Meh",
+      "8": "8 Meh",
+      "9": "9 Meh",
+      "10": "10 Meh",
+      "11": "11 Meh",
+      "12": "12 Meh"
+    }
+  },
+  "loginPage": {
+    "welcomeBack": "Bi Xêr Hatî Vegerîn",
+    "signIn": "Têkeve Pergala Şopandina Ereban",
+    "userName": "Navê Bikarhêner",
+    "password": "Şîfre",
+    "placeHolder": {
+      "userName": "Navê Bikarhênerê xwe binivîse",
+      "password": "Şîfreya xwe binivîse"
+    },
+    "login": "Têkeve",
+    "loggingIn": "Têketin Tê Kirin..."
+  },
+  "vehiclesPage": {
+    "vehiclePlate": "Plakaya Erebe",
+    "brand": "Marka",
+    "model": "Model",
+    "modelYear": "Sala Modelê",
+    "chassisNo": "Hejmara Şaseyê",
+    "initialKM": "Kîlometreya Destpêkê",
+    "hasDriver": "Ajoker Heye",
+    "forRent": "Ji bo Kirêkirinê?",
+    "addVehicle": "Erebe Zêde Bike",
+    "editVehicle": "Erebe Biguhêre",
+    "saveVehicle": "Erebe Tomar Bike"
+  },
+  "devicesPage": {
+    "deviceSerialNumber": "Hejmara Serial a Amûrê",
+    "deviceModel": "Modela Amûrê",
+    "devicePacketType": "Cureya Pakêta Amûrê",
+    "connectedVehicle": "Bi Erebe Girêdayî ye?",
+    "devicePhoneNumber": "Hejmara Telefonê ya Amûrê",
+    "addDevice": "Amûr Zêde Bike",
+    "editDevice": "Amûr Biguhêre",
+    "saveDevice": "Amûr Tomar Bike"
+  },
+  "driversPage": {
+    "saveDriver": "Ajoker Tomar Bike",
+    "editDriver": "Ajoker Biguhêre",
+    "addDriver": "Ajoker Zêde Bike",
+    "driverName": "Navê Ajoker",
+    "driverCode": "Koda Ajoker"
+  },
+  "vehicleConnectedDevicePage": {
+    "saveVehicleToDevice": "Girêdana Amûr-Erebe Tomar Bike",
+    "editVehicleToDevice": "Girêdana Amûr-Erebe Biguhêre",
+    "addVehicleToDevice": "Girêdana Amûr-Erebe Zêde Bike",
+    "addingDate": "Dîroka Zêdekirinê",
+    "deletingDate": "Dîroka Jêbirinê",
+    "selectVehicle": "Erebe Hilbijêre (Plaka)",
+    "selectDevice": "Amûr Hilbijêre (Hejmara Serial)",
+    "blockageVehicle": "Astengkirina Erebe"
+  },
+  "vehicleConnectedDriverPage": {
+    "saveVehicleToDriver": "Girêdana Ajoker-Erebe Tomar Bike",
+    "editVehicleToDriver": "Girêdana Ajoker-Erebe Biguhêre",
+    "addVehicleToDriver": "Girêdana Ajoker-Erebe Zêde Bike",
+    "selectDriver": "Ajoker Hilbijêre"
+  },
+  "packetsPage": {
+    "savePacket": "Pakêt Tomar Bike",
+    "editPacket": "Pakêt Biguhêre",
+    "addPacket": "Pakêt Zêde Bike",
+    "packetType": "Cureya Pakêtê",
+    "packetDescription": "Danasîna Pakêtê"
+  },
+  "packetContents": {
+    "savePacketContent": "Naveroka Pakêtê Tomar Bike",
+    "editPacketContent": "Naveroka Pakêtê Biguhêre",
+    "addPacketContent": "Naveroka Pakêtê Zêde Bike",
+    "packetName": "Navê Pakêtê",
+    "packetContentDescription": "Danasîna Naveroka Pakêtê",
+    "fieldName": "Navê Qadê"
+  },
+  "vehicleMaintenancePage": {
+    "saveVehicleMaintenance": "Bakarhênana Erebe Tomar Bike",
+    "editVehicleMaintenance": "Bakarhênana Erebe Biguhêre",
+    "addVehicleMaintenance": "Bakarhênana Erebe Zêde Bike",
+    "lastMaintenanceDate": "Dîroka Bakarhênana Dawîn",
+    "nextMaintenanceDate": "Dîroka Bakarhênana Pêş",
+    "periodInMonths": "Dema Bi Mehan",
+    "periodInKiloMeters": "Dema Bi Kîlometreyan",
+    "performedBy": "Ji Aliyê Kê ve Hate Kirin"
+  },
+  "vehicleCascoPage": {
+    "saveVehicleCasco": "Kaskoya Erebe Tomar Bike",
+    "editVehicleCasco": "Kaskoya Erebe Biguhêre",
+    "addVehicleCasco": "Kaskoya Erebe Zêde Bike",
+    "startDate": "Dîroka Destpêkê",
+    "endDate": "Dîroka Dawiyê",
+    "insuranceCompany": "Şîrketa Sîgorteyê",
+    "policyNumber": "Hejmara Polîçeyê"
+  },
+  "vehicleInspectionPage": {
+    "saveVehicleInspection": "Kontrola Erebe Tomar Bike",
+    "editVehicleInspection": "Kontrola Erebe Biguhêre",
+    "addVehicleInspection": "Kontrola Erebe Zêde Bike",
+    "inspectionDate": "Dîroka Kontrolê",
+    "expiryDate": "Dîroka Qediya"
+  },
+  "vehicleInsurancePage": {
+    "saveVehicleInsurance": "Sîgorteya Erebe Tomar Bike",
+    "editVehicleInsurance": "Sîgorteya Erebe Biguhêre",
+    "addVehicleInsurance": "Sîgorteya Erebe Zêde Bike"
+  },
+  "vehicleRepairPage": {
+    "saveVehicleRepair": "Tamîrkirina Erebe Tomar Bike",
+    "editVehicleRepair": "Tamîrkirina Erebe Biguhêre",
+    "addVehicleRepair": "Tamîrkirina Erebe Zêde Bike",
+    "faultType": "Cureya Çewtiyê",
+    "faultDescription": "Danasîna Çewtiyê",
+    "repairAction": "Çalakiya Tamîrkirinê",
+    "repairCost": "Mesrefa Tamîrkirinê",
+    "repairDate": "Dîroka Tamîrkirinê"
+  },
+  "vehicleSpeedLimitPage": {
+    "saveVehicleSpeedLimit": "Sînorê Lezê ya Erebe Tomar Bike",
+    "editVehicleSpeedLimit": "Sînorê Lezê ya Erebe Biguhêre",
+    "addVehicleSpeedLimit": "Sînorê Lezê ya Erebe Zêde Bike",
+    "speedLimit": "Sînorê Lezê",
+    "startDate": "Dîroka Destpêkê",
+    "endDate": "Dîroka Dawiyê"
+  }
+}

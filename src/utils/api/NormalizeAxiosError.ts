@@ -18,7 +18,7 @@ export function normalizeAxiosError(error: unknown): NormalizedErrorT {
       case 401:
         // Token yenileme mantığı Interceptor'da ele alınacağı için
         // burada sadece normalize edilmiş bir hata mesajı dönüyoruz.
-        return { message: "Oturum süreniz doldu veya yetkiniz yok.", status };
+        return { message: "Oturum süreniz doldu veya Girdiginiz Veriler Hatalıdır.", status };
       case 404:
         return { message: "Aradığınız içerik bulunamadı.", status };
       case 500:

@@ -17,7 +17,8 @@ import * as Keychain from "react-native-keychain";
 */
 
 export type StoredTokens = {
-  // IF SOME THING CHANGE IN THE FUTURE  I JUST NEED TO CHANGE THIS ONE 
+  //Todo:  IF SOME THING CHANGE IN THE FUTURE  I JUST NEED TO CHANGE THIS ONE 
+  accessToken: string,
   refreshToken: string;
 };
 

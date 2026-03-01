@@ -5,10 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './languages/en.json';
 import tr from './languages/tr.json';
+import kr from './languages/kr.json'
 
 const LANGUAGES = {
   en: { translation: en },
   tr: { translation: tr },
+  kr: { translation: kr }
 } as const;
 
 const LANG_CODES = Object.keys(LANGUAGES);

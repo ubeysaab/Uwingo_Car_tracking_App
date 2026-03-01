@@ -1,5 +1,5 @@
 import { ENDPOINTS } from '@/api/endpoints';
-import { getAddressFromCoords } from '@/api/getAddressFromCoords';
+import { getAddressFromCoords } from '@/utils/getAddressFromCoords';
 
 
 

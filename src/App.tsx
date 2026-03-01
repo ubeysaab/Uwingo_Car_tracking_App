@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 // ⭐️  imports for conditional rendering (UI Gating)
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import WorkingStack from '@/navigation/WorkingStack';
 import { useAuthStore } from '@/store/local/authStore';
 
@@ -12,6 +12,7 @@ import { PaperProvider } from 'react-native-paper';
 import { AppRegistry } from 'react-native';
 
 import ReactQueryProvider from '@/store/server/ReactQueryProvider';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 
 export default function App() {
@@ -37,21 +38,22 @@ export default function App() {
 
 
   return (
-    <NavigationContainer>
+    <ReactQueryProvider>
+      <NavigationContainer>
 
-      {/* TODO : USE THE PROVIDER TO HANDLE THEME  WITH   Material Design 3 default theme*/}
+        {/* TODO : USE THE PROVIDER TO HANDLE THEME  WITH   Material Design 3 default theme*/}
 
 
-      <ReactQueryProvider>
         <PaperProvider>
           <SafeAreaProvider>
             {/* // 3. Conditional Rendering based on Status */}
+            <LanguageSwitcher />
             <WorkingStack status={status} />
           </SafeAreaProvider>
         </PaperProvider >
-      </ReactQueryProvider>
 
-    </NavigationContainer>
+      </NavigationContainer>
+    </ReactQueryProvider>
   );
 }
 

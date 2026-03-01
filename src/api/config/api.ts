@@ -81,7 +81,18 @@ api.interceptors.response.use(
     }
 
 
-    console.log("error from api",error)
+    // console.log("error from api",error)
+
+    // 2. Backend'den gelen özel hata mesajını ayıklama
+  // .NET genellikle hatayı error.response.data içinde döner
+  const serverMessage = error.response?.data
+  
+  // error.response?.data?.message // Custom object ise
+  //                    || error.response?.data?.title   // .NET ProblemDetails ise
+                    //  || error.response?.data          // Doğrudan string ise
+                    //  || error.message;                // Hiçbiri yoksa Axios'un kendi hatası
+
+  console.log("Backend'den gelen mesaj:", serverMessage);
     const normalized = normalizeAxiosError(error);
 
     // Reject with the cleaned error object

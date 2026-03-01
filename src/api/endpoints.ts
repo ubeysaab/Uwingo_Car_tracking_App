@@ -106,10 +106,14 @@ export const ENDPOINTS = {
     update: `${BASE_URL}/api/VehicleRepair/update-vehiclerepair`,
     delete: `${BASE_URL}/api/VehicleRepair/delete-vehiclerepair`,
   },
+  VehicleDetails: {
+    get: `${BASE_URL}/api/Vehicles/get-vehiclesDetails`
+  },
 
 
   Others: {
     getBySrnLastList: `${MONGO_BASE_URL}/api/TrackingData/getby-srnlastlist`,
-    login: `${BASE_URL}/api/Authentication/login`
+    login: `${BASE_URL}/api/Authentication/login`,
+    instantData: `${BASE_URL}/api/InstantData/create-InstantData`
   }
 };

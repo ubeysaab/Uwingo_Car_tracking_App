@@ -644,7 +644,7 @@ This video demonstrates how to configure VS Code to automatically update import 
 
 
 
-# React Query
+## React Query
 In **TanStack Query** (formerly React Query), `useQueryClient` is a custom hook that returns the current **QueryClient** instance.
 
 Think of the `QueryClient` as the "brain" or the central engine that manages the cache, state, and configuration for all your data fetching.
@@ -727,6 +727,226 @@ Would you like to see a full example of how to implement an **optimistic update*
 
 
 
+## RipGrep (need To learn)
+`rg -l "theThingYourAreLooking" | ForEach-Object {git add $_}`
 
 
 
+## git 
+Command,What it finds,Use Case
+`git log --grep=""X"`,"Commits with ""X"" in the message.",Finding a specific feature/fix.
+`git log -S ""X""`,"Commits where ""X"" was added/removed in code.",Finding when a variable was deleted.
+`git log -G ""X""`,"Commits where ""X"" exists in the diff.",Finding any change involving a keyword.
+
+
+
+## zod error vs message 
+In the context of **Zod** and **React Hook Form**, the difference between `message` and `error` is primarily about the **level of the data structure** you are looking at.
+
+---
+
+### 1. `error` (The Container)
+
+The `error` is usually an **object** that contains all the metadata about why a specific field failed. When you use React Hook Form, `errors.fieldName` is an object.
+
+**Inside the `error` object, you typically find:**
+
+* **type**: The validation rule that failed (e.g., "required", "min", "too_small").
+* **message**: The actual string text to show the user.
+* **ref**: A reference to the input element (in web).
+
+### 2. `message` (The String)
+
+The `message` is just the **plain text** inside that error object. It is the human-readable part (e.g., "Please enter a valid date").
+
+---
+
+### Comparison Table
+
+| Feature       | `error`                                         | `message`                                         |
+| ------------- | ----------------------------------------------- | ------------------------------------------------- |
+| **Data Type** | Object `{ type, message, ... }`                 | String `"Required"`                               |
+| **Purpose**   | Tells the developer *what* happened.            | Tells the user *how* to fix it.                   |
+| **Usage**     | Used to trigger UI changes (e.g., red borders). | Used to display the warning text below the input. |
+
+---
+
+### How it looks in your code
+
+When you define your schema, you are providing the **message** for the potential **error**:
+
+```typescript
+const schema = z.object({
+  performedBy: z.string().min(1, { message: "Name is required" }) 
+  //                              ^ This is the message string
+});
+
+```
+
+When you use it in your Component:
+
+```tsx
+const { formState: { errors } } = useForm();
+
+// 1. We check if the 'error' object exists to show/hide parts of UI
+const hasError = errors.performedBy ? true : false;
+
+// 2. We extract the 'message' string to show the text
+const errorMessage = errors.performedBy?.message;
+
+return (
+  <View>
+    <TextInput style={{ borderColor: errors.performedBy ? 'red' : 'gray' }} />
+    
+    {/* If the error object exists, show the message string */}
+    {errors.performedBy && <Text>{errors.performedBy.message}</Text>}
+  </View>
+);
+
+```
+
+### Why you might be confused (Zod 4 / Modern Zod)
+
+In older versions of some libraries, you might have seen a field called `error` that was just a string.
+
+**In modern Zod/React Hook Form:**
+
+1. **`errors`** is the collection of all field failures.
+2. **`errors.field`** is the specific error object for that input.
+3. **`errors.field.message`** is the string text you defined in your Zod schema.
+
+---
+
+**Summary:** If your code says `errors.lastMaintenanceDate`, you are holding the **Error Object**.
+If your code says `errors.lastMaintenanceDate.message`, you are holding the **Text String**.
+
+Would you like me to show you how to set up a "Base Input" component that automatically extracts the `message` from the `error` object so you don't have to repeat that logic?
+
+
+
+
+## Uploading Images
+
+Since you're using **React Native**, handling file uploads requires a specific approach to how the `fetch` API interacts with the native file system.
+
+Here is the integrated code for your `ImageUploader` component. I’ve added a `loading` state to provide feedback to the user while the image is traveling to the server.
+
+### Updated Component
+
+```tsx
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, Alert, ActivityIndicator, Platform } from 'react-native';
+import { launchCamera, launchImageLibrary, CameraOptions, ImagePickerResponse, Asset } from 'react-native-image-picker';
+
+const ImageUploader = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const options: CameraOptions = {
+    mediaType: 'photo',
+    quality: 1,
+    saveToPhotos: true,
+  };
+
+  const uploadImage = async (asset: Asset) => {
+    const formData = new FormData();
+    
+    // Crucial for React Native: The object must have uri, type, and name
+    const fileToUpload = {
+      uri: Platform.OS === 'android' ? asset.uri : asset.uri?.replace('file://', ''),
+      type: asset.type || 'image/jpeg',
+      name: asset.fileName || 'upload.jpg',
+    };
+
+    // @ts-ignore - FormData expects a string/blob, but RN uses this object format
+    formData.append('image', fileToUpload);
+
+    try {
+      setUploading(true);
+      const response = await fetch('https://your-api-endpoint.com/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const result = await response.json();
+      Alert.alert('Success', 'Image uploaded!');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Upload Failed', 'Check your network or server.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleResponse = (result: ImagePickerResponse) => {
+    if (result.didCancel) return;
+    if (result.errorCode) {
+      Alert.alert('Error', result.errorMessage);
+    } else if (result.assets && result.assets.length > 0) {
+      const asset = result.assets[0];
+      setSelectedImage(asset.uri || null);
+      uploadImage(asset);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {uploading && <ActivityIndicator size="large" color="#0000ff" />}
+      
+      {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />}
+
+      <View style={styles.buttonRow}>
+        <LucideIconButton text="Take Photo" icon='Camera' onPress={() => launchCamera(options, handleResponse)} />
+        <LucideIconButton text="Gallery" icon='ImagePlus' onPress={() => launchImageLibrary(options, handleResponse)} />
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  image: { width: 200, height: 200, marginBottom: 20, borderRadius: 10 },
+  buttonRow: { flexDirection: 'row', gap: 10 }
+});
+
+export default ImageUploader;
+
+```
+
+---
+
+### Why this works
+
+1. **`FormData` Construction**: React Native's `fetch` implementation looks for an object with a `uri` key. If it sees this, it knows to go to the device storage, find that file, and stream it as binary data rather than a plain string.
+2. **`Platform.OS` Check**: Android URIs usually start with `content://` or `file://`. Occasionally, iOS needs the `file://` prefix stripped for the internal `fetch` library to read it correctly.
+3. **`Content-Type`**: When sending `FormData`, the browser (or React Native) automatically adds a "boundary" string to the header to separate the fields. By setting the header manually to `multipart/form-data`, you're ensuring the server knows how to parse the incoming stream.
+
+### One quick thing to check:
+
+Does your server expect the file field name to be `'image'`, `'file'`, or something else? In my code, I used `formData.append('image', ...)`. Ensure this matches your backend's expected key (like `multer.single('image')` in Node.js).
+
+**Would you like me to show you how to add a progress bar so the user can see the upload percentage?**
+
+
+## i18n
+| Package               | Role       | Why you can't (easily) skip it                                                                                                                              |
+| --------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| i18next               | The Brain  | "This is the base engine. It handles the logic of switching languages                                                                                       | pluralization (e.g., ""1 item"" vs ""2 items""), and formatting." |
+| react-i18next         | The Bridge | "This connects the ""Brain"" to React. It gives you the useTranslation hook so your UI automatically re-renders when the language changes."                 |
+| react-native-localize | The Sensor | "JavaScript can't ""talk"" to your iPhone or Android system settings directly to ask ""What language is this phone set to?"" This native module does that." |
+| async-storage         | The Memory | "Without this, if a user manually changes the app to French, it will ""forget"" and reset to English the next time they open the app."                      |
+
+
+
+
+
+## ts
+What a type predicate means (plain English)
+
+It means:
+
+“If this function returns true, then TypeScript should treat value as PeriodInMonths.”

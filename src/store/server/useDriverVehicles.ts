@@ -1,4 +1,4 @@
-import { DriverVehiclesService } from "@/api/services/driverVehicles/driverVehiclesService";
+import { DriverVehiclesService } from "@/api/services/driverVehiclesService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // useQueryClient is a custom hook that returns the current QueryClient instance.
