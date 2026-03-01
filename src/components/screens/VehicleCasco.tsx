@@ -2,19 +2,20 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
 
 
 import VehicleCascoFormModal from '@/components/Modals/forms/VehicleCascoFormModal';
 import { useCreateVehicleCasco, useDeleteVehicleCasco, useGetVehicleCasco, useUpdateVehicleCasco } from '@/store/server/useVehicleCasco';
 import { useGetVehicles } from '@/store/server/useVehicles';
 import { VehicleCascoApplicationT } from '@/types/comingData/vehicleCasco';
+
 
 interface dataShapeToShow {
   vehicleCascoId: number | null;
@@ -30,6 +31,7 @@ interface dataShapeToShow {
 
 
 const VehicleCasco = () => {
+
 
   const { data: vehicleCascoData, isPending: vehicleCascoIsPending, isError: isErrorVehicleCasco, refetch: refetchVehicleCasco } = useGetVehicleCasco();
   const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
@@ -174,11 +176,11 @@ const VehicleCasco = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Policy Number', key: 'policyNumber' },
-    { label: 'Start Date', key: 'startDate' },
-    { label: 'End Date', key: 'endDate' },
-    { label: 'Insurance Company', key: 'insuranceCompany' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehicle' },
+    { label: 'vehicleCascoPage.policyNumber', key: 'policyNumber' },
+    { label: 'vehicleCascoPage.startDate', key: 'startDate' },
+    { label: 'vehicleCascoPage.endDate', key: 'endDate' },
+    { label: 'vehicleCascoPage.insuranceCompany', key: 'insuranceCompany' },
 
   ];
 
@@ -189,7 +191,7 @@ const VehicleCasco = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleCascoPage.addVehicleCasco'}
           onPress={handleAddNew}
         />
       </View>

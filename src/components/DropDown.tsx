@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
   data: { label: string; value: any }[];
   onChange: (value: any) => void;
@@ -11,7 +11,10 @@ interface Props {
 
 const DropdownComponent = ({ data, onChange, value, label = "" }: Props) => {
   const [isFocus, setIsFocus] = useState(false);
+  console.log("DROPDOWN CURRENT VALUE:", value);
 
+  const { t } = useTranslation()
+  const dropdownKey = value ? `dropdown-${value}` : 'dropdown-empty';
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -19,10 +22,11 @@ const DropdownComponent = ({ data, onChange, value, label = "" }: Props) => {
 
       {!data || data.length === 0 ? (
         <View style={styles.noDataContainer}>
-          <Text style={styles.noDataText}>There Are No Selectable Items</Text>
+          <Text style={styles.noDataText}>{t("common.noSelectableItems")}</Text>
         </View>
       ) : (
         <Dropdown
+          key={dropdownKey}
           style={[styles.dropdown, isFocus && { borderColor: '#007AFF' }]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
@@ -34,7 +38,7 @@ const DropdownComponent = ({ data, onChange, value, label = "" }: Props) => {
           valueField="value"
           placeholder={!isFocus ? 'Select item' : '...'}
           searchPlaceholder="Search..."
-          value={value}
+          value={value === undefined ? null : value}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={(item) => {

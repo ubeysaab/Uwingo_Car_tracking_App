@@ -20,6 +20,7 @@ import { useGetVehicles } from '@/store/server/useVehicles';
 import { DeviceVehicleApplicationT } from '@/types/comingData/deviceVehicle';
 import { DeviceApplicationT } from '@/types/comingData/devices';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 
 interface dataShapeToShow {
@@ -67,6 +68,8 @@ const DevicesVehicles = () => {
     refetchVehicles();
   };
 
+
+
   const [selectedDeviceVehicles, setSelectedDeviceVehicles] = React.useState<DeviceVehicleApplicationT | null>(null);
 
 
@@ -112,8 +115,8 @@ const DevicesVehicles = () => {
       return {
         deviceSerialNumber: device?.serialNumber || null,
         vehiclePlate: vehicle?.plate || null,
-        installDate: junction?.installDate || null,
-        removeDate: junction?.removeDate || null,
+        installDate: junction?.installDate?.split('T')[0] || null,
+        removeDate: junction?.removeDate?.split('T')[0] || null,
         vehicle_Id: junction?.vehicle_Id || null,
         device_Id: junction?.device_Id || null,
         connectionId: junction?.connectionId || null,
@@ -229,11 +232,11 @@ const DevicesVehicles = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Device Serial Number', key: 'deviceSerialNumber' },
-    { label: 'Vehilce Plate', key: 'vehiclePlate' },
-    { label: 'Adding Date', key: 'installDate' },
-    { label: 'Deleting Date', key: "removeDate" },
-    { label: 'Blockage', key: "isRoleToBlockage" }
+    { label: 'devicesPage.deviceSerialNumber', key: 'deviceSerialNumber' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehiclePlate' },
+    { label: 'common.addingDate', key: 'installDate' },
+    { label: 'common.deletingDate', key: "removeDate" },
+    { label: 'blockage', key: "isRoleToBlockage" }
   ];
 
   return (
@@ -243,7 +246,7 @@ const DevicesVehicles = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleConnectedDevicePage.addVehicleToDevice'}
           onPress={handleAddNew}
         />
       </View>

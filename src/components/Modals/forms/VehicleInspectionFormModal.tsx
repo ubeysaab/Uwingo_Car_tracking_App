@@ -6,9 +6,13 @@ import InputErrorMessage from "@/components/InputErrorMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { VehicleInspectionApplicationT, vehicleInspectionApplicationTSchema } from "@/types/comingData/vehicleInspection";
+
+
+import SaveButton from "@/components/TouchableRipple/SaveButton";
+import { useTranslation } from "react-i18next";
 
 // TODO : END DATE SHOULDN'T BE SMALLER THAN THE START DATE THERE IS A WRONG WITH ZOD SCHEME 
 
@@ -30,7 +34,7 @@ const VehicleInspectionFormModal = ({
 
 }: vehicleInspectionFormModalProps) => {
 
-
+  const { t } = useTranslation();
   const [method, setMethod] = useState<"put" | "post">('post')
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     // Using .partial() or .pick() here so it doesn't complain about missing fields
@@ -76,12 +80,12 @@ const VehicleInspectionFormModal = ({
 
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent={true}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Vehicle Inspection' : 'Add Vehicle Inspection'}</Text>
+            <Text style={styles.title}>{initialData ? t('vehicleInspectionPage.editVehicleInspection') : t('vehicleInspectionPage.addVehicleInspection')}</Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -92,7 +96,9 @@ const VehicleInspectionFormModal = ({
           </View>
           <ScrollView style={styles.form}>
             {/* vehicle plate */}
-            <Text style={styles.label}>Vehicle Plate</Text>
+            <Text style={styles.label}>
+              {t("vehiclesPage.vehiclePlate")}
+            </Text>
             <Controller
               control={control}
               name="vehicleId"
@@ -119,7 +125,9 @@ const VehicleInspectionFormModal = ({
 
 
 
-            <Text style={styles.label}> Inspection Date</Text>
+            <Text style={styles.label}>
+              {t("vehicleInspectionPage.inspectionDate")}
+            </Text>
             <Controller
               control={control}
               name="inspectionDate"
@@ -134,7 +142,9 @@ const VehicleInspectionFormModal = ({
               )}
             />
 
-            <Text style={styles.label}> End Date</Text>
+            <Text style={styles.label}>
+              {t("vehicleInspectionPage.expiryDate")}
+            </Text>
             <Controller
               control={control}
               name="expiryDate"
@@ -149,7 +159,7 @@ const VehicleInspectionFormModal = ({
               )}
             />
 
-            <Text style={styles.label}> Notes</Text>
+            <Text style={styles.label}> {t('common.notes')}</Text>
             <Controller
               control={control}
               name="notes"
@@ -159,6 +169,7 @@ const VehicleInspectionFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.notes && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -175,24 +186,19 @@ const VehicleInspectionFormModal = ({
 
               )} />
 
-
-
-
-
-
-
-
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+
+
+          <SaveButton
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+
+            label='vehicleInspectionPage.saveVehicleInspection'
+
+          />
         </KeyboardAvoidingView>
       </View>
     </Modal>
@@ -209,16 +215,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

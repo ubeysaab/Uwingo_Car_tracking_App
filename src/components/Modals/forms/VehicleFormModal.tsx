@@ -82,7 +82,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
   }, [initialData, visible, reset]);
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent={true}>
       <View style={styles.overlay}>
         <KeyboardAvoidingView
           behavior={'padding'}
@@ -113,6 +113,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
                     value={value}
                     onChangeText={onChange}
                     placeholder="34 ABC 123"
+                    placeholderTextColor="#999"
                   />
 
                   {
@@ -135,7 +136,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
                   render={({ field: { onChange, value } }) => (
                     <>
 
-                      <TextInput style={styles.input} value={value} onChangeText={onChange} placeholder="Toyota" />
+                      <TextInput placeholderTextColor="#999" style={styles.input} value={value} onChangeText={onChange} placeholder="Toyota" />
                       {
                         errors.make && (
                           <InputErrorMessage errorMessage={errors?.make?.message} />
@@ -159,6 +160,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
                     <>
                       <TextInput style={styles.input} value={value}
                         onChangeText={onChange}
+                        placeholderTextColor="#999"
                         placeholder="Corolla" />
 
                       {
@@ -181,7 +183,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
               render={({ field: { onChange, value } }) => (
 
                 <>
-                  <TextInput style={styles.input} value={value} onChangeText={onChange} />
+                  <TextInput placeholderTextColor="#999" style={styles.input} value={value} onChangeText={onChange} />
                   {
                     errors.vin && (
                       <InputErrorMessage errorMessage={errors?.vin?.message} />
@@ -202,6 +204,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
 
                     <>
                       <TextInput
+                        placeholderTextColor="#999"
                         style={styles.input}
                         keyboardType="numeric"
                         value={String(value)}
@@ -228,6 +231,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
 
                     <>
                       <TextInput
+                        placeholderTextColor="#999"
                         style={styles.input}
                         keyboardType="numeric"
                         value={String(value)}
@@ -281,8 +285,8 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 },
   inputError: { borderColor: '#FF3B30' },
   row: { flexDirection: 'row' },
   flex1: { flex: 1 },

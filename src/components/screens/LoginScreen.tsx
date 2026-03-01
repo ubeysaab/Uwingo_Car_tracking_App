@@ -1,8 +1,9 @@
+import { NormalizedErrorT } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -11,14 +12,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { NormalizedErrorT } from "@/types/auth";
 
 import loginService from "@/api/services/login/login";
+import ErrorModal from "@/components/Modals/ErrorModal";
 import { useAuthStore } from "@/store/local/authStore";
 import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "@/types/auth";
-
 
 export default function LoginScreen() {
   const {
@@ -36,6 +36,20 @@ export default function LoginScreen() {
 
   })
 
+
+  const { t, i18n } = useTranslation();
+
+
+
+  const [errorModalVisibility, setErrorModalVisibility] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+
+
+  function onClose() {
+    setErrorModalVisibility(false)
+  }
+
   const loginSuccess = useAuthStore(store => store.loginSuccess)
   const onSubmit = async (data: loginCredentialsValidationSchemaT) => {
     try {
@@ -44,20 +58,20 @@ export default function LoginScreen() {
         data.username,
         data.password
       )
-      console.log("Login data:", res)
       await loginSuccess(res)
 
       // Alert.alert("Success", "Logged in successfully!")
     } catch (error: unknown) {
       console.log(error)
-      const errorMessage = ((error as NormalizedErrorT).message ||
+      const errMsg = ((error as NormalizedErrorT).message ||
         " An Error happend Please Try Again Later.")
-      Alert.alert(errorMessage)
+      setErrorMessage(errMsg)
+      setErrorModalVisibility(true)
     }
   }
 
   return (
-    <>
+    <View style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
@@ -74,11 +88,11 @@ export default function LoginScreen() {
               >
                 <Image
                   style={styles.logoImg}
-                  source={require("/assets/images/logo.png")}
+                  source={require("/assets/images/logo2.png")}
                 />
               </View>
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Sign in to  Vehicle Tracking System</Text>
+              <Text style={styles.title}>{t('loginPage.welcomeBack')}</Text>
+              <Text style={styles.subtitle}>{t('loginPage.signIn')}</Text>
             </View>
 
             {/* Login Form */}
@@ -86,14 +100,14 @@ export default function LoginScreen() {
 
               {/* Username Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Username</Text>
+                <Text style={styles.label}>{t('loginPage.userName')}</Text>
                 <Controller
                   control={control}
                   name="username"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       style={[styles.input, errors.username && styles.inputError]}
-                      placeholder="Enter your username"
+                      placeholder={t('loginPage.placeHolder.userName')}
                       placeholderTextColor="#999"
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -111,14 +125,14 @@ export default function LoginScreen() {
 
               {/* Password Field */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password</Text>
+                <Text style={styles.label}>{t('loginPage.password')}</Text>
                 <Controller
                   control={control}
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       style={[styles.input, errors.password && styles.inputError]}
-                      placeholder="Enter your password"
+                      placeholder={t('loginPage.placeHolder.password')}
                       placeholderTextColor="#999"
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -133,39 +147,38 @@ export default function LoginScreen() {
                 )}
               </View>
 
-              {/* Additional Options */}
-              {/* <View style={styles.optionsContainer}>
-                <TouchableOpacity>
-                  <Text style={styles.forgotPassword}>Forgot Password?</Text>
-                </TouchableOpacity>
-              </View> */}
 
-              {/* Alternative Login Button at Bottom */}
               <TouchableOpacity
                 style={[styles.bottomLoginButton, isSubmitting && styles.loginButtonDisabled]}
                 onPress={handleSubmit(onSubmit)}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <Text style={styles.bottomLoginButtonText}>Logging in...</Text>
+                  <Text style={styles.bottomLoginButtonText}>{t("loginPage.loggingIn")}</Text>
                 ) : (
-                  <Text style={styles.bottomLoginButtonText}>Login</Text>
+                  <Text style={styles.bottomLoginButtonText}>{t("loginPage.login")}</Text>
                 )}
               </TouchableOpacity>
 
 
             </View>
+
+            <ErrorModal
+              visible={errorModalVisibility}
+              message={errorMessage}
+              onClose={onClose}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#ffffff",
   },
   container: {
     flex: 1,
@@ -197,7 +210,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#1a1a1a",
+    color: "#0f2d59",
     marginBottom: 8,
   },
   subtitle: {

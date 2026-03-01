@@ -4,9 +4,17 @@ import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import InputErrorMessage from "@/components/InputErrorMessage";
 import { VehicleMaintenanceApplicationSchema, VehicleMaintenanceApplicationT } from "@/types/comingData/vehicleMaintenance";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+
+import SaveButton from "@/components/TouchableRipple/SaveButton";
+import { buildPeriodInMonthData } from "@/utils/periodInMonths";
+import { useTranslation } from "react-i18next";
+
+
+
+
 
 
 
@@ -30,6 +38,7 @@ const VehicleMaintenanceFormModal = ({
 
 }: VehicleMaintenanceFormModalProps) => {
 
+  const { t } = useTranslation();
 
   const [method, setMethod] = useState<"put" | "post">('post')
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
@@ -56,10 +65,6 @@ const VehicleMaintenanceFormModal = ({
   });
 
 
-  function showmeDate(value: any) {
-    console.log(value)
-  }
-
 
   useEffect(() => {
     console.log('inital data', initialData)
@@ -85,28 +90,19 @@ const VehicleMaintenanceFormModal = ({
   }, [initialData, visible, reset]);
 
 
-  const periodInMonthData = [
-    { label: "1 Months", value: 1 },
-    { label: "2 Months", value: 2 },
-    { label: "3 Months", value: 3 },
-    { label: "4 Months", value: 4 },
-    { label: "5 Months", value: 5 },
-    { label: "6 Months", value: 6 },
-    { label: "7 Months", value: 7 },
-    { label: "8 Months", value: 8 },
-    { label: "9 Months", value: 9 },
-    { label: "10 Months", value: 10 },
-    { label: "11 Months", value: 11 },
-    { label: "12 Months", value: 12 },
-  ]
+  const periodInMonthData = useMemo(
+    () => buildPeriodInMonthData(t, 12),
+    [t]
+  );
+
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent={true}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Maintenance Information' : 'Add Maintenance Information'}</Text>
+            <Text style={styles.title}>{initialData ? t('vehicleMaintenancePage.editVehicleMaintenance') : t('vehicleMaintenancePage.addVehicleMaintenance')}</Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -117,7 +113,7 @@ const VehicleMaintenanceFormModal = ({
           </View>
           <ScrollView style={styles.form}>
             {/* vehicle plate */}
-            <Text style={styles.label}>Vehicle Plate</Text>
+            <Text style={styles.label}></Text>{t('vehicleConnectedDevicePage.selectVehicle')}
             <Controller
               control={control}
               name="vehicle_Id"
@@ -143,7 +139,7 @@ const VehicleMaintenanceFormModal = ({
               )} />
 
             {/* last maintenance */}
-            <Text style={styles.label}> Last Maintenance Date</Text>
+            <Text style={styles.label}> {t('vehicleMaintenancePage.lastMaintenanceDate')}</Text>
             <Controller
               control={control}
               name="lastMaintenanceDate"
@@ -154,7 +150,7 @@ const VehicleMaintenanceFormModal = ({
 
             {/* Period In Month */}
 
-            <Text style={styles.label}>Period In Month</Text>
+            <Text style={styles.label}>{t('vehicleMaintenancePage.periodInMonths')}</Text>
             <Controller
               control={control}
               name="periodInMonths"
@@ -183,7 +179,7 @@ const VehicleMaintenanceFormModal = ({
 
 
             {/* Period In KM */}
-            <Text style={styles.label}>Period In Kilometers</Text>
+            <Text style={styles.label}>{t('vehicleMaintenancePage.periodInKiloMeters')}</Text>
             <Controller
               control={control}
               name="periodInKilometers"
@@ -191,6 +187,7 @@ const VehicleMaintenanceFormModal = ({
                 <>
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.periodInKilometers && styles.inputError]}
                     value={String(value)}
                     onChangeText={(val) => onChange(Number(val))}
@@ -209,7 +206,7 @@ const VehicleMaintenanceFormModal = ({
             />
 
             {/* KM */}
-            <Text style={styles.label}> Kilometers</Text>
+            <Text style={styles.label}> {t("common.kilometer")}</Text>
             <Controller
               control={control}
               name="kilometer"
@@ -219,6 +216,7 @@ const VehicleMaintenanceFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.kilometer && styles.inputError]}
                     value={String(value)}
                     onChangeText={(val) => onChange(Number(val))}
@@ -238,7 +236,7 @@ const VehicleMaintenanceFormModal = ({
 
             {/* Performed By  */}
 
-            <Text style={styles.label}> Performed By</Text>
+            <Text style={styles.label}> {t("vehicleMaintenancePage.performedBy")}</Text>
             <Controller
               control={control}
               name="performedBy"
@@ -248,6 +246,7 @@ const VehicleMaintenanceFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.performedBy && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -265,7 +264,7 @@ const VehicleMaintenanceFormModal = ({
               )} />
 
             {/* Description */}
-            <Text style={styles.label}> Description</Text>
+            <Text style={styles.label}> {t('common.description')}</Text>
             <Controller
               control={control}
               name="description"
@@ -275,6 +274,7 @@ const VehicleMaintenanceFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.description && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -297,15 +297,16 @@ const VehicleMaintenanceFormModal = ({
 
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+
+          <SaveButton
+            label="vehicleMaintenancePage.saveVehicleMaintenance"
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+
+
+          />
         </KeyboardAvoidingView>
       </View>
     </Modal>
@@ -322,16 +323,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

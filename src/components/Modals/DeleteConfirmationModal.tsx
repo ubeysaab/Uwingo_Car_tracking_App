@@ -24,7 +24,7 @@ const DeleteConfirmationModal = ({
   isDeleting = false,
 }: DeleteModalProps) => {
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.alertBox}>
           {/* Warning Icon Section */}

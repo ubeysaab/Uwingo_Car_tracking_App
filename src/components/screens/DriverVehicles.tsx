@@ -1,21 +1,16 @@
 import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
-
 import { NormalizedErrorT } from '@/types/auth';
-import { DriverApplicationT } from '@/types/comingData/drivers';
 import { DriverVehiclesApplicationT } from '@/types/comingData/driverVehicles';
-import { VehicleApplicationT } from '@/types/comingData/vehicles';
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
-
+import { View } from 'react-native';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import SplashScreen from '@/components/Screens/SplashScreen';
 import { useCreateDriverVehicles, useDeleteDriverVehicles, useGetDriverVehicles, useUpdateDriverVehicles } from '@/store/server/useDriverVehicles';
-
-import DriverVehiclesModal from '@/components/Modals/DriverVehiclesModal';
+import DriverVehiclesModal from '@/components/Modals/forms/DriverVehiclesModal';
 import { useGetDrivers } from '@/store/server/useDrivers';
 import { useGetVehicles } from '@/store/server/useVehicles';
 import { useMemo } from 'react';
@@ -66,26 +61,30 @@ const DriverVehicles = () => {
 
 
 
-  const { availableDrivers, availableVehicles, mappedData } = useMemo(() => {
+  const { availableDrivers, mappedData } = useMemo(() => {
     // 1. Safety check
     if (!driverVehiclesData || !driversData || !vehiclesData) {
       return { availableDrivers: [], availableVehicles: [], mappedData: [] };
     }
 
-    // 2. Get Sets of IDs already in use (Sets are faster for lookups)
-    const assignedDriverIds = new Set(driverVehiclesData.map(dv => dv.drivers_Id));
-    const assignedVehicleIds = new Set(driverVehiclesData.map(dv => dv.vehicle_Id));
+    // 2. Get Sets of IDs already in use (Filtering out terminated ones)
+    // We use flatMap so we don't include 'undefined' in our Set
+    const assignedDriverIds = new Set(
+      driverVehiclesData.flatMap((dv: DriverVehiclesApplicationT) =>
+        (dv.drivers_Id && !dv.terminationDate) ? [dv.drivers_Id] : []
+      )
+    );
 
-    // 3. Filter for available (those NOT in the Sets)
+
+
+    // 3. Filter for available (those NOT in the active Sets)
     const availableDrivers = driversData.filter(
       (driver) => !assignedDriverIds.has(driver.driverId)
     );
 
-    const availableVehicles = vehiclesData.filter(
-      (vehicle) => !assignedVehicleIds.has(vehicle.vehicleId)
-    );
 
-    // 4. Create your display data (your existing logic)
+
+    // 4. Create your display data
     const mappedData = driverVehiclesData.map((junction) => {
       const driver = driversData.find((d) => d.driverId === junction.drivers_Id);
       const vehicle = vehiclesData.find((v) => v.vehicleId === junction.vehicle_Id);
@@ -93,15 +92,15 @@ const DriverVehicles = () => {
       return {
         driverName: driver?.driverName || 'Unknown Driver',
         vehiclePlate: vehicle?.plate || 'Unknown Plate',
-        startDate: junction?.identificationDate || null,
-        terminationDate: junction?.terminationDate || null,
+        startDate: junction?.identificationDate?.split('T')[0] || null,
+        terminationDate: junction?.terminationDate?.split('T')[0] || null,
         vehicle_Id: junction?.vehicle_Id || null,
         drivers_Id: junction?.drivers_Id || null,
         driverVehicleId: junction?.driverVehicleId || null
       };
     });
 
-    return { availableDrivers, availableVehicles, mappedData };
+    return { availableDrivers, mappedData };
   }, [vehiclesData, driversData, driverVehiclesData]);
 
 
@@ -119,7 +118,7 @@ const DriverVehicles = () => {
 
 
   const [selectedDriverVehicles, setSelectedDriverVehicles] = React.useState<DriverVehiclesApplicationT | null>(null);
-  // const [selectedVehicle, setSelectedVehicle] = React.useState<VehicleApplicationT | null>(null);
+
   const [errorMessage, setErrorMessage] = React.useState<string>("")
 
   // 1. Add state to track the ID specifically for deletion
@@ -135,13 +134,13 @@ const DriverVehicles = () => {
 
   // 2. Handlers
   const handleEdit = (driverVehicle: DriverVehiclesApplicationT) => {
-    setSelectedDriverVehicles(driverVehicle); // Set the vehicle to be edited
-    setSaveModalVisibility(true);       // Open modal
+    setSelectedDriverVehicles(driverVehicle);
+    setSaveModalVisibility(true);
   };
 
   const handleAddNew = () => {
-    // console.log(data)
-    setSelectedDriverVehicles(null);    // No vehicle means "Add Mode"
+
+    setSelectedDriverVehicles(null);
     setSaveModalVisibility(true);
   };
 
@@ -210,10 +209,10 @@ const DriverVehicles = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Driver Name', key: 'driverName' },
-    { label: 'Vehilce Plate', key: 'vehiclePlate' },
-    { label: 'Adding Date', key: 'startDate' },
-    { label: 'Deleting Date', key: "terminationDate" }
+    { label: 'driversPage.driverName', key: 'driverName' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehiclePlate' },
+    { label: 'common.addingDate', key: 'startDate' },
+    { label: 'common.deletingDate', key: "terminationDate" }
   ];
 
   return (
@@ -223,7 +222,7 @@ const DriverVehicles = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleConnectedDriverPage.addVehicleToDriver'}
           onPress={handleAddNew}
         />
       </View>
@@ -236,8 +235,8 @@ const DriverVehicles = () => {
         onSubmit={confirmAddandUpdate}
         initialData={selectedDriverVehicles}
         // Logic: The list should be "Available" PLUS the "Current" one being edited
-        vehicles={availableVehicles.map(item => ({ id: item.vehicleId, label: item.plate }))}
-        drivers={availableDrivers.map(item => ({ id: item.driverId, label: item.driverName }))}
+        vehicles={vehiclesData.map(item => ({ value: item.vehicleId, label: item.plate }))}
+        drivers={availableDrivers.map(item => ({ value: item.driverId, label: item.driverName }))}
       />
 
 
@@ -265,29 +264,5 @@ const DriverVehicles = () => {
   );
 };
 
-
-
-const styles = StyleSheet.create({
-  actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    gap: 6,
-  },
-  editButton: { backgroundColor: '#007AFF' },
-  deleteButton: { backgroundColor: '#FF3B30' },
-  actionButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
-})
 
 export default DriverVehicles;

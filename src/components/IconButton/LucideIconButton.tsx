@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { LucideIcon, icons } from 'lucide-react-native';
-
+import { useTranslation } from 'react-i18next';
 // --- TİP TANIMLARI ---
 
 export type LucideIconNames = keyof typeof icons;
@@ -59,12 +59,12 @@ const LucideIconButton = React.forwardRef<View, IconButtonProps>(
       style,
       borderRadius = 5,
       accessibilityLabel,
-      text = ''
+      text = 'common.create'
     },
     ref
   ) => {
     const LucideIconComponent = icons[icon] as LucideIcon;
-
+    const { t } = useTranslation()
     return (
       <View
         ref={ref}
@@ -99,7 +99,7 @@ const LucideIconButton = React.forwardRef<View, IconButtonProps>(
               {text ? (
                 <>
                   <Text style={[styles.text, { color: textColor }]}>
-                    {text}
+                    {t(String(text))}
                   </Text>
                   <View style={{ width: 6 }} />
                 </>

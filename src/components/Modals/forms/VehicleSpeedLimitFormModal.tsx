@@ -3,21 +3,22 @@ import DropdownComponent from "@/components/DropDown";
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import InputErrorMessage from "@/components/InputErrorMessage";
 
-import { vehicleSpeedLimitApplicationSchema, VehicleSpeedLimitApplicationT } from "@/types/comingData/vehicleSpeedLimit";
+import { vehicleSpeedLimitApplicationSchema, vehicleSpeedLimitApplicationSchemaT } from "@/types/comingData/vehicleSpeedLimit";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
-
+import SaveButton from "@/components/TouchableRipple/SaveButton";
+import { useTranslation } from "react-i18next";
 
 // TODO : END DATE SHOULDN'T BE SMALLER THAN THE START DATE THERE IS A WRONG WITH ZOD SCHEME 
 
 interface vehicleSpeedLimitFormModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<VehicleSpeedLimitApplicationT>, method: "put" | 'post') => void;
-  initialData?: VehicleSpeedLimitApplicationT | null;
+  onSubmit: (data: vehicleSpeedLimitApplicationSchemaT, method: "put" | 'post') => void;
+  initialData?: vehicleSpeedLimitApplicationSchemaT | null;
   vehiclesData: { label: string, value: number }[] | undefined
 
 }
@@ -31,18 +32,13 @@ const VehicleSpeedLimitFormModal = ({
 
 }: vehicleSpeedLimitFormModalProps) => {
 
+  const { t } = useTranslation();
+
 
   const [method, setMethod] = useState<"put" | "post">('post')
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     // Using .partial() or .pick() here so it doesn't complain about missing fields
-    resolver: zodResolver(vehicleSpeedLimitApplicationSchema.pick({
-      vehicleId: true,
-      startDate: true,
-      endDate: true,
-      description: true,
-      speedLimit: true,
-
-    })),
+    resolver: zodResolver(vehicleSpeedLimitApplicationSchema),
     defaultValues: {
       vehicleId: undefined,
       startDate: new Date().toISOString().split("T")[0],
@@ -84,12 +80,18 @@ const VehicleSpeedLimitFormModal = ({
 
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent={true}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        {visible && <KeyboardAvoidingView
+          key={visible ? 'open' : "closed"}
+
+          behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Vehicle Speed Limit' : 'Add Vehicle Speed Limit'}</Text>
+            <Text style={styles.title}>{initialData ? t('vehicleSpeedLimitPage.editVehicleSpeedLimit') :
+
+              t('vehicleSpeedLimitPage.addVehicleSpeedLimit')
+            }</Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -100,7 +102,7 @@ const VehicleSpeedLimitFormModal = ({
           </View>
           <ScrollView style={styles.form}>
             {/* vehicle plate */}
-            <Text style={styles.label}>Vehicle Plate</Text>
+            <Text style={styles.label}>{t("vehiclesPage.vehiclePlate")}</Text>
             <Controller
               control={control}
               name="vehicleId"
@@ -110,7 +112,7 @@ const VehicleSpeedLimitFormModal = ({
 
 
                   <DropdownComponent
-                    value={value}
+                    value={value ?? null}
                     onChange={onChange}
                     data={vehiclesData}
                   />
@@ -125,7 +127,7 @@ const VehicleSpeedLimitFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Description</Text>
+            <Text style={styles.label}> {t('common.description')}</Text>
             <Controller
               control={control}
               name="description"
@@ -135,6 +137,7 @@ const VehicleSpeedLimitFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.description && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -151,7 +154,9 @@ const VehicleSpeedLimitFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Start Date</Text>
+            <Text style={styles.label}>
+              {t('vehicleSpeedLimitPage.startDate')}
+            </Text>
             <Controller
               control={control}
               name="startDate"
@@ -160,7 +165,10 @@ const VehicleSpeedLimitFormModal = ({
               )}
             />
 
-            <Text style={styles.label}> End Date</Text>
+            <Text style={styles.label}>
+
+              {t('vehicleSpeedLimitPage.endDate')}
+            </Text>
             <Controller
               control={control}
               name="endDate"
@@ -180,7 +188,9 @@ const VehicleSpeedLimitFormModal = ({
 
 
 
-            <Text style={styles.label}> Speed Limit</Text>
+            <Text style={styles.label}>
+              {t('vehicleSpeedLimitPage.speedLimit')}
+            </Text>
             <Controller
               control={control}
               name="speedLimit"
@@ -190,6 +200,7 @@ const VehicleSpeedLimitFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.speedLimit && styles.inputError]}
                     value={String(value)}
                     onChangeText={val => onChange(Number(val))}
@@ -211,16 +222,14 @@ const VehicleSpeedLimitFormModal = ({
 
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+
+          <SaveButton
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
+          />
+        </KeyboardAvoidingView>}
       </View>
     </Modal>
   );
@@ -236,16 +245,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

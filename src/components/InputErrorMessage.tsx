@@ -13,6 +13,6 @@ export default function InputErrorMessage({
 
 
 const styles = StyleSheet.create({
-  errorText: { color: '#ff3b30', fontSize: 16 }
+  errorText: { color: '#ff3b30', fontSize: 16, marginBottom: 4 }
 
 })

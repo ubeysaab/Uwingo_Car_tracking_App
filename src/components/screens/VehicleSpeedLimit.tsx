@@ -2,12 +2,13 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+
 
 import VehicleSpeedLimitFormModal from '@/components/Modals/forms/VehicleSpeedLimitFormModal';
 import { useCreateVehicleSpeedLimit, useDeleteVehicleSpeedLimit, useGetVehicleSpeedLimit, useUpdateVehicleSpeedLimit } from '@/store/server/useVehicleSpeedLimit';
@@ -172,11 +173,11 @@ const VehicleSpeedLimit = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Speed Limit', key: 'speedLimit' },
-    { label: 'Start Date', key: 'startDate' },
-    { label: 'End Date', key: 'endDate' },
-    { label: 'Description', key: 'description' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehicle' },
+    { label: 'vehicleSpeedLimitPage.speedLimit', key: 'speedLimit' },
+    { label: 'vehicleSpeedLimitPage.startDate', key: 'startDate' },
+    { label: 'vehicleSpeedLimitPage.endDate', key: 'endDate' },
+    { label: 'common.description', key: 'description' },
 
   ];
 
@@ -187,7 +188,7 @@ const VehicleSpeedLimit = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleSpeedLimitPage.addVehicleSpeedLimit'}
           onPress={handleAddNew}
         />
       </View>

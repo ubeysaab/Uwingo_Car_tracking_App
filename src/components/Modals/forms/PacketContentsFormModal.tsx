@@ -1,12 +1,13 @@
 import DropdownComponent from "@/components/DropDown";
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import InputErrorMessage from "@/components/InputErrorMessage";
+import SaveButton from "@/components/TouchableRipple/SaveButton";
 import { PacketContentsApplicationSchema, PacketContentsApplicationT } from "@/types/comingData/packetContents";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import { useTranslation } from "react-i18next";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 
 
@@ -29,7 +30,7 @@ const PacketContentsFormModal = ({
 
 }: PacketContentsFormModalProps) => {
 
-
+  const { t } = useTranslation();
   const [method, setMethod] = useState<"put" | "post">('post')
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     // Using .partial() or .pick() here so it doesn't complain about missing fields
@@ -72,15 +73,13 @@ const PacketContentsFormModal = ({
 
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Packet' : 'Add Packet'}</Text>
-            {/* <TouchableOpacity onPress={onClose}>
-              <X color="#333" size={24} />
-            </TouchableOpacity> */}
+            <Text style={styles.title}>{initialData ? t('packetContents.editPacketContent') : t('packetContents.addPacketContent')}</Text>
+
             <LucideIconButton
               icon='X'
               size={24}
@@ -91,7 +90,7 @@ const PacketContentsFormModal = ({
           </View>
           <ScrollView style={styles.form}>
 
-            <Text style={styles.label}>Field Name</Text>
+            <Text style={styles.label}>{t("packetContents.fieldName")}</Text>
             <Controller
               control={control}
               name="fieldName"
@@ -103,6 +102,7 @@ const PacketContentsFormModal = ({
                     value={value}
                     onChangeText={onChange}
                     placeholder="field name"
+                    placeholderTextColor="#999"
                   />
 
                   {
@@ -115,7 +115,7 @@ const PacketContentsFormModal = ({
               )}
             />
 
-            <Text style={styles.label}> Description</Text>
+            <Text style={styles.label}> {t("packetContents.packetContentDescription")}</Text>
             <Controller
               control={control}
               name="description"
@@ -129,6 +129,7 @@ const PacketContentsFormModal = ({
                     value={value}
                     onChangeText={onChange}
                     placeholder="description"
+                    placeholderTextColor="#999"
                   />
 
                   {
@@ -141,7 +142,7 @@ const PacketContentsFormModal = ({
 
               )} />
 
-            <Text style={styles.label}>Packet Name</Text>
+            <Text style={styles.label}>{t("packetContents.packetName")}</Text>
             <Controller
               control={control}
               name="packet_Id"
@@ -170,15 +171,14 @@ const PacketContentsFormModal = ({
 
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+          <SaveButton
+            label='packetContents.savePacketContent'
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+
+          />
         </KeyboardAvoidingView>
       </View>
     </Modal>
@@ -195,16 +195,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

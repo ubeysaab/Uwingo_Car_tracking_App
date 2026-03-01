@@ -2,14 +2,14 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
 
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
 
 import { useGetVehicles } from '@/store/server/useVehicles';
 import { useCreateVehicleInsurance, useDeleteVehicleInsurance, useGetVehicleInsurance, useUpdateVehicleInsurance } from '@/store/server/useVehicleInsurance';
@@ -86,8 +86,8 @@ const VehicleInsurance = () => {
         vehicleId: junction?.vehicleId || null,
         policyNumber: junction?.policyNumber || null,
         insuranceCompany: junction?.insuranceCompany || null,
-        startDate: junction?.startDate || null,
-        endDate: junction?.endDate || null,
+        startDate: junction?.startDate?.split('T')[0] || null,
+        endDate: junction?.endDate?.split('T')[0] || null,
         vehicle: `${vehicle?.plate} (${vehicle?.make} ${vehicle?.model})` || null,
 
 
@@ -174,11 +174,11 @@ const VehicleInsurance = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Policy Number', key: 'policyNumber' },
-    { label: 'Start Date', key: 'startDate' },
-    { label: 'End Date', key: 'endDate' },
-    { label: 'Insurance Company', key: 'insuranceCompany' },
+    { label: 'vehiclesPage.vehilcePlate', key: 'vehicle' },
+    { label: 'vehicleCascoPage.policyNumber', key: 'policyNumber' },
+    { label: 'vehicleCascoPage.startDate', key: 'startDate' },
+    { label: 'vehicleCascoPage.endDate', key: 'endDate' },
+    { label: 'vehicleCascoPage.insuranceCompany', key: 'insuranceCompany' },
 
   ];
 
@@ -189,7 +189,7 @@ const VehicleInsurance = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleInsurancePage.addVehicleInsurance'}
           onPress={handleAddNew}
         />
       </View>

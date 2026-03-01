@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
-export default function SaveButton({ label = 'saveDetails', onPress }: { label: string, onPress: () => void }) {
+export default function SaveButton({ label = 'saveDetails', onPress }: { label?: string, onPress: () => void }) {
 
 
   const { t } = useTranslation()

@@ -2,11 +2,13 @@ import { DatePickerComponent } from "@/components/DatePicker";
 import DropdownComponent from "@/components/DropDown";
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import InputErrorMessage from "@/components/InputErrorMessage";
+import SaveButton from "@/components/TouchableRipple/SaveButton";
 import { vehicleCascoApplicationSchema, VehicleCascoApplicationT } from "@/types/comingData/vehicleCasco";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 
 
@@ -83,12 +85,12 @@ const vehicleCascoFormModal = ({
 
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Casco Information' : 'Add Casco Information'}</Text>
+            <Text style={styles.title}>{initialData ? t("vehicleCascoPage.editVehicleCasco") : t("vehicleCascoPage.addVehicleCasco")}</Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -99,7 +101,7 @@ const vehicleCascoFormModal = ({
           </View>
           <ScrollView style={styles.form}>
             {/* vehicle plate */}
-            <Text style={styles.label}>Vehicle Plate</Text>
+            <Text style={styles.label}>{t("vehiclesPage.vehiclePlate")}</Text>
             <Controller
               control={control}
               name="vehicleId"
@@ -124,7 +126,7 @@ const vehicleCascoFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Policy Number</Text>
+            <Text style={styles.label}> {t("vehicleCascoPage.policyNumber")}</Text>
             <Controller
               control={control}
               name="policyNumber"
@@ -138,6 +140,7 @@ const vehicleCascoFormModal = ({
                     value={value}
                     onChangeText={onChange}
                     placeholder="policyNumber"
+                    placeholderTextColor="#999"
                   />
 
                   {
@@ -150,7 +153,7 @@ const vehicleCascoFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Start Date</Text>
+            <Text style={styles.label}> {t("vehicleCascoPage.startDate")}</Text>
             <Controller
               control={control}
               name="startDate"
@@ -159,7 +162,10 @@ const vehicleCascoFormModal = ({
               )}
             />
 
-            <Text style={styles.label}> End Date</Text>
+            <Text style={styles.label}>
+
+              {t("vehicleCascoPage.endDate")}
+            </Text>
             <Controller
               control={control}
               name="endDate"
@@ -185,12 +191,15 @@ const vehicleCascoFormModal = ({
 
 
 
-            {/* Performed By  */}
 
 
 
-            {/* Description */}
-            <Text style={styles.label}> Insurance Compnay</Text>
+            <Text style={styles.label}>
+              {t("vehicleCascoPage.insuranceCompany")}
+
+
+
+            </Text>
             <Controller
               control={control}
               name="insuranceCompany"
@@ -204,6 +213,7 @@ const vehicleCascoFormModal = ({
                     value={value}
                     onChangeText={onChange}
                     placeholder="insuranceCompany"
+                    placeholderTextColor="#999"
                   />
 
                   {
@@ -221,15 +231,14 @@ const vehicleCascoFormModal = ({
 
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+
+          <SaveButton
+            label="vehicleCascoPage.saveVehicleCasco"
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+          />
         </KeyboardAvoidingView>
       </View>
     </Modal>
@@ -246,16 +255,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

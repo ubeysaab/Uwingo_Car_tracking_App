@@ -3,20 +3,20 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import * as React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
-
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
 
 import PacketContentsFormModal from '@/components/Modals/forms/PacketContentsFormModal';
 import { useCreatePacketContents, useDeletePacketContent, useGetPacketContents, useUpdatePacketContent } from '@/store/server/usePacketContents';
 import { useGetPackets } from '@/store/server/usePackets';
 import { PacketContentsApplicationT } from '@/types/comingData/packetContents';
 import { PacketApplicationT } from '@/types/comingData/packets';
+import { useTranslation } from 'react-i18next';
 
 interface dataShapeToShow {
   packetContentId: number | null,
@@ -29,6 +29,8 @@ interface dataShapeToShow {
 
 
 const PacketContents = () => {
+
+  const { t } = useTranslation();
 
   const { data: packetsData, isPending: packetIsPending, isError: isErrorPacket, refetch: refetchPacket } = useGetPackets();
   const { data, isPending, isError, refetch } = useGetPacketContents()
@@ -178,9 +180,9 @@ const PacketContents = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Packet Name', key: 'packetType' },
-    { label: 'Field Name', key: 'fieldName' },
-    { label: ' Description', key: 'description' },
+    { label: 'packetContents.packetName', key: 'packetType' },
+    { label: 'packetContents.fieldName', key: 'fieldName' },
+    { label: 'packetContents.packetContentDescription', key: 'description' },
   ];
 
   return (
@@ -190,7 +192,7 @@ const PacketContents = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'packetContents.addPacketContent'}
           onPress={handleAddNew}
         />
       </View>

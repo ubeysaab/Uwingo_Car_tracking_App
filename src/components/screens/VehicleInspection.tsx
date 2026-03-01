@@ -2,19 +2,21 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
+
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
 
 import { useCreateVehicleInspection, useDeleteVehicleInspection, useGetVehicleInspection, useUpdateVehicleInspection } from '@/store/server/useVehicleInspection';
 import { VehicleInspectionApplicationT } from '@/types/comingData/vehicleInspection';
 
 import { useGetVehicles } from '@/store/server/useVehicles';
 import VehicleInspectionFormModal from '@/components/Modals/forms/VehicleInspectionFormModal';
+
 
 
 interface dataShapeToShow {
@@ -84,8 +86,8 @@ const VehicleInspection = () => {
         vehicleInspectionId: junction?.vehicleInspectionId || null,
         vehicleId: junction?.vehicleId || null,
         notes: junction?.notes || null,
-        inspectionDate: junction?.inspectionDate || null, // ISO String format
-        expiryDate: junction?.expiryDate || null,  // ISO String format
+        inspectionDate: junction?.inspectionDate?.split('T')[0] || null, // ISO String format
+        expiryDate: junction?.expiryDate?.split('T')[0] || null,  // ISO String format
         vehicle: `${vehicle?.plate} (${vehicle?.make} ${vehicle?.model})` || null,
 
 
@@ -173,10 +175,10 @@ const VehicleInspection = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Inspection Date', key: 'inspectionDate' },
-    { label: 'Expiry Date', key: 'expiryDate' },
-    { label: 'Notes', key: 'notes' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehicle' },
+    { label: 'vehicleInspectionPage.inspectionDate', key: 'inspectionDate' },
+    { label: 'vehicleInspectionPage.expiryDate', key: 'expiryDate' },
+    { label: 'common.notes', key: 'notes' },
 
   ];
 
@@ -187,7 +189,7 @@ const VehicleInspection = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleInspectionPage.addVehicleInspection'}
           onPress={handleAddNew}
         />
       </View>

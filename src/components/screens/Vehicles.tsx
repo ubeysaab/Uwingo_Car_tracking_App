@@ -1,17 +1,17 @@
-import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
-import { useCreateVehicle, useDeleteVehicle, useGetVehicles, useUpdateVehicle } from '@/store/server/useVehicles';
-import { VehicleApplicationT } from '@/types/comingData/vehicles';
-import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ColumnConfig } from '@/components/ResponsiveTable/types';
-import { NormalizedErrorT } from '@/types/auth';
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
 import ErrorModal from '@/components/Modals/ErrorModal';
-import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import VehicleFormModal from '@/components/Modals/forms/VehicleFormModal';
+import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
 import ErrorScreen from '@/components/Screens/ErrorScreen';
 import SplashScreen from '@/components/Screens/SplashScreen';
+import { useCreateVehicle, useDeleteVehicle, useGetVehicles, useUpdateVehicle } from '@/store/server/useVehicles';
+import { NormalizedErrorT } from '@/types/auth';
+import { VehicleApplicationT } from '@/types/comingData/vehicles';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 
 
 
@@ -21,7 +21,6 @@ const Vehicles = () => {
   const mutationDelete = useDeleteVehicle()
   const mutationUpdate = useUpdateVehicle()
   const mutationAdd = useCreateVehicle()
-  const { t } = useTranslation()
 
 
   // 1. State to manage the Modal
@@ -141,7 +140,7 @@ const Vehicles = () => {
         style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5 }}>
         <LucideIconButton
           icon={"Plus"}
-          text={t("common.create")}
+          text={"vehiclesPage.addVehicle"}
           onPress={handleAddNew}
         />
       </View>

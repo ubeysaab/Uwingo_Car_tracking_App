@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   FlatList,
   LayoutAnimation,
@@ -7,12 +7,16 @@ import {
   TextInput,
   View
 } from 'react-native';
-import ResponsiveTableRow from './ResponsiveTableRow';
+import ResponsiveTableRow from '@/components/ResponsiveTable/ResponsiveTableRow';
+import { useTranslation } from 'react-i18next';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 const ResponsiveTable = ({ data = [], columns = [], uniqueKey, handleEdit, handleDelete }: { data: any[], columns: any[], uniqueKey: string, handleEdit: (item: any) => void, handleDelete: (id: any) => void }) => {
 
+
+
+  const { t, i18n } = useTranslation();
   // States 
   const [containerWidth, setContainerWidth] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -50,14 +54,13 @@ const ResponsiveTable = ({ data = [], columns = [], uniqueKey, handleEdit, handl
 
 
 
-  console.log(`from the table component data :  `, data)
-  console.log(`from the table component  columns : `, columns)
-
   return (
     <View style={styles.container} onLayout={onLayout}>
       <TextInput
+
         style={styles.searchInput}
-        placeholder="Search..."
+        placeholder={t('common.search')}
+        placeholderTextColor="#999"
         onChangeText={(t) => { setSearchQuery(t); setDisplayLimit(PAGE_SIZE); }}
       />
 
@@ -65,7 +68,7 @@ const ResponsiveTable = ({ data = [], columns = [], uniqueKey, handleEdit, handl
         <View style={{ width: 40 }} />
         {visibleColumns.map((col) => (
           <Text key={col.key} style={[styles.headerCell, { flex: 1 }]}>
-            {col.label}
+            {t(col['label'])}
           </Text>
         ))}
       </View>
@@ -115,6 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcfcfc',
     fontSize: 16,
     color: '#333',
+
   },
 
   // Table Header
@@ -133,67 +137,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5
   },
 
-  // Row Styles
-  rowContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
-  },
-  visibleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 18
-  },
-  cell: {
-    fontSize: 15,
-    color: '#2c3e50'
-  },
-
-  // Expansion Button
-  button: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonText: {
-    color: '#007AFF',
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-
-  // Dropdown / Expanded Content
-  dropdown: {
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF'
-  },
-  detailItem: {
-    flexDirection: 'row',
-    paddingVertical: 4
-  },
-  label: {
-    fontWeight: '700',
-    width: 100,
-    color: '#7f8c8d',
-    fontSize: 13
-  },
-  value: {
-    flex: 1,
-    color: '#34495e',
-    fontSize: 14
-  },
-
-  // Footer / Pagination Styles
-  footerText: {
-    textAlign: 'center',
-    color: '#bdc3c7',
-    paddingVertical: 25,
-    fontSize: 14,
-    fontStyle: 'italic'
-  }
 });
 
 export default ResponsiveTable;

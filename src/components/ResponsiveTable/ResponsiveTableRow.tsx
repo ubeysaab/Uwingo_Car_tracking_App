@@ -1,9 +1,9 @@
+import ImageUploader from '@/components/ImageUploader';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Pencil, Trash2 } from 'lucide-react-native'; // Import Lucide Icons
-import { ColumnConfig } from './types';
-import LucideIconButton from '../IconButton/LucideIconButton';
-
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import { useTranslation } from 'react-i18next';
 interface ResponsiveTableRowProps<T> {
   item: T;
   expandedId: string | number | null;
@@ -11,12 +11,11 @@ interface ResponsiveTableRowProps<T> {
   visibleColumns: ColumnConfig<T>[];
   hiddenColumns: ColumnConfig<T>[];
   uniqueKey: keyof T;
-  onEdit: (item: T) => void;   // Added Edit Callback
-  onDelete: (item: T) => void; // Added Delete Callback
-  sendDataAsStrings?: boolean;
+  onEdit: (item: T) => void;
+  onDelete: (item: T) => void;
 }
 
-// T extends Record<string, any> fixes the "indexing type unknown" error
+// todo : T extends Record<string, any> fixes the "indexing type unknown" error
 const ResponsiveTableRow = <T extends Record<string, any>>({
   item,
   expandedId,
@@ -26,10 +25,11 @@ const ResponsiveTableRow = <T extends Record<string, any>>({
   uniqueKey,
   onEdit,
   onDelete,
-  sendDataAsStrings = false
 }: ResponsiveTableRowProps<T>) => {
   const isExpanded = expandedId === item[uniqueKey];
   const isDeleted = item?.terminationDate
+  const hasImages: boolean = Object.keys(item).includes('images')
+  const { t } = useTranslation()
 
   return (
     <View style={styles.rowContainer}>
@@ -53,52 +53,36 @@ const ResponsiveTableRow = <T extends Record<string, any>>({
           {/* Render Hidden Fields */}
           {hiddenColumns.map((col: ColumnConfig<T>) => (
             <View key={String(col.key)} style={styles.detailItem}>
-              <Text style={styles.label}>{col.label}:</Text>
-              <Text style={styles.value}>{String(item[col.key] ?? 'N/A')}</Text>
+              <Text style={styles.label}>{t(col.label)}:</Text>
+              <Text style={styles.value}>{t(String(item[col.key]).toLowerCase()) ?? t('N/A')}</Text>
             </View>
           ))}
 
           {/* Action Buttons Section */}
-          {!isDeleted &&
-            (<View style={styles.actionContainer}>
-              {/* <TouchableOpacity
-              style={[styles.actionButton, styles.editButton]}
-              onPress={() => onEdit?.(item)}
-            >
-              <Pencil size={18} color="#FFF" />
-              <Text style={styles.actionButtonText}>Edit</Text>
-            </TouchableOpacity> */}
+          {!isDeleted && (<>
+            <View style={styles.actionContainer}>
 
               <LucideIconButton
                 icon='Pencil'
                 containerColor={"#007AFF"}
                 onPress={() => onEdit?.(item)}
-                text={'Edit'}
-              // disabled={item?.terminationDate}
+                text={t('common.edit')}
               />
-
-              {/* <TouchableOpacity
-              style={[styles.actionButton, styles.deleteButton]}
-              onPress={() => onDelete?.(item)}
-            >
-              <Trash2 size={18} color="#FFF" />
-              <Text style={styles.actionButtonText}>Delete</Text>
-            </TouchableOpacity> */}
               <LucideIconButton
                 icon='Trash2'
                 containerColor={"#FF3B30"}
                 onPress={() => onDelete?.(item)}
-                text={'Delete'}
-              // disabled={item?.terminationDate}
+                text={t('common.delete')}
               />
             </View>
-            )}
+            {hasImages && (<View><ImageUploader /></View>)}
+          </>
+          )}
         </View>
       )}
     </View>
   );
 };
-
 export default ResponsiveTableRow;
 
 const styles = StyleSheet.create({
@@ -108,8 +92,8 @@ const styles = StyleSheet.create({
   button: { width: 40, alignItems: 'center' },
   buttonText: { color: '#007AFF', fontWeight: 'bold' },
   dropdown: { backgroundColor: '#f9f9f9', padding: 15, borderRadius: 8, marginHorizontal: 10, marginBottom: 10 },
-  detailItem: { flexDirection: 'row', marginBottom: 8 },
-  label: { fontWeight: '600', width: 100, color: '#666' },
+  detailItem: { flexDirection: 'row', marginBottom: 8, alignItems: 'center', gap: 5 },
+  label: { fontWeight: '600', color: '#666', },
   value: { color: '#222', flex: 1 },
 
   // New Styles for Action Buttons
@@ -122,15 +106,5 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     gap: 10,
   },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    gap: 6,
-  },
-  editButton: { backgroundColor: '#007AFF' },
-  deleteButton: { backgroundColor: '#FF3B30' },
-  actionButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+
 });

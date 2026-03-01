@@ -2,12 +2,12 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
 
 
 
@@ -27,6 +27,7 @@ interface dataShapeToShow {
   performedBy: string | null;
   repairCost: number | null;
   notes: string | null;
+  images: string[] | []
 }
 
 
@@ -53,6 +54,7 @@ const VehicleRepair = () => {
   const [vehicleRepairToDelete, setVehicleRepairToDelete] = React.useState<VehicleRepairApplicationT | null>(null);
 
 
+  // 2. Handlers
 
   const handleDelete = (id: any) => {
     setVehicleRepairToDelete(id);
@@ -60,7 +62,7 @@ const VehicleRepair = () => {
   };
 
 
-  // 2. Handlers
+
   const handleEdit = (vehicleRepair: VehicleRepairApplicationT) => {
     setSelectedVehicleRepair(vehicleRepair);
     setSaveModalVisibility(true);
@@ -85,7 +87,7 @@ const VehicleRepair = () => {
       return {
         vehicleRepairId: junction?.vehicleRepairId || null,
         vehicleId: junction?.vehicleId || null,
-        repairDate: junction?.repairDate || null,
+        repairDate: junction?.repairDate?.split('T')[0] || null,
         faultType: junction?.faultType || null,
         faultDescription: junction?.faultDescription || null,
         repairAction: junction?.repairAction || null,
@@ -93,6 +95,7 @@ const VehicleRepair = () => {
         repairCost: junction?.repairCost || null,
         vehicle: `${vehicle?.plate} (${vehicle?.make} ${vehicle?.model})` || null,
         notes: junction?.notes || null,
+        images: junction?.images || []
 
       }
     })
@@ -122,9 +125,7 @@ const VehicleRepair = () => {
     console.log('method : ', method, "data", data)
 
     if (method === 'put') {
-      // We pass ONE object containing id and the rest of the data
       console.log("the data sended for update", data)
-      // const { fieldName, description, packet_Id } = data;
       const payloadData = {
         ...data,
         vehicleRepairId: selectedVehicleRepair?.vehicleRepairId
@@ -177,13 +178,13 @@ const VehicleRepair = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Repair Date', key: 'repairDate' },
-    { label: 'Fault Type', key: 'faultType' },
-    { label: 'Fault Description', key: 'faultDescription' },
-    { label: 'Repair Action', key: 'repairAction' },
-    { label: 'Performed By', key: 'performedBy' },
-    { label: 'Repair Cost', key: 'repairCost' },
+    { label: 'vehiclesPage.vehiclePlate', key: 'vehicle' },
+    { label: 'vehicleRepairPage.repairDate', key: 'repairDate' },
+    { label: 'vehicleRepairPage.faultType', key: 'faultType' },
+    { label: 'vehicleRepairPage.faultDescription', key: 'faultDescription' },
+    { label: 'vehicleRepairPage.repairAction', key: 'repairAction' },
+    { label: 'vehicleMaintenancePage.performedBy', key: 'performedBy' },
+    { label: 'vehicleRepairPage.repairCost', key: 'repairCost' },
 
 
   ];
@@ -195,7 +196,7 @@ const VehicleRepair = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleRepairPage.addVehicleRepair'}
           onPress={handleAddNew}
         />
       </View>

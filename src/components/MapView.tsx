@@ -1,6 +1,6 @@
 import { fetchFinalMapData } from "@/api/services/map/fetchPipeLine";
-import type { FinalMapDTO } from "@/types/forMap";
-import React, { useEffect, useRef, useState } from "react";
+import { CreateInstantDataEndpoint_send, CreateInstantDataEndpoint_whatGet } from "@/types/forMap";
+import { useEffect, useRef, useState } from "react";
 import { AppState, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 
@@ -8,54 +8,80 @@ import { WebView } from "react-native-webview";
 // If MapView is in src/components, and HTML is in src/assets:
 const mapHtmlFile = require("/assets/mapView.html");
 
-
+// Inside your map component logic:
+// const routeCoords: Coordinate[] = JSON.parse(vehicle.coordinatesJson);
 // TODO :  ADD BUTTON THAT SHOWS ALL POPU UP IN ORDER TO FIND VEHICLES FASTER( NOW YOU NEED TO CLICK ON IT IN ORDER TO SEE THE VALUES) ( BETTER UX)
 
 
-type OutVehicle = {
-  serialNumber: string;
-  lat: number;
-  lng: number;
-  plate: string;
-  speed: number;
-  isWorking: boolean;
-};
-
+import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { RootDrawerParamList } from "@/navigation/types";
 export default function MapView() {
+  const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
   const webviewRef = useRef<WebView | null>(null);
   const timerRef = useRef<number | null>(null); // Fixed type for timer
   const [isMapReady, setIsMapReady] = useState(false); // Track if map is loaded
 
   // Store latest vehicles here so we can send them as soon as map is ready
-  const latestVehiclesRef = useRef<OutVehicle[]>([]);
+  const latestVehiclesRef = useRef<CreateInstantDataEndpoint_whatGet[] | CreateInstantDataEndpoint_send[]>([]);
+
+  const { t } = useTranslation();
 
 
-  // TODO : transform determine the shape of the data that gonna send to weview
-  function transform(dto: FinalMapDTO[]): OutVehicle[] {
-    return dto
-      .map((x) => {
+  // const localizationData = {
+  //   vehicles: t('common.vehicles'),
+  //   active: t('common.active'),
+  //   violations: t('common.violations'),
+  //   mapLegend: t('common.mapLegend'),
+  //   purpleCircle: t('common.purpleCircle'),
+  //   redCircle: t('common.redCircle'),
+  //   redCircleDescription: t('common.redCircleDescription'),
+  //   purpleCircleDescription: t('common.purpleCircleDescription'),
+  //   speedLimit: t('common.speedLimit'),
+  //   on: t('common.on'),
+  //   off: t('common.off'),
+  //   lastUpdate: t('common.lastUpdate'),
+
+  //   // ... add all other strings
+  // };
+
+  // -  determine the shape of the data that gonna send to webview
+  function reShapeTheDateBeforeSendToWebView(lastDataFrmPipeLine: any) {
+
+    return lastDataFrmPipeLine
+      .map((x: CreateInstantDataEndpoint_whatGet) => {
         // ... your existing logic ...
         const serialNumber: string = String(
-          x.trackingData?.SerialNumber
+          x?.serialNumber
 
         );
 
-        const lat = Number(x.trackingData?.Latitude);
-        const lng = Number(x.trackingData?.Longitude);
+        const lat = Number(x?.latitude);
+        const lng = Number(x?.longitude);
 
         return {
+          vehicleId: x?.vehicleId,
+          dailyKM: x?.dailyKM,
           serialNumber,
           lat,
           lng,
-          plate: String(x.vehicles?.Plate),
-          speed: Number(x.trackingData?.speed),
-          isWorking: x?.trackingData?.WorkingStatus
+          plate: x?.plate,
+          speed: Number(x?.speed),
+          isWorking: x?.workingstatus,
+          speedLimit: x?.speedLimit,
+          coordinate: x?.coordinatesJson,
+          analysisEndDate: x?.analysisEndDate
+          , analysisStartDate: x?.analysisStartDate
+
+
         };
       })
-      .filter((v) => isFinite(v.lat) && isFinite(v.lng));
+      .filter((v: any) => isFinite(v.lat) && isFinite(v.lng));
   }
 
-  function postFullUpdateToWebView(vehicles: OutVehicle[]) {
+  // function that send data from here to the mapview 
+  function postFullUpdateToWebView(vehicles: any[]) {
     // Save latest data
     latestVehiclesRef.current = vehicles;
 
@@ -66,7 +92,7 @@ export default function MapView() {
     }
   }
 
-  // Add to your component to test if WebView is receiving messages
+  //  test if WebView is receiving messages
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'active' && webviewRef.current) {
@@ -94,7 +120,7 @@ export default function MapView() {
         const dto = await fetchFinalMapData();
         if (!mounted) return;
 
-        const vehicles = transform(dto);
+        const vehicles = reShapeTheDateBeforeSendToWebView(dto);
         // console.log(vehicles)
         postFullUpdateToWebView(vehicles);
       } catch (err) {
@@ -106,7 +132,7 @@ export default function MapView() {
     fetchAndSend();
 
     // Interval
-    timerRef.current = setInterval(fetchAndSend, 60000);
+    timerRef.current = setInterval(fetchAndSend, 50000);
 
     return () => {
       mounted = false;
@@ -133,8 +159,12 @@ export default function MapView() {
           });
           webviewRef.current?.postMessage(payload);
         }
-      } else if (msg.type === "console") { // lowercase to match
-        console.info(`[WebView Console ${msg.type}]`, msg.data.log || msg.data);
+      } else if (msg.type === 'VEHICLE_DETAILS') {
+        console.log(msg)
+        navigation.navigate("All Details With Street View", { item: msg.data })
+      }
+      else if (msg.type === "console") { // lowercase to match
+        console.info(`[WebView  ${msg.type}]`, msg.data.log || msg.data);
       } else {
         console.log('Unknown message type:', msg.type, msg.data);
       }
@@ -143,6 +173,11 @@ export default function MapView() {
     }
   }
 
+
+  //   window.ReactNativeWebView.postMessage
+  // → the only official bridge from WebView JS → React Native
+  // postMessage : sends only strings 
+  // 
   const debugging = `
   const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(
     JSON.stringify({

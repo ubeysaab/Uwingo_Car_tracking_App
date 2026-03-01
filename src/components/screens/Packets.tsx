@@ -3,25 +3,27 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import * as React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
 
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import SplashScreen from '@/components/Screens/SplashScreen';
 
 import PacketFormModal from '@/components/Modals/forms/PacketFormModal';
 import { useCreatePacket, useDeletePacket, useGetPackets, useUpdatePacket } from '@/store/server/usePackets';
 import { PacketApplicationT } from '@/types/comingData/packets';
 
+import { useTranslation } from 'react-i18next';
 
 
 
 
 const Packets = () => {
 
+  const { t } = useTranslation()
   const { data, isPending, isError, refetch } = useGetPackets();
   const mutationDelete = useDeletePacket()
   const mutationUpdate = useUpdatePacket()
@@ -87,7 +89,6 @@ const Packets = () => {
       const payloadData = {
         ...data,
         packetId: selectedPacket?.packetId,
-        // companyApplicationId: selectedPacket?.companyApplicationId
       }
       mutationUpdate.mutate(
         payloadData,
@@ -131,8 +132,8 @@ const Packets = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<PacketApplicationT>[] = [
-    { label: 'Packet Type', key: 'packetType' },
-    { label: 'Packet Description', key: 'description' },
+    { label: 'packetsPage.packetType', key: 'packetType' },
+    { label: 'packetsPage.packetDescription', key: 'description' },
   ];
 
   return (
@@ -142,7 +143,7 @@ const Packets = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'packetsPage.addPacket'}
           onPress={handleAddNew}
         />
       </View>

@@ -2,12 +2,14 @@ import { DatePickerComponent } from "@/components/DatePicker";
 import DropdownComponent from "@/components/DropDown";
 import LucideIconButton from "@/components/IconButton/LucideIconButton";
 import InputErrorMessage from "@/components/InputErrorMessage";
+import SaveButton from "@/components/TouchableRipple/SaveButton";
 import { vehicleRepairApplicationSchema, VehicleRepairApplicationT } from "@/types/comingData/vehicleRepair";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { useTranslation } from "react-i18next";
 
 
 // TODO : END DATE SHOULDN'T BE SMALLER THAN THE START DATE THERE IS A WRONG WITH ZOD SCHEME 
@@ -31,11 +33,10 @@ const vehicleRepairFormModal = ({
 }: vehicleRepairFormModalProps) => {
 
 
+  const { t } = useTranslation();
   const [method, setMethod] = useState<"put" | "post">('post')
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
-    // Using .partial() or .pick() here so it doesn't complain about missing fields
     resolver: zodResolver(vehicleRepairApplicationSchema.pick({
-      // vehicleRepairId: ZodNumber;
       vehicleId: true,
       repairDate: true,
       faultType: true,
@@ -44,8 +45,6 @@ const vehicleRepairFormModal = ({
       performedBy: true,
       repairCost: true,
       notes: true,
-
-
     })),
     defaultValues: {
       vehicleId: undefined,
@@ -90,12 +89,17 @@ const vehicleRepairFormModal = ({
 
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent={true}>
       <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalContainer}>
+        <KeyboardAvoidingView behavior={'padding'} style={styles.modalContainer}>
 
           <View style={styles.header}>
-            <Text style={styles.title}>{initialData ? 'Edit Repair Information' : 'Add Repair Information'}</Text>
+            <Text style={styles.title}>
+              {initialData ? t("vehicleRepairPage.editVehicleRepair") : t("vehicleRepairPage.addVehicleRepair")}
+
+
+
+            </Text>
             <LucideIconButton
               icon='X'
               size={24}
@@ -105,16 +109,19 @@ const vehicleRepairFormModal = ({
             />
           </View>
           <ScrollView style={styles.form}>
-            {/* vehicle plate */}
-            <Text style={styles.label}>Vehicle Plate</Text>
+
+            <Text style={styles.label}>
+
+              {
+                t("vehiclesPage.vehiclePlate")
+              }
+            </Text>
             <Controller
               control={control}
               name="vehicleId"
               render={({ field: { onChange, value } }) => (
 
                 <>
-
-
                   <DropdownComponent
                     value={value}
                     onChange={onChange}
@@ -131,7 +138,11 @@ const vehicleRepairFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Fault Type</Text>
+            <Text style={styles.label}>
+              {
+                t("vehicleRepairPage.faultType")
+              }
+            </Text>
             <Controller
               control={control}
               name="faultType"
@@ -141,6 +152,7 @@ const vehicleRepairFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.faultType && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -158,7 +170,11 @@ const vehicleRepairFormModal = ({
               )} />
 
 
-            <Text style={styles.label}> Fault Description</Text>
+            <Text style={styles.label}>
+
+
+              {t("vehicleRepairPage.faultDescription")}
+            </Text>
             <Controller
               control={control}
               name="faultDescription"
@@ -168,6 +184,7 @@ const vehicleRepairFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.faultDescription && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -184,7 +201,13 @@ const vehicleRepairFormModal = ({
 
               )} />
 
-            <Text style={styles.label}> Repair Action</Text>
+            <Text style={styles.label}>
+              {
+                t('vehicleRepairPage.repairAction')
+              }
+
+
+            </Text>
             <Controller
               control={control}
               name="repairAction"
@@ -194,6 +217,7 @@ const vehicleRepairFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.repairAction && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -211,16 +235,20 @@ const vehicleRepairFormModal = ({
               )} />
 
 
-            <Text style={styles.label}> Performed By</Text>
+            <Text style={styles.label}>
+              {
+                t('vehicleMaintenancePage.performedBy')
+              }
+
+            </Text>
             <Controller
               control={control}
               name="performedBy"
               render={({ field: { onChange, value } }) => (
 
                 <>
-
-
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.performedBy && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -236,20 +264,28 @@ const vehicleRepairFormModal = ({
                 </>
 
               )} />
-            <Text style={styles.label}> Repair Cost</Text>
+            <Text style={styles.label}>
+              {
+                t('vehicleRepairPage.repairCost')
+              }
+
+
+
+
+            </Text>
             <Controller
               control={control}
               name="repairCost"
               render={({ field: { onChange, value } }) => (
 
                 <>
-
-
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.repairCost && styles.inputError]}
                     value={String(value)}
                     onChangeText={val => onChange(Number(val))}
                     placeholder="repairCost"
+                    keyboardType="numeric"
                   />
 
                   {
@@ -264,7 +300,11 @@ const vehicleRepairFormModal = ({
 
 
 
-            <Text style={styles.label}> Repair Date</Text>
+            <Text style={styles.label}>
+
+
+              {t("vehicleRepairPage.repairDate")}
+            </Text>
 
             <Controller
               control={control}
@@ -282,8 +322,12 @@ const vehicleRepairFormModal = ({
               )}
             />
 
-            {/* Description */}
-            <Text style={styles.label}> Notes</Text>
+
+            <Text style={styles.label}>
+              {
+                t('common.notes')
+              }
+            </Text>
             <Controller
               control={control}
               name="notes"
@@ -293,6 +337,7 @@ const vehicleRepairFormModal = ({
 
 
                   <TextInput
+                    placeholderTextColor="#999"
                     style={[styles.input, errors.notes && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
@@ -309,20 +354,15 @@ const vehicleRepairFormModal = ({
 
               )} />
 
-
-
-
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.saveButton}
+          <SaveButton
+            label="Save Details"
             onPress={handleSubmit(
               (data) => onSubmit(data, method),
               (error) => console.log(error)
             )}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+          />
         </KeyboardAvoidingView>
       </View>
     </Modal>
@@ -339,16 +379,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
   form: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  inputError: { borderColor: '#FF3B30' },
-  row: { flexDirection: 'row' },
-  flex1: { flex: 1 },
-  pickerContainer: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  radioBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center' },
-  radioBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
-  radioText: { fontWeight: '600', color: '#666' },
-  radioTextActive: { color: 'white' },
-  saveButton: { backgroundColor: '#007AFF', padding: 16, borderRadius: 10, alignItems: 'center', marginBottom: 30 },
-  saveButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 8, padding: 12, fontSize: 16 }, inputError: { borderColor: '#FF3B30' },
+
 });

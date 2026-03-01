@@ -11,13 +11,10 @@ import SplashScreen from './SplashScreen';
 
 
 
-import VehicleCascoFormModal from '@/components/Modals/forms/VehicleCascoFormModal';
-import { useGetVehicles } from '@/store/server/useVehicles';
-import { VehicleCascoApplicationT } from '@/types/comingData/vehicleCasco';
+import DevicesFormModal from '@/components/Modals/forms/DevicesFormModal';
 import { useCreateDevice, useDeleteDevice, useGetDevices, useUpdateDevice } from '@/store/server/useDevices';
 import { useGetPackets } from '@/store/server/usePackets';
 import { DeviceApplicationT } from '@/types/comingData/devices';
-import DevicesFormModal from '@/components/Modals/forms/DevicesFormModal';
 
 
 
@@ -146,11 +143,11 @@ const Devices = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<DeviceApplicationT>[] = [
-    { label: 'Device Serial Number', key: 'serialNumber' },
-    { label: 'Device Model', key: 'model' },
-    { label: 'Device Packet Type', key: 'packetType' },
-    { label: 'Connected Vehicle', key: 'isConnectedVehicles' },
-    { label: 'Device Phone Number', key: 'devicePhoneNumber' },
+    { label: 'devicesPage.deviceSerialNumber', key: 'serialNumber' },
+    { label: 'devicesPage.deviceModel', key: 'model' },
+    { label: 'devicesPage.devicePacketType', key: 'packetType' },
+    { label: 'devicesPage.connectedVehicle', key: 'isConnectedVehicles' },
+    { label: 'devicesPage.devicePhoneNumber', key: 'devicePhoneNumber' },
 
   ];
 
@@ -161,7 +158,7 @@ const Devices = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text="devicesPage.addDevice"
           onPress={handleAddNew}
         />
       </View>

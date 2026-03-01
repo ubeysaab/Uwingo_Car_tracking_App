@@ -9,8 +9,6 @@ import ErrorModal from '@/components/Modals/ErrorModal';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
 import ErrorScreen from '@/components/Screens/ErrorScreen';
 import SplashScreen from '@/components/Screens/SplashScreen';
-
-
 import { useCreateDriver, useDeleteDriver, useGetDrivers, useUpdateDriver } from '@/store/server/useDrivers';
 import { DriverApplicationT } from '@/types/comingData/drivers';
 import DriverFormModal from '@/components/Modals/forms/DriverFormModal';
@@ -129,8 +127,8 @@ const Drivers = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<DriverApplicationT>[] = [
-    { label: 'Driver Name', key: 'driverName' },
-    { label: 'Driver Code', key: 'driverCode' },
+    { label: 'driversPage.driverName', key: 'driverName' },
+    { label: 'driversPage.driverCode', key: 'driverCode' },
   ];
 
   return (
@@ -140,7 +138,7 @@ const Drivers = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'driversPage.addDriver'}
           onPress={handleAddNew}
         />
       </View>
@@ -181,27 +179,6 @@ const Drivers = () => {
 
 
 
-const styles = StyleSheet.create({
-  actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    gap: 6,
-  },
-  editButton: { backgroundColor: '#007AFF' },
-  deleteButton: { backgroundColor: '#FF3B30' },
-  actionButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
-})
+
 
 export default Drivers;

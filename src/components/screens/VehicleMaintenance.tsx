@@ -2,19 +2,21 @@ import ResponsiveTable from '@/components/ResponsiveTable/ResponsiveTable';
 import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
-import LucideIconButton from '../IconButton/LucideIconButton';
-import DeleteConfirmationModal from '../Modals/DeleteConfirmationModal';
-import ErrorModal from '../Modals/ErrorModal';
-import { ColumnConfig } from '../ResponsiveTable/types';
-import ErrorScreen from './ErrorScreen';
-import SplashScreen from './SplashScreen';
 
 
+import LucideIconButton from '@/components/IconButton/LucideIconButton';
+import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
+import SplashScreen from '@/components/Screens/SplashScreen';
+import ErrorModal from '@/components/Modals/ErrorModal';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import { ColumnConfig } from '@/components/ResponsiveTable/types';
 
 import VehicleMaintenanceFormModal from '@/components/Modals/forms/VehicleMaintenanceFormModal';
 import { useCreateVehicleMaintenance, useDeleteVehicleMaintenance, useGetVehicleMaintenances, useUpdateVehicleMaintenance } from '@/store/server/useVehicleMaintainance';
 import { useGetVehicles } from '@/store/server/useVehicles';
 import { VehicleMaintenanceApplicationT } from '@/types/comingData/vehicleMaintenance';
+
+import { useTranslation } from 'react-i18next';
 
 interface dataShapeToShow {
   periodicMaintenanceId: number | null,
@@ -27,12 +29,18 @@ interface dataShapeToShow {
   nextMaintenanceDate: string | null,
   performedBy: string | null,
   description: string | null,
+  images: string[] | [],
 
 }
 
 
 
 const VehicleMaintenance = () => {
+
+
+
+
+  const { t } = useTranslation();
 
   const { data: vehicleMaintenanceData, isPending: vehicleMaintenanceIsPending, isError: isErrorVehicleMaintenance, refetch: refetchVehicleMaintenance } = useGetVehicleMaintenances();
   const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
@@ -74,12 +82,14 @@ const VehicleMaintenance = () => {
 
 
 
+  // TODO : BURADA VEHICLES ICIN BIR FILTER OLACAK GIBI . 
+
   const mappedData = React.useMemo(() => {
     if (!vehiclesData || !vehicleMaintenanceData) {
       return [];
     }
 
-    const theFilteredData: dataShapeToShow[] = vehicleMaintenanceData.map((junction): dataShapeToShow => {
+    const theFilteredData: dataShapeToShow[] = vehicleMaintenanceData.map((junction: VehicleMaintenanceApplicationT): dataShapeToShow => {
       const vehicle = vehiclesData.find((v) => v?.vehicleId === junction?.vehicle_Id);
 
       return {
@@ -93,7 +103,7 @@ const VehicleMaintenance = () => {
         vehicle: vehicle?.plate || null,
         kilometer: junction?.kilometer || null,
         performedBy: junction?.performedBy || null,
-
+        images: junction?.images || []
       }
     })
     return theFilteredData
@@ -179,14 +189,14 @@ const VehicleMaintenance = () => {
 
   // Manually define your columns to map labels to specific object keys
   const columns: ColumnConfig<dataShapeToShow>[] = [
-    { label: 'Vehicle', key: 'vehicle' },
-    { label: 'Last Maintenance Date', key: 'lastMaintenanceDate' },
-    { label: 'Period In Month', key: 'periodInMonths' },
-    { label: 'Period In KiloMeters', key: 'periodInKilometers' },
-    { label: 'Next Maintenance Date', key: 'nextMaintenanceDate' },
-    { label: 'KiloMeters', key: 'kilometer' },
-    { label: 'peformed By', key: 'performedBy' },
-    { label: ' Description', key: 'description' },
+    { label: 'vehicleConnectedDevicePage.selectVehicle', key: 'vehicle' },
+    { label: 'vehicleMaintenancePage.lastMaintenanceDate', key: 'lastMaintenanceDate' },
+    { label: 'vehicleMaintenancePage.periodInMonths', key: 'periodInMonths' },
+    { label: 'vehicleMaintenancePage.periodInKiloMeters', key: 'periodInKilometers' },
+    { label: 'vehicleMaintenancePage.nextMaintenanceDate', key: 'nextMaintenanceDate' },
+    { label: 'common.kilometer', key: 'kilometer' },
+    { label: 'vehicleMaintenancePage.performedBy', key: 'performedBy' },
+    { label: ' common.description', key: 'description' },
   ];
 
   return (
@@ -196,7 +206,7 @@ const VehicleMaintenance = () => {
 
         <LucideIconButton
           icon={"Plus"}
-          text={'Create'}
+          text={'vehicleMaintenancePage.addVehicleMaintenance'}
           onPress={handleAddNew}
         />
       </View>
@@ -211,7 +221,7 @@ const VehicleMaintenance = () => {
         vehiclesData={vehiclesData
           ?.filter((item) => item?.vehicleId !== undefined)
           .map((item) => ({
-            label: item.plate ?? 'Unknown Plate',
+            label: item.plate,
             value: item.vehicleId as number // Casting is safe here because of the filter
           }))}
       />
