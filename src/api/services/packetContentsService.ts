@@ -7,7 +7,7 @@ import { PacketContentsApplicationSchema, PacketContentsApplicationT } from "@/t
 
 export const PacketContentsService = {
   // GET
-  getAll: () => callApi('get', ENDPOINTS.PacketContents.get, z.array(PacketContentsApplicationSchema)),
+  getAll: () => callApi('get', ENDPOINTS.PacketContents.get, z.array(z.any())),
 
   // create 
 

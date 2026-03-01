@@ -5,7 +5,7 @@ import z from "zod";
 
 export const PacketsService = {
   // GET
-  getAll: () => callApi('get', ENDPOINTS.Packets.get, z.array(PacketApplicationSchema)),
+  getAll: () => callApi('get', ENDPOINTS.Packets.get, z.array(z.any())),
 
   // create 
 

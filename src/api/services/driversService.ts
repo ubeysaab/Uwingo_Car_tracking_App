@@ -6,7 +6,7 @@ import { DriverApplicationSchema, DriverApplicationT } from "@/types/comingData/
 
 export const DriverService = {
   // GET
-  getAll: () => callApi('get', ENDPOINTS.Drivers.get, z.array(DriverApplicationSchema)),
+  getAll: () => callApi('get', ENDPOINTS.Drivers.get, z.array(z.any())),
 
   // create 
 

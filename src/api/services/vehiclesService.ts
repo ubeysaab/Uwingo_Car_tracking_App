@@ -5,7 +5,7 @@ import z from "zod";
 
 export const VehicleService = {
   // GET
-  getAll: () => callApi('get', ENDPOINTS.Vehicles.get, z.array(VehicleApplicationSchema)),
+  getAll: () => callApi('get', ENDPOINTS.Vehicles.get, z.array(z.any())),
 
   // create 
 
