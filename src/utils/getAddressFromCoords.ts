@@ -1,32 +1,5 @@
-// export const getAddressFromCoords = async (lat: any, lon: any) => {
-//   try {
 
-//     console.log('lat for getting addres', lat)
-//     console.log('lon for getting addres', lon)
-//     // Nominatim requires a User-Agent header to identify your app
-//     const response = await fetch(
-//       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
-//       {
-//         headers: {
-//           'User-Agent': 'YourAppName/1.0',
-//         },
-//       }
-//     );
 
-//     const data = await response.json();
-//     console.log('get Address from cords')
-//     console.log(data)
-
-//     if (data && data.display_name) {
-//       return `${data.address.road},${data.address.suburb}, ${data.address.town}/${data.address.province}  ${data.address.country}`; // Full formatted address
-//     } else {
-//       return "Address not found";
-//     }
-//   } catch (error) {
-//     console.error("Geocoding Error: ", error);
-//     return "Error fetching address";
-//   }
-// };
 export const getAddressFromCoords = async (lat: number, lon: number) => {
   try {
     // Improved validation: 0 is a valid coordinate!
@@ -42,7 +15,7 @@ export const getAddressFromCoords = async (lat: number, lon: number) => {
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
       {
         headers: {
-          'User-Agent': 'YourAppName/1.0',
+          'User-Agent': 'UwingoAracTakip/1.0',
           'Accept': 'application/json'
         },
       }
