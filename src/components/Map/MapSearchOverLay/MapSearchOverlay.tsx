@@ -581,7 +581,7 @@ const MapSearchOverlay = ({ allVehicles, onSelectVehicle, onFilterChange, violat
 
                     return (
                       <VehicleCard
-                        address={item.address ?? "hizmet durdurdun ubey 429 yuzunden"}
+                        address={item.address }
                         speed={item.speed}
                         status={item.isWorking}
                         plate={item.plate}
@@ -634,7 +634,7 @@ const MapSearchOverlay = ({ allVehicles, onSelectVehicle, onFilterChange, violat
           } */}
           {openedTab === 'Filters' &&
             <>
-              <View style={[styles.groupHeader, { borderWidth: 2, borderColor: 'red' }]}>
+              <View style={[styles.groupHeader]}>
                 <Text style={styles.vehicleCountText}>{stats.filtered.length} Araç</Text>
 
               </View>

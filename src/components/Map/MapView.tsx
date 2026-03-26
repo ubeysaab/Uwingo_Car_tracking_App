@@ -4,7 +4,7 @@ import MapLayerSwitcher from "@/components/Map/MapLayerSwitcher";
 import MapSearchOverlay from "@/components/Map/MapSearchOverLay/MapSearchOverlay";
 import AnimatedMapSkeleton from "@/components/Map/MapSkeletonLoader";
 import ErrorModal from "@/components/Modals/ErrorModal";
-import ErrorScreen from "@/components/Screens/ErrorScreen";
+import ErrorScreen from "@/components/screens/ErrorScreen";
 import { RootDrawerParamList } from "@/navigation/types";
 import { CreateInstantDataEndpoint_whatGet } from "@/types/forMap";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -14,6 +14,7 @@ import { AppState, Modal, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import MapControls from "@/components/Map/MapControls";
 import { NormalizedErrorT } from "@/types/auth";
+import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 const mapHtmlFile = require("/assets/mapView.html");
 
 
@@ -129,16 +130,16 @@ export default function MapView() {
       */
 
 
-      // const hasMoved = prevVehicle
-      //   ? (Math.abs(prevVehicle.lat - lat) > 0.0018 || Math.abs(prevVehicle.lng - lng) > 0.0018)
-      //   : true;
+      const hasMoved = prevVehicle
+        ? (Math.abs(prevVehicle.lat - lat) > 0.0018 || Math.abs(prevVehicle.lng - lng) > 0.0018)
+        : true;
 
-      // if (prevVehicle?.address && !hasMoved) {
-      //   address = prevVehicle.address; // Reuse cached address
-      // } else if (isFinite(lat) && isFinite(lng)) {
-      //   // Only fetch if moved or new
-      //   address = await getAddressFromCoords(lat, lng);
-      // }
+      if (prevVehicle?.address && !hasMoved) {
+        address = prevVehicle.address; // Reuse cached address
+      } else if (isFinite(lat) && isFinite(lng)) {
+        // Only fetch if moved or new
+        address = await getAddressFromCoords(lat, lng);
+      }
 
       return {
         vehicleId: x?.vehicleId,
@@ -153,7 +154,7 @@ export default function MapView() {
         coordinate: x?.coordinatesJson,
         analysisEndDate: x?.analysisEndDate,
         analysisStartDate: x?.analysisStartDate,
-        // address: address
+        address: address
       };
     });
 

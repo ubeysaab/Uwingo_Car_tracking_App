@@ -3,9 +3,9 @@ import { NormalizedErrorT } from '@/types/auth';
 import React from 'react';
 import { View } from 'react-native';
 import LucideIconButton from '@/components/IconButton/LucideIconButton';
-import ErrorScreen from '@/components/Screens/ErrorScreen';
+import ErrorScreen from '@/components/screens/ErrorScreen';
 import ErrorModal from '@/components/Modals/ErrorModal';
-import SplashScreen from '@/components/Screens/SplashScreen';
+import SplashScreen from '@/components/screens/SplashScreen';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
 
