@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { AlertTriangle, Trash2 } from 'lucide-react-native';
 import LucideIconButton from '../IconButton/LucideIconButton';
-
+import { useTranslation } from 'react-i18next';
 interface DeleteModalProps {
   visible: boolean;
   onClose: () => void;
@@ -23,6 +23,9 @@ const DeleteConfirmationModal = ({
   onConfirm,
   isDeleting = false,
 }: DeleteModalProps) => {
+
+  const { t } = useTranslation()
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -36,10 +39,9 @@ const DeleteConfirmationModal = ({
 
           {/* Text Content */}
           <View style={styles.content}>
-            <Text style={styles.title}>Delete This Item </Text>
+            <Text style={styles.title}>{t('deleteConfirmation.deleteItem')} </Text>
             <Text style={styles.message}>
-              Are you sure you want to delete this Item{' '}
-
+              {t('deleteConfirmation.sure')}
             </Text>
           </View>
 
@@ -50,24 +52,19 @@ const DeleteConfirmationModal = ({
               onPress={onClose}
               disabled={isDeleting}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text style={styles.cancelText}>
+
+                {t('deleteConfirmation.cancel')}
+
+              </Text>
             </TouchableOpacity>
 
-            {/* <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={onConfirm}
-              disabled={isDeleting}
-            >
-              <Trash2 color="white" size={18} style={{ marginRight: 6 }} />
-              <Text style={styles.deleteText}>
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </Text>
-            </TouchableOpacity> */}
+
             <LucideIconButton
               icon='Trash2'
               containerColor={"#FF3B30"}
               onPress={onConfirm}
-              text={isDeleting ? 'Deleting...' : 'Delete'}
+              text={isDeleting ? t('deleteConfirmation.deleting') : t('deleteConfirmation.delete')}
               disabled={isDeleting}
               style={[styles.deleteButton]}
             />

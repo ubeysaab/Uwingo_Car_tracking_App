@@ -146,7 +146,11 @@ const VehicleInspectionFormModal = ({
                 <>
 
 
+
                   <DatePickerComponent value={value} onChange={(val) => onChange(val.split(".")[0])} />
+                  {
+                    errors?.expiryDate && (<InputErrorMessage errorMessage={errors.expiryDate?.message} />)
+                  }
 
 
                 </>
@@ -167,7 +171,7 @@ const VehicleInspectionFormModal = ({
                     style={[styles.input, errors.notes && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="notes"
+                    placeholder={t('common.notes')}
                   />
 
                   {

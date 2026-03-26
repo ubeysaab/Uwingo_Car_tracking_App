@@ -22,8 +22,8 @@ import { DeviceApplicationT } from '@/types/comingData/devices';
 
 const Devices = () => {
 
-  const { data: devicesData, isPending: DevicesIsPending, isError: isErrorDevices, refetch: refetchVehicleDevices } = useGetDevices();
-  const { data: packetsData, isPending: packetsIsPending, isError: isPacketsError, refetch: refetchPackets } = useGetPackets()
+  const { data: devicesData, isPending: DevicesIsPending, isError: isErrorDevices, refetch: refetchVehicleDevices, error: devicesError } = useGetDevices();
+  const { data: packetsData, isPending: packetsIsPending, isError: isPacketsError, refetch: refetchPackets, error: packetsError } = useGetPackets()
   const mutationDelete = useDeleteDevice()
   const mutationUpdate = useUpdateDevice()
   const mutationAdd = useCreateDevice()
@@ -138,7 +138,8 @@ const Devices = () => {
   )
 
   if (isPacketsError || isErrorDevices) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={devicesError?.message || packetsError?.message
+    } />
   )
 
   // Manually define your columns to map labels to specific object keys

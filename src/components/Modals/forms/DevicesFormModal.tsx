@@ -130,7 +130,7 @@ const DevicesFormModal = ({
                     style={[styles.input, errors.model && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="Model"
+                    placeholder={t('devicesPage.deviceModel')}
                     placeholderTextColor="#999"
                   />
 
@@ -162,7 +162,7 @@ const DevicesFormModal = ({
                     style={[styles.input, errors.serialNumber && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="serialNumber"
+                    placeholder={t('devicesPage.deviceSerialNumber')}
                     keyboardType="numeric"
                     placeholderTextColor="#999"
                   />
@@ -192,7 +192,7 @@ const DevicesFormModal = ({
                     style={[styles.input, errors.devicePhoneNumber && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="devicePhoneNumber"
+                    placeholder={t('devicesPage.devicePhoneNumber')}
                     keyboardType="numeric"
                     placeholderTextColor="#999"
                   />

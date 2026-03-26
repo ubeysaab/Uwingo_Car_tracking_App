@@ -30,8 +30,8 @@ interface dataShapeToShow {
 
 const VehicleSpeedLimit = () => {
 
-  const { data: vehicleSpeedLimitData, isPending: vehicleSpeedLimitIsPending, isError: isErrorVehicleSpeedLimit, refetch: refetchVehicleSpeedLimit } = useGetVehicleSpeedLimit();
-  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
+  const { data: vehicleSpeedLimitData, isPending: vehicleSpeedLimitIsPending, isError: isErrorVehicleSpeedLimit, refetch: refetchVehicleSpeedLimit, error: vehicleSpeedLimitError } = useGetVehicleSpeedLimit();
+  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles, error: vehiclesError } = useGetVehicles()
   const mutationDelete = useDeleteVehicleSpeedLimit()
   const mutationUpdate = useUpdateVehicleSpeedLimit()
   const mutationAdd = useCreateVehicleSpeedLimit()
@@ -168,7 +168,7 @@ const VehicleSpeedLimit = () => {
   )
 
   if (isVehiclesError || isErrorVehicleSpeedLimit) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={vehiclesError?.message || vehicleSpeedLimitError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

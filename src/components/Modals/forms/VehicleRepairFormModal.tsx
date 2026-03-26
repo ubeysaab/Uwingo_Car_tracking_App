@@ -147,7 +147,7 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.faultType && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="faultType"
+                    placeholder={t("vehicleRepairPage.faultType")}
                   />
 
                   {
@@ -179,7 +179,7 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.faultDescription && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="faultDescription"
+                    placeholder={t("vehicleRepairPage.faultDescription")}
                   />
 
                   {
@@ -212,7 +212,7 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.repairAction && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="repairAction"
+                    placeholder={t('vehicleRepairPage.repairAction')}
                   />
 
                   {
@@ -243,7 +243,7 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.performedBy && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="performedBy"
+                    placeholder={t('vehicleMaintenancePage.performedBy')}
                   />
 
                   {
@@ -275,7 +275,9 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.repairCost && styles.inputError]}
                     value={String(value)}
                     onChangeText={val => onChange(Number(val))}
-                    placeholder="repairCost"
+                    placeholder={
+                      t('vehicleRepairPage.repairCost')
+                    }
                     keyboardType="numeric"
                   />
 
@@ -332,7 +334,9 @@ const vehicleRepairFormModal = ({
                     style={[styles.input, errors.notes && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="notes"
+                    placeholder={
+                      t('common.notes')
+                    }
                   />
 
                   {

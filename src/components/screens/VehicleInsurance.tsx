@@ -32,8 +32,8 @@ interface dataShapeToShow {
 
 const VehicleInsurance = () => {
 
-  const { data: vehicleInsuranceData, isPending: vehicleInsuranceIsPending, isError: isErrorVehicleInsurance, refetch: refetchVehicleInsurance } = useGetVehicleInsurance();
-  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
+  const { data: vehicleInsuranceData, isPending: vehicleInsuranceIsPending, isError: isErrorVehicleInsurance, refetch: refetchVehicleInsurance, error: insuranceError } = useGetVehicleInsurance();
+  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles, error: vehicleError } = useGetVehicles()
   const mutationDelete = useDeleteVehicleInsurance()
   const mutationUpdate = useUpdateVehicleInsurance()
   const mutationAdd = useCreateVehicleInsurance()
@@ -61,6 +61,7 @@ const VehicleInsurance = () => {
 
   // 2. Handlers
   const handleEdit = (vehicleInsurance: VehicleInsuranceApplicationT) => {
+    console.log(vehicleInsurance)
     setSelectedVehicleInsurance(vehicleInsurance);
     setSaveModalVisibility(true);
   };
@@ -169,7 +170,7 @@ const VehicleInsurance = () => {
   )
 
   if (isVehiclesError || isErrorVehicleInsurance) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={insuranceError?.message || vehicleError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys
@@ -194,7 +195,11 @@ const VehicleInsurance = () => {
         />
       </View>
 
-      <ResponsiveTable data={mappedData} columns={columns} uniqueKey='vehicleInsuranceId' handleEdit={handleEdit} handleDelete={handleDelete} />
+      <ResponsiveTable data={mappedData}
+        columns={columns}
+        uniqueKey='vehicleInsuranceId'
+        handleEdit={handleEdit}
+        handleDelete={handleDelete} />
 
       <VehicleInsuranceFormModel
         visible={saveModalVisibility}

@@ -202,6 +202,7 @@ const DevicesVehicles = () => {
           onError: (error: NormalizedErrorT) => {
 
             setErrorModalVisibility(true)
+            console.log(error.message)
             setErrorMessage(error.message)
           }
         }

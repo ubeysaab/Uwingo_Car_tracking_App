@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 const Packets = () => {
 
   const { t } = useTranslation()
-  const { data, isPending, isError, refetch } = useGetPackets();
+  const { data, isPending, isError, refetch, error } = useGetPackets();
   const mutationDelete = useDeletePacket()
   const mutationUpdate = useUpdatePacket()
   const mutationAdd = useCreatePacket()
@@ -127,7 +127,7 @@ const Packets = () => {
   )
 
   if (isError) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={error.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

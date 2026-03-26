@@ -98,7 +98,7 @@ const PacketFormModal = ({
                     style={[styles.input, errors.packetType && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="34 ABC 123"
+                    placeholder={t('packetsPage.packetType')}
                     placeholderTextColor="#999"
                   />
                   {
@@ -128,7 +128,7 @@ const PacketFormModal = ({
                     value={value}
                     placeholderTextColor="#999"
                     onChangeText={onChange}
-                    placeholder="34 ABC 123"
+                    placeholder={t('packetsPage.packetDescription')}
                   />
 
                   {

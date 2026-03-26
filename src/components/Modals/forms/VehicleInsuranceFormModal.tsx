@@ -101,7 +101,7 @@ const VehicleInsuranceFormModel = ({
           <ScrollView style={styles.form}>
             {/* vehicle plate */}
             <Text style={styles.label}>
-              {t('vehiclesPage.vehilcePlate')}
+              {t('vehiclesPage.vehiclePlate')}
             </Text>
             <Controller
               control={control}
@@ -143,7 +143,7 @@ const VehicleInsuranceFormModel = ({
                     style={[styles.input, errors.policyNumber && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="policyNumber"
+                    placeholder={t('vehicleCascoPage.policyNumber')}
                   />
 
                   {
@@ -207,7 +207,7 @@ const VehicleInsuranceFormModel = ({
                     style={[styles.input, errors.insuranceCompany && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="insuranceCompany"
+                    placeholder={t('vehicleCascoPage.insuranceCompany')}
                   />
 
                   {

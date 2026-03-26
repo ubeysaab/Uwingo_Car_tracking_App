@@ -141,7 +141,7 @@ const VehicleSpeedLimitFormModal = ({
                     style={[styles.input, errors.description && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="description"
+                    placeholder={t('common.description')}
                   />
 
                   {
@@ -200,6 +200,7 @@ const VehicleSpeedLimitFormModal = ({
 
 
                   <TextInput
+                    keyboardType="numeric"
                     placeholderTextColor="#999"
                     style={[styles.input, errors.speedLimit && styles.inputError]}
                     value={String(value)}

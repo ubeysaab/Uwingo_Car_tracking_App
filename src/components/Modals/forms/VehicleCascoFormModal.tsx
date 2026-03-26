@@ -132,7 +132,7 @@ const vehicleCascoFormModal = ({
                     style={[styles.input, errors.policyNumber && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="policyNumber"
+                    placeholder={t("vehicleCascoPage.policyNumber")}
                     placeholderTextColor="#999"
                   />
 
@@ -205,8 +205,9 @@ const vehicleCascoFormModal = ({
                     style={[styles.input, errors.insuranceCompany && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="insuranceCompany"
+                    placeholder={t("vehicleCascoPage.insuranceCompany")}
                     placeholderTextColor="#999"
+
                   />
 
                   {

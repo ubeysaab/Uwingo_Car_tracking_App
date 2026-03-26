@@ -17,7 +17,7 @@ import { View } from 'react-native';
 
 const Vehicles = () => {
 
-  const { data, isPending, isError, refetch } = useGetVehicles();
+  const { data, isPending, isError, refetch, error } = useGetVehicles();
   const mutationDelete = useDeleteVehicle()
   const mutationUpdate = useUpdateVehicle()
   const mutationAdd = useCreateVehicle()
@@ -117,7 +117,7 @@ const Vehicles = () => {
   )
 
   if (isError) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen message={error.message} onRetry={refetch} />
   )
 
   const columns: ColumnConfig<VehicleApplicationT>[] = [

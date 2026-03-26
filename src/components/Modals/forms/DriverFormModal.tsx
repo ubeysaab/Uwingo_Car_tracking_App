@@ -96,7 +96,7 @@ const DriverFormModal = ({ visible, onClose, onSubmit, initialData }: DriverForm
                     style={[styles.input, errors.driverName && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="Driver Name"
+                    placeholder={t('driversPage.driverName')}
                     placeholderTextColor="#999"
                   />
                   {errors.driverName && (
@@ -117,7 +117,7 @@ const DriverFormModal = ({ visible, onClose, onSubmit, initialData }: DriverForm
                     value={value}
                     onChangeText={onChange}
                     placeholderTextColor="#999"
-                    placeholder="Uw Driver"
+                    placeholder={t('driversPage.driverCode')}
                   />
                   {errors.driverCode && (
                     <InputErrorMessage errorMessage={errors.driverCode?.message} />

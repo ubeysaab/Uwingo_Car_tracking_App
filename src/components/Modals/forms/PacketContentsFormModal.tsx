@@ -101,7 +101,7 @@ const PacketContentsFormModal = ({
                     style={[styles.input, errors.fieldName && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="field name"
+                    placeholder={t("packetContents.fieldName")}
                     placeholderTextColor="#999"
                   />
 
@@ -128,7 +128,7 @@ const PacketContentsFormModal = ({
                     style={[styles.input, errors.description && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="description"
+                    placeholder={t("packetContents.packetContentDescription")}
                     placeholderTextColor="#999"
                   />
 

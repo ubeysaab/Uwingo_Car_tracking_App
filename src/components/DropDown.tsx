@@ -37,8 +37,8 @@ const DropdownComponent = ({ data, onChange, value, label = "" }: Props) => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select item' : '...'}
-          searchPlaceholder="Search..."
+          placeholder={!isFocus ? t('common.selectItem') : '...'}
+          searchPlaceholder={t('common.search')}
           value={value === undefined ? null : value}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}

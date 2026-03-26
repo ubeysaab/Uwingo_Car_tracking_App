@@ -42,8 +42,8 @@ const VehicleMaintenance = () => {
 
   const { t } = useTranslation();
 
-  const { data: vehicleMaintenanceData, isPending: vehicleMaintenanceIsPending, isError: isErrorVehicleMaintenance, refetch: refetchVehicleMaintenance } = useGetVehicleMaintenances();
-  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
+  const { data: vehicleMaintenanceData, isPending: vehicleMaintenanceIsPending, isError: isErrorVehicleMaintenance, refetch: refetchVehicleMaintenance, error: maintenanceError } = useGetVehicleMaintenances();
+  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles, error: vehicleError } = useGetVehicles()
   const mutationDelete = useDeleteVehicleMaintenance()
   const mutationUpdate = useUpdateVehicleMaintenance()
   const mutationAdd = useCreateVehicleMaintenance()
@@ -70,7 +70,13 @@ const VehicleMaintenance = () => {
 
   // 2. Handlers
   const handleEdit = (vehicleMaintenance: VehicleMaintenanceApplicationT) => {
-    setSelectedVehicleMaintenance(vehicleMaintenance);
+    const payload = {
+      ...vehicleMaintenance,
+      lastMaintenanceDate: new Date(vehicleMaintenance?.lastMaintenanceDate).toISOString().split('.')[0],
+      nextMaintenanceDate: new Date(vehicleMaintenance?.nextMaintenanceDate).toISOString().split('.')[0]
+
+    }
+    setSelectedVehicleMaintenance(payload);
     setSaveModalVisibility(true);
   };
 
@@ -98,7 +104,7 @@ const VehicleMaintenance = () => {
         periodInMonths: junction?.periodInMonths || null,
         periodInKilometers: junction?.periodInKilometers || null,
         lastMaintenanceDate: junction?.lastMaintenanceDate.split('T')[0] || null,
-        nextMaintenanceDate: junction?.nextMaintenanceDate || null,
+        nextMaintenanceDate: junction?.nextMaintenanceDate.split('T')[0] || null,
         description: junction?.description || null,
         vehicle: vehicle?.plate || null,
         kilometer: junction?.kilometer || null,
@@ -134,12 +140,16 @@ const VehicleMaintenance = () => {
     console.log('hello from add ')
     console.log('method : ', method, "data", data)
 
+
     if (method === 'put') {
       // We pass ONE object containing id and the rest of the data
       const payloadData = {
         ...data,
+        // Ensure the date is valid or null/undefined if missing
+
+        // Direct assignment with optional chaining
         periodicMaintenanceId: selectedVehicleMaintenance?.periodicMaintenanceId
-      }
+      };
 
 
       mutationUpdate.mutate(
@@ -184,7 +194,7 @@ const VehicleMaintenance = () => {
   )
 
   if (isVehiclesError || isErrorVehicleMaintenance) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={vehicleError?.message || maintenanceError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys
@@ -196,7 +206,7 @@ const VehicleMaintenance = () => {
     { label: 'vehicleMaintenancePage.nextMaintenanceDate', key: 'nextMaintenanceDate' },
     { label: 'common.kilometer', key: 'kilometer' },
     { label: 'vehicleMaintenancePage.performedBy', key: 'performedBy' },
-    { label: ' common.description', key: 'description' },
+    { label: 'common.description', key: 'description' },
   ];
 
   return (

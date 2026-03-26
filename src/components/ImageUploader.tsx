@@ -3,6 +3,7 @@ import ErrorModal from '@/components/Modals/ErrorModal';
 import SuccessModal from '@/components/Modals/SuccessModal';
 import { useState } from 'react';
 import { Alert, Image, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Asset, CameraOptions, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const ImageUploader = () => {
@@ -12,7 +13,7 @@ const ImageUploader = () => {
   const [errorModalVisibility, setErrorModalVisibility] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successModalVisibility, setSuccessModalVisibility] = useState(false)
-
+  const { t } = useTranslation()
 
 
   function onClose() {
@@ -95,8 +96,8 @@ const ImageUploader = () => {
       {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />}
 
       {/* <View style={styles.buttonContainer}> */}
-      <LucideIconButton text="Take Photo" icon='Camera' onPress={() => launchCamera(options, handleResponse)} />
-      <LucideIconButton text="Choose from Gallery" icon='ImagePlus' onPress={() => launchImageLibrary(options, handleResponse)} />
+      <LucideIconButton text={t('common.takePhoto')} icon='Camera' onPress={() => launchCamera(options, handleResponse)} />
+      <LucideIconButton text={t('common.chooseFrmGallery')} icon='ImagePlus' onPress={() => launchImageLibrary(options, handleResponse)} />
       {/* </View> */}
 
       <ErrorModal

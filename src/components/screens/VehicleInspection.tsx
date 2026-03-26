@@ -33,8 +33,8 @@ interface dataShapeToShow {
 
 const VehicleInspection = () => {
 
-  const { data: vehicleInpsectionData, isPending: vehicleInpsectionIsPending, isError: isErrorvehicleInpsection, refetch: refetchvehicleInpsection } = useGetVehicleInspection();
-  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
+  const { data: vehicleInpsectionData, isPending: vehicleInpsectionIsPending, isError: isErrorvehicleInpsection, refetch: refetchvehicleInpsection, error: inspectionError } = useGetVehicleInspection();
+  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles, error } = useGetVehicles()
   const mutationDelete = useDeleteVehicleInspection()
   const mutationUpdate = useUpdateVehicleInspection()
   const mutationAdd = useCreateVehicleInspection()
@@ -62,7 +62,13 @@ const VehicleInspection = () => {
 
   // 2. Handlers
   const handleEdit = (vehicleInpsection: VehicleInspectionApplicationT) => {
-    setSelectedvehicleInpsection(vehicleInpsection);
+    const payload = {
+      ...vehicleInpsection,
+      inspectionDate: new Date(vehicleInpsection?.inspectionDate).toISOString().split('.')[0],
+      expiryDate: new Date(vehicleInpsection?.expiryDate).toISOString().split('.')[0]
+
+    }
+    setSelectedvehicleInpsection(payload);
     setSaveModalVisibility(true);
   };
 
@@ -170,7 +176,7 @@ const VehicleInspection = () => {
   )
 
   if (isVehiclesError || isErrorvehicleInpsection) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={error?.message || inspectionError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

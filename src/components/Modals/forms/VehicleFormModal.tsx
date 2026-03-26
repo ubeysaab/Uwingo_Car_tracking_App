@@ -183,7 +183,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
               render={({ field: { onChange, value } }) => (
 
                 <>
-                  <TextInput placeholderTextColor="#999" style={styles.input} value={value} onChangeText={onChange} />
+                  <TextInput placeholderTextColor="#999" placeholder={t('vehiclesPage.chassisNo')} style={styles.input} value={value} onChangeText={onChange} />
                   {
                     errors.vin && (
                       <InputErrorMessage errorMessage={errors?.vin?.message} />
@@ -205,6 +205,7 @@ const VehicleFormModal = ({ visible, onClose, onSubmit, initialData }: VehicleFo
                     <>
                       <TextInput
                         placeholderTextColor="#999"
+                        placeholder='2026'
                         style={styles.input}
                         keyboardType="numeric"
                         value={String(value)}

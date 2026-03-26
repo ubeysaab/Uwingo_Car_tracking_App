@@ -13,15 +13,15 @@ import {
 const { width } = Dimensions.get('window');
 
 export const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
   const [modalVisible, setModalVisible] = useState(false);
 
   const languages = useMemo(() => [
-    { label: 'English', value: "en", },
-    { label: 'Türkçe', value: "tr", },
-    { label: 'Kurdî', value: "kr", },
-  ], []);
+    { label: t('languageSwitcher.english'), value: "en", },
+    { label: t('languageSwitcher.turkish'), value: "tr", },
+    { label: t('languageSwitcher.kurdish'), value: "kr", },
+  ], [i18n]);
 
   const currentLanguage = languages.find(lang => lang.value === language) || languages[0];
 
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'red'
+    // borderWidth: 2,
+    // borderColor: 'red'
   },
   modalContainer: {
     backgroundColor: 'white',

@@ -33,8 +33,8 @@ interface dataShapeToShow {
 const VehicleCasco = () => {
 
 
-  const { data: vehicleCascoData, isPending: vehicleCascoIsPending, isError: isErrorVehicleCasco, refetch: refetchVehicleCasco } = useGetVehicleCasco();
-  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles } = useGetVehicles()
+  const { data: vehicleCascoData, isPending: vehicleCascoIsPending, isError: isErrorVehicleCasco, refetch: refetchVehicleCasco, error: vehicleCascoError } = useGetVehicleCasco();
+  const { data: vehiclesData, isPending: vehiclesIsPending, isError: isVehiclesError, refetch: refetchVehicles, error: vehicleError } = useGetVehicles()
   const mutationDelete = useDeleteVehicleCasco()
   const mutationUpdate = useUpdateVehicleCasco()
   const mutationAdd = useCreateVehicleCasco()
@@ -62,7 +62,14 @@ const VehicleCasco = () => {
 
   // 2. Handlers
   const handleEdit = (vehicleCasco: VehicleCascoApplicationT) => {
-    setSelectedVehicleCasco(vehicleCasco);
+    const payload = {
+      ...vehicleCasco,
+      startDate: new Date(vehicleCasco?.startDate).toISOString().split('.')[0],
+      endDate: new Date(vehicleCasco?.endDate).toISOString().split('.')[0]
+
+    }
+    setSelectedVehicleCasco(payload);
+    // setSelectedVehicleCasco(vehicleCasco);
     setSaveModalVisibility(true);
   };
 
@@ -171,7 +178,7 @@ const VehicleCasco = () => {
   )
 
   if (isVehiclesError || isErrorVehicleCasco) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={vehicleError?.message || vehicleCascoError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

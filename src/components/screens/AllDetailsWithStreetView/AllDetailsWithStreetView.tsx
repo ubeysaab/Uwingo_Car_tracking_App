@@ -319,7 +319,7 @@ const AllDetailsWithStreetView: React.FC<Props> = ({
   }
 
   if (isError) {
-    return <ErrorScreen onRetry={refetch} />;
+    return <ErrorScreen onRetry={refetch} message={error.message} />;
   }
   if (!vehicle) {
     return (

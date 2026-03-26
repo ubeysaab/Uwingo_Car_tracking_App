@@ -103,7 +103,7 @@ const VehicleMaintenanceFormModal = ({
             />
           </View>
           <ScrollView style={styles.form}>
-            <Text style={styles.label}></Text>{t('vehicleConnectedDevicePage.selectVehicle')}
+            <Text style={styles.label}>{t('vehicleConnectedDevicePage.selectVehicle')}</Text>
             <Controller
               control={control}
               name="vehicle_Id"
@@ -237,7 +237,7 @@ const VehicleMaintenanceFormModal = ({
                     style={[styles.input, errors.performedBy && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="performedBy"
+                    placeholder={t("vehicleMaintenancePage.performedBy")}
                   />
 
                   {
@@ -264,7 +264,7 @@ const VehicleMaintenanceFormModal = ({
                     style={[styles.input, errors.description && styles.inputError]}
                     value={value}
                     onChangeText={onChange}
-                    placeholder="description"
+                    placeholder={t('common.description')}
                   />
 
                   {

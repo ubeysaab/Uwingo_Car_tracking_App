@@ -32,8 +32,8 @@ const PacketContents = () => {
 
   const { t } = useTranslation();
 
-  const { data: packetsData, isPending: packetIsPending, isError: isErrorPacket, refetch: refetchPacket } = useGetPackets();
-  const { data, isPending, isError, refetch } = useGetPacketContents()
+  const { data: packetsData, isPending: packetIsPending, isError: isErrorPacket, refetch: refetchPacket, error: packetError } = useGetPackets();
+  const { data, isPending, isError, refetch, error } = useGetPacketContents()
   const mutationDelete = useDeletePacketContent()
   const mutationUpdate = useUpdatePacketContent()
   const mutationAdd = useCreatePacketContents()
@@ -175,7 +175,7 @@ const PacketContents = () => {
   )
 
   if (isError || isErrorPacket) return (
-    <ErrorScreen onRetry={refetch} />
+    <ErrorScreen onRetry={refetch} message={error?.message || packetError?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys
