@@ -6,8 +6,8 @@ import { View } from 'react-native';
 
 import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import ErrorModal from '@/components/Modals/ErrorModal';
-import ErrorScreen from '@/components/Screens/ErrorScreen';
-import SplashScreen from '@/components/Screens/SplashScreen';
+import ErrorScreen from '@/components/screens/ErrorScreen';
+import SplashScreen from '@/components/screens/SplashScreen';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
 

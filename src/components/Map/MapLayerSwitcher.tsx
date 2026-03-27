@@ -51,6 +51,8 @@ const MapLayerSwitcher = ({ onLayerChange, onTrafficToggle, position }: Props) =
             <Switch
               value={trafficEnabled}
               onValueChange={handleTrafficChange}
+              thumbColor={trafficEnabled ? COLORS.primaryLight : COLORS.disabled}
+              
               trackColor={{ false: "#ddd", true: COLORS.primary }}
             />
           </View>

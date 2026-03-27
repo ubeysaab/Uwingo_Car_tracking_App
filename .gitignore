@@ -76,3 +76,7 @@ yarn-error.log
 
 .env
 *.env
+
+*.txt
+key.properties
+*.jks

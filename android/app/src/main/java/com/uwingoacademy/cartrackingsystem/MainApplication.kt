@@ -1,4 +1,5 @@
-package com.uwingoaractakip
+package com.uwingoacademy.cartrackingsystem
+
 
 import android.app.Application
 import com.facebook.react.PackageList

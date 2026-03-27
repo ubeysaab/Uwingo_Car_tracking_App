@@ -995,3 +995,14 @@ If that command returns **0 vulnerabilities**, you are 100% "green" for the Play
 Good luck with the upload! Your vehicle tracking system is shaping up to be a solid project—getting through the first Play Store submission is always the most satisfying part.
 
 **Would you like me to help you generate the signing key or the release build command for your Android upload?**
+
+
+## Versiyonlama Stratejisi 
+Versiyonlama Stratejisi (SemVer)
+Genelde 1.0.0 formatı şu mantıkla kullanılır:
+
+`1 (Major):` Çok büyük değişiklikler veya uygulama tasarımı tamamen değiştiğinde.
+
+`0 (Minor):` Uygulamaya yeni bir özellik eklendiğinde.
+
+`0 (Patch):` Sadece hata düzeltmeleri (bug fix) yapıldığında.
