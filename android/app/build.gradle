@@ -7,6 +7,12 @@ react {
     autolinkLibrariesWithApp()
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 def enableProguardInReleaseBuilds = false
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
@@ -16,22 +22,30 @@ android {
     buildToolsVersion = rootProject.ext.buildToolsVersion
     compileSdk = rootProject.ext.compileSdkVersion
 
-    namespace = "com.uwingoaractakip"
+    // TODO : ADD THE  UNIQUE PACKAGE NAME HERE com.yourname.appname
+namespace = "com.uwingoacademy.cartrackingsystem"
 
     defaultConfig {
-        applicationId = "com.uwingoaractakip"
+        applicationId = "com.uwingoacademy.cartrackingsystem"
         minSdk = rootProject.ext.minSdkVersion
         targetSdk = rootProject.ext.targetSdkVersion
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 1 // <--- Her güncellemede bu tam sayıyı +1 artır
+        versionName = "1.0.0"
     }
-
     signingConfigs {
+        // Android Studio'nun sen kod yazarken uygulamayı telefonunda hızlıca test edebilmesi için kullandığı "geçici" imzadır.
         debug {
             storeFile = file('debug.keystore')
             storePassword = 'android'
             keyAlias = 'androiddebugkey'
             keyPassword = 'android'
+        }
+        // uygulamayi Google Play'e yüklemek için kullanacagim imzadir buradaki [keys] `key.properties` dosyasından alınır. 
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
         }
     }
 
@@ -40,7 +54,7 @@ android {
             signingConfig = signingConfigs.debug
         }
         release {
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.release
             minifyEnabled = enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
