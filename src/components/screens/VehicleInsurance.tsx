@@ -6,10 +6,10 @@ import { View } from 'react-native';
 
 import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import ErrorModal from '@/components/Modals/ErrorModal';
-import ErrorScreen from '@/components/screens/ErrorScreen';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
-import SplashScreen from '@/components/screens/SplashScreen';
+import SplashScreen from '@/components/Screens/SplashScreen';
 
 import { useGetVehicles } from '@/store/server/useVehicles';
 import { useCreateVehicleInsurance, useDeleteVehicleInsurance, useGetVehicleInsurance, useUpdateVehicleInsurance } from '@/store/server/useVehicleInsurance';

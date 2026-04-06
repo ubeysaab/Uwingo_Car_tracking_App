@@ -118,12 +118,15 @@
     "kurdish": "Kurdish"
   },
   "common": {
+    "smthingWrong": "A problem occurred while loading the data. Please try again.",
+    "errorOcc": "Error Occurred",
     "active": "Active",
     "addingDate": "Adding Date",
     "allVehicles": "All Vehicles",
     "blockage": "Blockage",
     "chooseFrmGallery": "Choose From Gallery",
     "create": "Create",
+    "close": "Close",
     "daysRemaining": "Days Remaining",
     "delete": "Delete",
     "deletingDate": "Deleting Date",

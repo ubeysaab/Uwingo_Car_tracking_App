@@ -118,10 +118,13 @@
     "descriptionLength": "Açıklama en az 3 karakter olmalıdır"
   },
   "common": {
+    "smthingWrong": "Veriler yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.",
+    "errorOcc": "Hata Oluştu",
     "active": "Aktif",
     "addingDate": "Ekleme Tarihi",
     "allVehicles": "Tüm Araçlar",
     "create": "Ekle",
+    "close": "Kapat",
     "daysRemaining": "Kalan Gün",
     "delete": "Sil",
     "deletingDate": "Silme Tarihi",

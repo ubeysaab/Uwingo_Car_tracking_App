@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AlertCircle, X } from 'lucide-react-native';
 import { COLORS } from '@/constants';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorModalProps {
   visible: boolean;
@@ -11,7 +12,9 @@ interface ErrorModalProps {
   onRetry?: () => void;
 }
 
-const ErrorModal = ({ visible, title = "Error Occurred", message, onClose, onRetry }: ErrorModalProps) => {
+const ErrorModal = ({ visible, title = "common.errorOcc", message, onClose, onRetry }: ErrorModalProps) => {
+
+  const { t } = useTranslation()
   return (
     <Modal
       transparent
@@ -28,19 +31,19 @@ const ErrorModal = ({ visible, title = "Error Occurred", message, onClose, onRet
           </View>
 
           {/* Text Content */}
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title}>{t(`${title}`)}</Text>
           <Text style={styles.message}>{message}</Text>
 
           {/* Actions */}
           <View style={styles.buttonContainer}>
             {onRetry && (
               <TouchableOpacity style={[styles.button, styles.retryButton]} onPress={onRetry}>
-                <Text style={styles.retryButtonText}>Try Again</Text>
+                <Text style={styles.retryButtonText}>{t('common.tryAgain')}</Text>
               </TouchableOpacity>
             )}
 
             <TouchableOpacity style={[styles.button, styles.closeButton]} onPress={onClose}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>

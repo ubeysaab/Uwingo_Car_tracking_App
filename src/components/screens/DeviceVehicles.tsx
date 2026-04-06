@@ -43,21 +43,24 @@ const DevicesVehicles = () => {
     data: devicesVehiclesData,
     isPending: isDevicesVehiclesPending,
     isError: isDevicesVehiclesError,
-    refetch: refetchDevicesVehicles
+    refetch: refetchDevicesVehicles,
+    error: devicesVehiclesError
   } = useGetDeviceVehicles();
 
   const {
     data: devicesData,
     isPending: isDevicesPending,
     isError: isDevicesError,
-    refetch: refetchDevices
+    refetch: refetchDevices,
+    error: devicesEror
   } = useGetDevices();
 
   const {
     data: vehiclesData,
     isPending: isVehiclePening,
     isError: isVehicleError,
-    refetch: refetchVehicles
+    refetch: refetchVehicles,
+    error: vehiclesError
   } = useGetVehicles();
 
 
@@ -228,7 +231,7 @@ const DevicesVehicles = () => {
   )
 
   if (isDevicesVehiclesError || isDevicesError || isVehicleError) return (
-    <ErrorScreen onRetry={handleRetry} />
+    <ErrorScreen onRetry={handleRetry} message={(devicesEror || vehiclesError || devicesVehiclesError)?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

@@ -7,7 +7,7 @@ interface ErrorScreenProps {
   onRetry: () => void;
 }
 
-const ErrorScreen = ({ message = "Something went wrong while loading the data.", onRetry }: ErrorScreenProps) => {
+const ErrorScreen = ({ message = "common.smthingWrong", onRetry }: ErrorScreenProps) => {
   const { t } = useTranslation()
   return (
     <View style={styles.errorContainer}>
@@ -15,7 +15,7 @@ const ErrorScreen = ({ message = "Something went wrong while loading the data.",
         <Text style={styles.errorIcon}>!</Text>
       </View>
       <Text style={styles.errorTitle}>Oops!</Text>
-      <Text style={styles.errorMessage}>{message}</Text>
+      <Text style={styles.errorMessage}>{t(`${message}`)}</Text>
 
       <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
         <Text style={styles.retryText}>{t("common.tryAgain")}</Text>

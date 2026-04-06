@@ -1,20 +1,19 @@
 import { fetchFinalMapData } from "@/api/services/map/fetchPipeLine";
-import MapLegend from "@/components/Map/MapLegend";
+import MapControls from "@/components/Map/MapControls";
 import MapLayerSwitcher from "@/components/Map/MapLayerSwitcher";
+import MapLegend from "@/components/Map/MapLegend";
 import MapSearchOverlay from "@/components/Map/MapSearchOverLay/MapSearchOverlay";
 import AnimatedMapSkeleton from "@/components/Map/MapSkeletonLoader";
-import ErrorModal from "@/components/Modals/ErrorModal";
-import ErrorScreen from "@/components/screens/ErrorScreen";
+import ErrorScreen from "@/components/Screens/ErrorScreen";
 import { RootDrawerParamList } from "@/navigation/types";
+import { NormalizedErrorT } from "@/types/auth";
 import { CreateInstantDataEndpoint_whatGet } from "@/types/forMap";
+import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppState, Modal, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import MapControls from "@/components/Map/MapControls";
-import { NormalizedErrorT } from "@/types/auth";
-import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 const mapHtmlFile = require("/assets/mapView.html");
 
 

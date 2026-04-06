@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -20,6 +21,7 @@ import ErrorModal from "@/components/Modals/ErrorModal";
 import { useAuthStore } from "@/store/local/authStore";
 import { loginCredentialsValidationSchema, loginCredentialsValidationSchemaT } from "@/types/auth";
 import { COLORS } from "@/constants";
+import Config from "react-native-config";
 
 export default function LoginScreen() {
   const {
@@ -38,6 +40,13 @@ export default function LoginScreen() {
   })
 
 
+
+  const checkConfig = () => {
+    Alert.alert(
+      "Debug Config",
+      `URL: ${Config.API_BASE_URL}\nType: ${typeof Config.API_BASE_URL}`
+    );
+  };
   const { t, i18n } = useTranslation();
 
 
@@ -68,6 +77,10 @@ export default function LoginScreen() {
         " An Error happend Please Try Again Later.")
       setErrorMessage(errMsg)
       setErrorModalVisibility(true)
+    }
+    finally {
+      checkConfig()
+
     }
   }
 

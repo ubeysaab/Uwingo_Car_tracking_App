@@ -1,4 +1,4 @@
-import Speedometer from "@/components/screens/AllDetailsWithStreetView/Speedometer";
+import Speedometer from "@/components/Screens/AllDetailsWithStreetView/Speedometer";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";

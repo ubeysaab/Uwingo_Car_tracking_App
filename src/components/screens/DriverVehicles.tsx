@@ -5,10 +5,10 @@ import * as React from 'react';
 import { View } from 'react-native';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
 import ErrorModal from '@/components/Modals/ErrorModal';
-import ErrorScreen from '@/components/screens/ErrorScreen';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
 import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
-import SplashScreen from '@/components/screens/SplashScreen';
+import SplashScreen from '@/components/Screens/SplashScreen';
 import { useCreateDriverVehicles, useDeleteDriverVehicles, useGetDriverVehicles, useUpdateDriverVehicles } from '@/store/server/useDriverVehicles';
 import DriverVehiclesModal from '@/components/Modals/forms/DriverVehiclesModal';
 import { useGetDrivers } from '@/store/server/useDrivers';
@@ -34,7 +34,8 @@ const DriverVehicles = () => {
     data: driverVehiclesData,
     isPending: isDriverVehiclesPending,
     isError: isDriverVehiclesError,
-    refetch: refetchDriverVehicles
+    refetch: refetchDriverVehicles,
+    error: driverVehiclesError,
   } = useGetDriverVehicles();
 
   const {
@@ -42,6 +43,7 @@ const DriverVehicles = () => {
     isPending: isDriverPending,
     isError: isDriverError,
     refetch: refetchDrivers
+    , error: driverError
   } = useGetDrivers();
 
   const {
@@ -49,6 +51,7 @@ const DriverVehicles = () => {
     isPending: isVehiclePening,
     isError: isVehicleError,
     refetch: refetchVehicles
+    , error: vehicleError
   } = useGetVehicles();
 
 
@@ -204,7 +207,7 @@ const DriverVehicles = () => {
   )
 
   if (isDriverVehiclesError || isDriverError || isVehicleError) return (
-    <ErrorScreen onRetry={handleRetry} />
+    <ErrorScreen onRetry={handleRetry} message={(driverError || vehicleError || driverVehiclesError)?.message} />
   )
 
   // Manually define your columns to map labels to specific object keys

@@ -9,8 +9,8 @@ import LucideIconButton from '@/components/IconButton/LucideIconButton';
 import DeleteConfirmationModal from '@/components/Modals/DeleteConfirmationModal';
 import ErrorModal from '@/components/Modals/ErrorModal';
 import { ColumnConfig } from '@/components/ResponsiveTable/types';
-import ErrorScreen from '@/components/screens/ErrorScreen';
-import SplashScreen from '@/components/screens/SplashScreen';
+import ErrorScreen from '@/components/Screens/ErrorScreen';
+import SplashScreen from '@/components/Screens/SplashScreen';
 
 import PacketFormModal from '@/components/Modals/forms/PacketFormModal';
 import { useCreatePacket, useDeletePacket, useGetPackets, useUpdatePacket } from '@/store/server/usePackets';

@@ -118,11 +118,14 @@
     "descriptionLength": "Daxuyanî divê bi kêmî ve 3 karakter be"
   },
   "common": {
+    "smthingWrong": "Di dema barkirina daneyan de pirsgirêkek derket. Ji kerema xwe dîsa biceribînin.",
+    "errorOcc": "Şaşî Çêbû",
     "active": "Çalak",
     "addingDate": "Dîroka Lêzêdekirinê",
     "allVehicles": "Hemû wesayît",
     "blockage": "Astengkirin",
     "create": "Biafirîne",
+    "close": "Bigre",
     "daysRemaining": "Rojên mayî",
     "delete": "Jê Bibe",
     "deletingDate": "Dîroka Jêbirinê",
