@@ -2,10 +2,17 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 /**
  * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('@react-native/metro-config').MetroConfig}
+ * We are fetching the default configuration first to extend it.
  */
-const config = {};
+const defaultConfig = getDefaultConfig(__dirname);
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+const config = {
+  resolver: {
+    // We add 'html' to assetExts so Metro treats .html files as static assets
+    // instead of trying to parse them as JavaScript code.
+    assetExts: [...defaultConfig.resolver.assetExts, 'html'],
+  },
+};
+
+// mergeConfig combines our custom 'html' setting with the rest of the React Native defaults.
+module.exports = mergeConfig(defaultConfig, config);

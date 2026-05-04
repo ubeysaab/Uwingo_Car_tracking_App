@@ -17,6 +17,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -28,8 +29,9 @@ import { WebView } from 'react-native-webview';
 const { width, height } = Dimensions.get('window');
 
 
-
-const detailedMap = require("/assets/streetViewMap.html")
+const mapSource = Platform.OS === 'android'
+  ? { uri: 'file:///android_asset/streetViewMap.html' }
+  : { uri: 'mapView.html' };
 
 
 
@@ -363,12 +365,17 @@ const AllDetailsWithStreetView: React.FC<Props> = ({
         )}
         <WebView
           ref={webViewRef}
-          source={detailedMap}
+          source={mapSource}
           style={styles.map}
           injectedJavaScript={debugging}
+          originWhitelist={["*"]}
+          javaScriptEnabled
+          domStorageEnabled
+          mixedContentMode="always"
+          allowFileAccess
+          allowFileAccessFromFileURLs={true}    // ← add this
+          allowUniversalAccessFromFileURLs={true}
           onMessage={handleWebViewMessage}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
           startInLoadingState={true}
           renderLoading={() => (
             <View style={styles.mapLoading}>

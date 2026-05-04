@@ -12,9 +12,15 @@ import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AppState, Modal, StyleSheet, View } from "react-native";
+import { AppState, Modal, Platform, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-const mapHtmlFile = require("/assets/mapView.html");
+
+
+
+
+const mapSource = Platform.OS === 'android'
+  ? { uri: 'file:///android_asset/mapView.html' }
+  : { uri: 'mapView.html' };
 
 
 export interface ReshapedData {
@@ -369,25 +375,27 @@ export default function MapView() {
       }
       <WebView
         ref={webviewRef}
-        // KEY FIX: Use source={require(...)} or source={{ html: ... }}
-        source={mapHtmlFile}
+        source={mapSource}
         onMessage={onMessage}
         onError={(e) => console.log("WebView error:", e.nativeEvent)}
-        // originWhitelist is crucial for local HTML loading
-
         webviewDebuggingEnabled={true}
-
         setBuiltInZoomControls={false}
         injectedJavaScript={debugging}
         originWhitelist={["*"]}
         javaScriptEnabled
         domStorageEnabled
         allowFileAccess
+        allowFileAccessFromFileURLs={true}    // ← add this
+        allowUniversalAccessFromFileURLs={true} // ← add this (lets your HTML fetch tile URLs)
         mixedContentMode="always"
         style={styles.webview}
         injectedJavaScriptBeforeContentLoaded={debugging}
         onLoadEnd={() => console.log("WebView fully loaded")}
         onLoadStart={() => console.log("WebView starting to load")}
+      // KEY FIX: Use source={require(...)} or source={{ html: ... }}
+      // originWhitelist is crucial for local HTML loading
+
+
       />
 
 

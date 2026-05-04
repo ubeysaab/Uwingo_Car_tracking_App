@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Live Vehicle Tracking</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+
+
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-width: 200px;
+      backdrop-filter: blur(10px);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-label i {
+      color: #007AFF;
+    }
+
+    select,
+    button {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:focus,
+    button:focus {
+      outline: none;
+      border-color: #007AFF;
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, #007AFF, #0056CC);
+      color: white;
+      border: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0056CC, #004099);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #legendButton {
+      position: absolute;
+      bottom: 20px;
+      left: 15px;
+      z-index: 1000;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #34C759, #28A745);
+      color: white;
+      border: none;
+      font-size: 20px;
+      box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #legendButton:hover {
+      background: linear-gradient(135deg, #28A745, #1E7E34);
+    }
+
+    #legendDropdown {
+      position: absolute;
+      bottom: 75px;
+      left: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(20px);
+      width: 280px;
+      display: none;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .legend-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .close-legend {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    .close-legend:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .legend-item:last-child {
+      border-bottom: none;
+    }
+
+    .legend-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 16px;
+    }
+
+    .legend-content {
+      flex: 1;
+    }
+
+    .legend-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .legend-description {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .vehicle-tooltip {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1px solid #ddd !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+      padding: 12px !important;
+      font-size: 13px !important;
+      backdrop-filter: blur(10px);
+    }
+
+    .speed-exceeded {
+      color: #FF3B30;
+      font-weight: 600;
+      animation: pulse 1.5s infinite;
+    }
+
+    .violations-exceeded {
+      color: #AF52DE;
+      font-weight: 600;
+    }
+
+    .violations-speed-exceeded {
+      color: #FF2D55;
+      font-weight: 600;
+      animation: pulse 1s infinite;
+    }
+
+    .speed-ok {
+      color: #34C759;
+    }
+
+    .workingStatusClassOpen {
+      color: #34C759;
+    }
+
+    .workingStatusClassClosed {
+      color: #FF3B30;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007AFF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .stats-bar {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #007AFF;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 1. Small Clusters (1-9 vehicles) - Soft Blue */
+    .marker-cluster-small {
+      background-color: rgba(0, 122, 255, 0.2) !important;
+    }
+
+    .marker-cluster-small div {
+      background-color: rgba(0, 122, 255, 0.6) !important;
+      color: white !important;
+    }
+
+    /* 2. Medium Clusters (10-99 vehicles) - Deep Blue */
+    .marker-cluster-medium {
+      background-color: rgba(0, 86, 204, 0.2) !important;
+    }
+
+    .marker-cluster-medium div {
+      background-color: rgba(0, 86, 204, 0.7) !important;
+      color: white !important;
+    }
+
+    /* 3. Large Clusters (100+ vehicles) - Dark Indigo */
+    .marker-cluster-large {
+      background-color: rgba(88, 86, 214, 0.2) !important;
+    }
+
+    .marker-cluster-large div {
+      background-color: rgba(88, 86, 214, 0.8) !important;
+      color: white !important;
+    }
+
+    /* 4. Keep your Red Alarm (highest priority) */
+    .cluster-alarm {
+      background-color: rgba(255, 59, 48, 0.3) !important;
+    }
+
+    .cluster-alarm div {
+      background-color: rgba(255, 59, 48, 0.9) !important;
+      color: white !important;
+      font-weight: bold;
+    }
+
+    /* Speeding/Violation Cluster (The "Alarm" State) */
+    .cluster-alarm {
+      background-color: rgba(255, 59, 48, 0.3) !important;
+      /* Soft Red outer */
+    }
+
+    .cluster-alarm div {
+      background-color: rgba(255, 59, 48, 0.8) !important;
+      /* Solid Red inner */
+      color: white !important;
+      font-weight: bold;
+      /* Optional: Add a pulse effect to catch the eye */
+      animation: cluster-pulse 2s infinite;
+    }
+
+    @keyframes cluster-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 59, 48, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @media (max-width: 768px) {
+      #controls {
+        top: calc(10px + env(safe-area-inset-top));
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 45%;
+      }
+
+      .stats-bar {
+        top: calc(15px + env(safe-area-inset-top));
+        left: 10px;
+        right: 10px;
+        justify-content: space-around;
+      }
+
+      #legendDropdown {
+        width: calc(100% - 30px);
+        left: 15px;
+        right: 15px;
+      }
+
+      .vehicle-label {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #007AFF;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        pointer-events: none;
+        /* Allows clicking the marker "through" the label */
+      }
+
+      .label-speed-danger {
+        color: #FF3B30;
+      }
+
+      .label-speed-ok {
+        color: #34C759;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <!-- Handle Show all Vehicle Info  -->
+
+
+
+  <!-- The end of it   -->
+
+
+  <div id="map"></div>
+
+  <div id="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading vehicle data...</div>
+  </div>
+
+  <div style="display: none;">
+    <div class="stat-item">
+      <div class="stat-value" id="totalVehicles">0</div>
+      <div class="stat-label">Vehicles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="activeVehicles">0</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="violationsCount">0</div>
+      <div class="stat-label">Violations</div>
+    </div>
+    <div class="stat-item" style="border-left: 1px solid #eee; padding-left: 10px; flex-direction: row; gap: 5px;">
+      <input type="checkbox" id="toggleAllLabels" style="display:none">
+      <div class="stat-label" style="cursor:pointer" onclick="document.getElementById('toggleAllLabels').click()">Show
+        Info</div>
+    </div>
+  </div>
+
+  </div>
+
+
+
+  <script>
+
+
+
+
+
+
+    let markers = L.markerClusterGroup({
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      disableClusteringAtZoom: 15,
+
+      // This function runs every time a cluster is drawn
+      iconCreateFunction: function (cluster) {
+        const markersInCluster = cluster.getAllChildMarkers();
+        let hasViolation = false;
+
+        // Check if ANY marker inside this cluster has a violation icon
+        for (let i = 0; i < markersInCluster.length; i++) {
+          const icon = markersInCluster[i].options.icon.options.className;
+          if (icon.includes('speed-exceeded') || icon.includes('violations')) {
+            hasViolation = true;
+            break;
+          }
+        }
+
+        const childCount = cluster.getChildCount();
+
+        // Define the CSS class based on violation status
+        let c = ' marker-cluster-';
+        if (childCount < 10) c += 'small';
+        else if (childCount < 100) c += 'medium';
+        else c += 'large';
+
+        // Add our custom alarm class if a vehicle is speeding
+        const alarmClass = hasViolation ? ' cluster-alarm' : '';
+
+        return new L.DivIcon({
+          html: '<div><span>' + childCount + '</span></div>',
+          className: 'marker-cluster' + c + alarmClass,
+          iconSize: new L.Point(40, 40)
+        });
+      }
+    });
+
+
+
+    // Global variables
+    let map;
+    let vehicleMarkers = new Map();
+    let lastPositions = {};
+    let offPlates = new Set();
+    let firstLoad = true;
+    let userInteracted = false;
+
+
+
+
+
+
+
+
+
+
+
+    let drawnItems = new L.FeatureGroup();
+    let vehiclesData = [];
+
+    // UI State
+    let numberOfTotalVehicles = 0;
+    let numberOfActiveVehicles = 0;
+    let violationsCount = 0;
+
+    let vehicleDistances = {};
+    let speedLimitDict = {};
+
+    let maxLatitude = -Infinity;
+    let minLongitude = Infinity;
+
+    let violations = [];
+    let vehiclePlates = [];
+
+    let refreshInterval;
+
+    // 1. Define all your available layers here
+    // 1. Define all available base maps
+    const baseLayers = {
+      osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }),
+      satellite: L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '© Google'
+      }),
+      topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenTopoMap'
+      }),
+      dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© CartoDB'
+      }),
+      light: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© CartoDB'
+      }),
+      voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© CartoDB'
+      }),
+      terrain: L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '© Google'
+      }),
+      google_standard: L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '© Google'
+      }),
+      google_transit: L.tileLayer('https://{s}.google.com/vt/lyrs=r,transit&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '© Google'
+      }),
+    };
+
+    // 2. Traffic Overlay (This stays on top of base layers)
+    const trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}', {
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      zIndex: 10, // Higher number means it sits ON TOP of the map
+      opacity: 0.7
+    });
+
+    let currentTrafficEnabled = false;
+
+    // 3. Universal Switcher
+    window.switchLayer = function (layerKey) {
+      // Remove only Base Layers (TileLayers that aren't the traffic layer)
+      map.eachLayer(function (layer) {
+        if (layer instanceof L.TileLayer && layer !== trafficLayer) {
+          map.removeLayer(layer);
+        }
+      });
+
+      if (baseLayers[layerKey]) {
+        baseLayers[layerKey].addTo(map);
+      } else {
+        baseLayers.osm.addTo(map);
+      }
+    };
+
+    // 4. Traffic Toggle
+    window.toggleTraffic = function (enabled) {
+      console.log('trafic enabled', enabled)
+      currentTrafficEnabled = enabled;
+
+      if (enabled) {
+        trafficLayer.addTo(map);
+      } else {
+        map.removeLayer(trafficLayer);
+      }
+    };
+
+
+
+
+
+
+
+
+
+    function initializeMap() {
+      // console.log("1️⃣ Harita yuklendi ")
+      map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([38.4011, 42.1078], 9);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      markers.addTo(map);
+      drawnItems.addTo(map);
+
+      L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+      window.map = map;
+      window.updateLocation = function (lat, lng) {
+        map.flyTo([lat, lng], 17, {
+          animate: true,
+          duration: 1.5
+        });
+      };
+
+      // Send ready message to React Native
+      sendReady();
+    }
+
+    function sendReady() {
+      const msg = JSON.stringify({ type: 'READY' });
+      if (window.ReactNativeWebView?.postMessage) {
+        window.ReactNativeWebView.postMessage(msg);
+      }
+    }
+
+    async function setupEventListeners() {
+      // console.log("event listener is working 1.5")
+
+      // Legend toggle
+      // document.getElementById('legendButton').addEventListener('click', function () {
+      //   const legend = document.getElementById('legendDropdown');
+      //   legend.style.display = legend.style.display === 'block' ? 'none' : 'block';
+      // });
+
+      // // Close legend
+      // document.getElementById('closeLegend').addEventListener('click', function () {
+      //   document.getElementById('legendDropdown').style.display = 'none';
+      // });
+
+      // Map interaction tracking
+      map.on('zoomstart', () => userInteracted = true);
+      map.on('dragstart', () => userInteracted = true);
+
+
+
+
+
+      // // Better ux
+      // document.getElementById('toggleAllLabels').addEventListener('change', function () {
+      //   updateVehicleMarkers(); // Forces a re-render with the new label state
+      // });
+
+      window.addEventListener('message', onMessage);
+      document.addEventListener('message', onMessage);
+    }
+
+    function handleEmptyData() {
+      if (!firstLoad) {
+        showNotification('No active vehicle data received.', 'error');
+      }
+    }
+
+    function handleProcessingError(error) {
+      console.error('Critical Error in UI Update:', error);
+      showNotification('An error occurred while updating the map.', 'error');
+    }
+
+    async function takeDataAndUpdateUI(incomingData) {
+      console.log("3️⃣ Processing incoming data...", incomingData);
+      console.log(incomingData)
+
+      try {
+        const hasData = Array.isArray(incomingData) && incomingData.length > 0;
+
+        if (!hasData) {
+          handleEmptyData();
+          return;
+        }
+
+        vehiclesData = incomingData;
+
+        // Draw route polygons first (this adds them to drawnItems)
+        drawRoutePolygons();
+
+        // Then update vehicle markers with violation detection
+        await updateVehicleMarkers();
+        // updateStats();
+
+      } catch (error) {
+        handleProcessingError(error);
+      }
+    }
+
+    async function loadInitialData() {
+      try {
+        // updateStats();
+
+        document.getElementById('loading').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loading').style.display = 'none';
+        }, 300);
+
+      } catch (error) {
+        showNotification('Failed to load data. Please check connection.', 'error');
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      // console.log("0️⃣ , Dom Loaded")
+      initializeMap();
+      await setupEventListeners();
+      loadInitialData();
+    });
+
+    async function onMessage(event) {
+      console.log("2️⃣ OnMessage Calisiyor", event)
+      const payload = await parseMessageData(event);
+      if (!payload) return;
+
+      if (payload.type === 'FULL_UPDATE') {
+        console.log('from on Message ', payload.data)
+        await takeDataAndUpdateUI(payload.data);
+      }
+    }
+
+    async function parseMessageData(event) {
+      try {
+        const raw = event.data || event;
+        if (typeof raw === 'string') return JSON.parse(raw);
+        return raw;
+      } catch {
+        return null;
+      }
+    }
+
+    // ====================== ROUTE VIOLATION LOGIC (MATCHING ORIGINAL .TXT FILE) ======================
+
+    /**
+     * Draw route polygons from vehicle data and add them to drawnItems layer
+     * This matches the original logic in the .txt file
+     */
+    function drawRoutePolygons() {
+      drawnItems.clearLayers();
+
+      vehiclesData.forEach(item => {
+        try {
+          if (item.coordinate) {
+            // Parse coordinates - expecting format like original: [{latitude, longitude}, ...]
+            const coords = typeof item.coordinate === 'string'
+              ? JSON.parse(item.coordinate)
+              : item.coordinate;
+
+            if (coords && Array.isArray(coords) && coords.length >= 3) {
+              // Convert to Leaflet format: [[lat, lng], [lat, lng], ...]
+              const latlngs = coords.map(p => [p.latitude ?? p.lat, p.longitude ?? p.lng]);
+
+              // Draw polygon (same as original logic)
+              const polygon = L.polygon(latlngs, {
+                stroke: false,
+                color: '#3498db',
+                weight: 2,
+                fill: false,
+                fillColor: '#a4cafe',
+                fillOpacity: 0
+              });
+
+              drawnItems.addLayer(polygon);
+            }
+          }
+        } catch (e) {
+          console.warn("Error drawing route polygon:", e);
+        }
+      });
+    }
+
+    /**
+     * Converts a Leaflet layer to Turf polygon (matches original .txt file)
+     */
+    function leafletPolygonToTurf(layer) {
+      const latlngs = layer.getLatLngs();
+      // Get outer ring (same as original)
+      const ring = (Array.isArray(latlngs[0]) ? latlngs[0] : latlngs).map(ll => [ll.lng, ll.lat]);
+
+      // Close polygon if needed (same as original)
+      if (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) {
+        ring.push(ring[0]);
+      }
+
+      return turf.polygon([ring]);
+    }
+
+    /**
+     * Checks if a point is inside any polygon in drawnItems (matches original .txt file)
+     */
+    function isPointInsideAnyPolygon(longitude, latitude) {
+      if (drawnItems.getLayers().length === 0) return false;
+
+      const pt = turf.point([longitude, latitude]);
+      let inside = false;
+
+      drawnItems.eachLayer(layer => {
+        if (inside) return; // short circuit (same as original)
+        try {
+          const poly = leafletPolygonToTurf(layer);
+          if (turf.booleanPointInPolygon(pt, poly)) inside = true;
+        } catch (_) { }
+      });
+
+      return inside;
+    }
+
+    /**
+     * Main function to check if a vehicle is outside its allowed route
+     * This matches the analyzeAndLogPoints logic from original .txt file
+     */
+    function isVehicleOutsidePolygon(itemPoint, coordinate) {
+      // If no coordinate data, return false (no violation)
+      if (!coordinate) return false;
+
+      try {
+        // Prepare the point for Turf
+        const pt = turf.point([itemPoint.longitude || itemPoint.lng,
+        itemPoint.latitude || itemPoint.lat]);
+
+        // Check if point is inside any polygon in drawnItems
+        // This matches the original logic exactly
+        return !isPointInsideAnyPolygon(pt.geometry.coordinates[0], pt.geometry.coordinates[1]);
+      } catch (error) {
+        console.error("Turf Error:", error);
+        return false;
+      }
+    }
+
+    // ====================== END OF ROUTE VIOLATION LOGIC ======================
+
+
+    async function updateVehicleMarkers() {
+      console.log('update markers', vehiclesData.length)
+      if (!vehiclesData || !Array.isArray(vehiclesData)) return;
+
+
+
+      markers.clearLayers();
+      const latlngs = [];
+      offPlates.clear();
+      const showAll = document.getElementById('toggleAllLabels').checked;
+
+      vehiclesData.forEach(item => {
+        const { lat, lng, speed, isWorking, plate, serialNumber, speedLimit, coordinate, analysisEndDate } = item;
+        if (!lat || !lng) return;
+
+        latlngs.push([lat, lng]);
+
+        // 1. Violation Logic
+        let polygonCoords = [];
+        try { polygonCoords = typeof item.coordinate === 'string' ? JSON.parse(item.coordinate) : item.coordinate; } catch (e) { }
+
+        let bearing = 0;
+        if (lastPositions[serialNumber]) {
+          bearing = computeDirection(lastPositions[serialNumber].lat, lastPositions[serialNumber].lng, lat, lng);
+        }
+
+        const targetDate = analysisEndDate ? new Date(analysisEndDate) : "";
+        const currentDate = new Date();
+        let isOutside = false;
+        if (coordinate && (targetDate > currentDate)) {
+          isOutside = isVehicleOutsidePolygon({ latitude: lat, longitude: lng }, polygonCoords);
+        }
+
+        const speedExceeded = speed > speedLimit;
+        if (isOutside || speedExceeded) offPlates.add(plate);
+
+        // 2. Styling
+        let iconClass = 'speed-ok';
+        if (speedExceeded && isOutside) iconClass = 'violations-speed-exceeded';
+        else if (speedExceeded) iconClass = 'speed-exceeded';
+        else if (isOutside) iconClass = 'violations-exceeded';
+
+        // 3. Label Content
+        const labelHtml = `
+      ${plate} <span class="${speedExceeded ? 'label-speed-danger' : 'label-speed-ok'}">${speed}km/h</span>
+    `;
+
+        // 4. Update or Create Marker
+        let marker;
+        if (vehicleMarkers.has(serialNumber)) {
+          marker = vehicleMarkers.get(serialNumber);
+          marker.setLatLng([lat, lng]);
+          marker.setIcon(createVehicleIcon(iconClass, bearing, isWorking));
+          marker.setPopupContent(createPopupContent(item, speed, speedLimit, isWorking, speedExceeded, isOutside));
+        } else {
+          marker = L.marker([lat, lng], {
+            icon: createVehicleIcon(iconClass, bearing, isWorking)
+          }).addTo(markers);
+          // We store the iconClass name in the options so the cluster function can read it
+          marker.options.icon.options.className = iconClass;
+          marker.bindPopup(createPopupContent(item, speed, speedLimit, isWorking, speedExceeded, isOutside));
+          vehicleMarkers.set(serialNumber, marker);
+        }
+
+
+
+        //  Add the marker to the cluster group
+        markers.addLayer(marker);
+        // 5. Handle Tooltips (Labels)
+        marker.unbindTooltip();
+        marker.bindTooltip(labelHtml, {
+          permanent: showAll,
+          direction: 'top',
+          className: 'vehicle-label',
+          offset: [0, -15],
+          opacity: 0.9
+        });
+
+        lastPositions[serialNumber] = { lat, lng };
+      });
+
+      // send message to RN In order to show violation
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'STATS_UPDATE',
+        violationsCount: offPlates.size,
+        violationCars: Array.from(offPlates)
+      }));
+
+      if (firstLoad && latlngs.length > 0) {
+        map.fitBounds(L.latLngBounds(latlngs), { padding: [50, 50] });
+        firstLoad = false;
+      }
+    }
+
+    function getStatusColor(iconClass, isWorking) {
+      if (iconClass.includes('speed-exceeded')) { return 'rgba(255, 59, 48, 0.9)' }
+      else if (iconClass.includes('violations')) { return 'rgba(175, 82, 222, 0.6)' }
+      else return isWorking ? '#00E676' : '#999';
+
+    };
+
+    // function createVehicleIcon(iconClass, currentBearing, isWorking) {
+    //   // console.log('7️⃣ create vehicle Icon--')
+
+    //   const borderColor = `border:3px solid ` + getStatusColor(iconClass, isWorking) + ';'
+    //   return L.divIcon({
+    //     html: `
+    //       <div style="position: relative; width: 40px; height: 40px; pointer-events:none;  >
+    //         <div class="${iconClass}" style="width: 100%; height: 100%; border-radius: 50%; 
+    //         ${borderColor}
+    //           transform: rotate(${currentBearing}deg);
+    //           background: 'rgba(233, 233, 233)'; 
+    //           display: flex; align-items: center; justify-content: center;">
+    //           <i class="fa-solid fa-location-arrow" style="color: #1785e1 ; 
+    //             font-size: 20px; transform: rotate(-45deg);"></i>
+    //         </div>
+    //       </div>
+    //     `,
+    //     className: 'vehicle-icon',
+    //     iconSize: [40, 40],
+    //     iconAnchor: [20, 20]
+    //   });
+
+    // }
+
+    function createVehicleIcon(iconClass, currentBearing, isWorking) {
+      // Maintaining your exact logic for border color calculation
+      const statusBorderColor = getStatusColor(iconClass, isWorking);
+
+      // Icon color logic based on isWorking (matches your RN iconColor)
+      const iconAndDotColor = isWorking ? '#00E676' : '#999';
+
+      return L.divIcon({
+        html: `
+      <div style="position: relative; width: 48px; height: 48px; pointer-events: none;">
+        <div class="${iconClass}" style="
+          width: 44px; 
+          height: 44px; 
+          border-radius: 50%; 
+          border: 2px solid ${statusBorderColor}; 
+          background-color: #F8F9FA; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center;
+          transform: rotate(${currentBearing}deg);
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${iconAndDotColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+          </svg>
+        </div>
+        
+        <div style="
+          width: 12px; 
+          height: 12px; 
+          border-radius: 50%; 
+          background-color: ${iconAndDotColor}; 
+          position: absolute; 
+          bottom: 4px; 
+          right: 4px; 
+          border: 2px solid #FFFFFF;
+          z-index: 2;
+        "></div>
+      </div>
+    `,
+        className: 'vehicle-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
+    }
+
+
+
+
+    function createPopupContent(item, speed, speedLimit, workingStatus, speedExceeded, hasRouteViolation) {
+      const violations = [];
+      // Use localized strings if you implemented the previous step, 
+      // otherwise keep these as defaults
+      if (speedExceeded) violations.push('Speed violation');
+      if (hasRouteViolation) violations.push('Route violation');
+
+      const violationText = violations.join(' • ');
+
+      // Stringify the item object so we can pass it through the click event
+      const itemData = JSON.stringify(item).replace(/"/g, '&quot;');
+
+      return `
+    <div style="padding: 10px; min-width: 200px;">
+      <div 
+        onclick="handlePlateClick('${itemData}')" 
+        style="font-size: 16px; font-weight: bold; color: #007AFF; margin-bottom: 8px; cursor: pointer; text-decoration: underline;"
+      >
+        ${item?.plate}
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+        <div><strong>Speed:</strong></div>
+        <div style="color: ${speedExceeded ? '#FF3B30' : '#34C759'}; font-weight: ${speedExceeded ? 'bold' : 'normal'}">
+          ${speed} km/h
+        </div>
+        
+        <div><strong>Limit:</strong></div>
+        <div>${speedLimit === 500 ? 'No Limit' : `${speedLimit}km/h`} </div>
+        
+        <div><strong>Status:</strong></div>
+        <div style="color: ${workingStatus ? '#34C759' : '#FF3B30'};">
+          ${workingStatus ? 'ON' : 'OFF'}
+        </div>
+        
+        ${violationText ? `
+          <div><strong>Violations:</strong></div>
+          <div style="color: #FF3B30; font-weight: bold;">
+            ${violationText}
+          </div>
+        ` : ''}
+      </div>
+      <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+        Last updated: ${new Date().toLocaleTimeString()}
+      </div>
+    </div>
+  `;
+    }
+
+
+    function computeDirection(lat1, lon1, lat2, lon2) {
+      const toRad = angle => angle * Math.PI / 180;
+      const toDeg = angle => angle * 180 / Math.PI;
+
+      const dLon = toRad(lon2 - lon1);
+      const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+        Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+      const bearing = Math.atan2(y, x);
+      return (toDeg(bearing) + 360) % 360;
+    }
+
+    function updateStats() {
+      numberOfTotalVehicles = vehiclesData.length;
+      numberOfActiveVehicles = vehiclesData.filter(v => v.isWorking).length;
+      violationsCount = offPlates.size;
+
+      if (document.getElementById('totalVehicles'))
+        document.getElementById('totalVehicles').textContent = numberOfTotalVehicles;
+      if (document.getElementById('activeVehicles'))
+        document.getElementById('activeVehicles').textContent = numberOfActiveVehicles;
+      if (document.getElementById('violationsCount'))
+        document.getElementById('violationsCount').textContent = violationsCount;
+    }
+
+
+    // __Notification __
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'error' ? '#FF3B30' : '#34C759'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+          document.head.removeChild(style);
+        }, 300);
+      }, 3000);
+    }
+
+
+
+    // __ HandleNavigate to StreetViewMap ___
+    function handlePlateClick(dataStr) {
+      const data = JSON.parse(dataStr);
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'VEHICLE_DETAILS',
+          data: data
+        }));
+      }
+    }
+  </script>
+</body>
+
+</html>

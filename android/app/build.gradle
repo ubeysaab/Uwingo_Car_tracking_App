@@ -40,7 +40,7 @@ namespace = "com.uwingoacademy.cartrackingsystem"
         applicationId = "com.uwingoacademy.cartrackingsystem"
         minSdk = rootProject.ext.minSdkVersion
         targetSdk = rootProject.ext.targetSdkVersion
-        versionCode = 3 // <--- Her güncellemede bu tam sayıyı +1 artır
+        versionCode = 4 // <--- Her güncellemede bu tam sayıyı +1 artır
         versionName = "1.0.1"
     }
     signingConfigs {
